@@ -4,12 +4,18 @@ import time
 metadata = {
     'protocolName': '384 well plate, 32x12 1:1 Serial Dilution',
     'author': 'Shawn Laursen',
-    'description': '''This protocol will make 32x12well dilutions in a 384 well
-                      plate. The dilutions are 1:1 across the the plate and
-                      leave the last well of each dilution with buffer (DNA)
-                      only. It will take the even columns of a 96 well plate to
-                      fill well 1 of each dilution and the adjacent well in the
-                      96 well plate will provide the dilution buffer for the
+    'description': '''This protocol will make 32x12well dilutions in a 384 
+well
+                      plate. The dilutions are 1:1 across the the plate 
+and
+                      leave the last well of each dilution with buffer 
+(DNA)
+                      only. It will take the even columns of a 96 well 
+plate to
+                      fill well 1 of each dilution and the adjacent well 
+in the
+                      96 well plate will provide the dilution buffer for 
+the
                       other 11 wells of each dilution.''',
     'apiLevel': '2.8'
     }
@@ -38,9 +44,12 @@ def run(protocol: protocol_api.ProtocolContext):
     p300m.flow_rate.aspirate = 5
     p300m.flow_rate.dispense = 5
 
-    #add 40ul of 50uM protein/20nM DNA from row 1,3,5,7 of 96well to 384well
-    p300m.transfer(40, plate96.rows()[0][0].bottom(1.75), plate384.rows()[0][0])
-    p300m.transfer(40, plate96.rows()[0][2].bottom(1.75), plate384.rows()[1][0])
+    #add 40ul of 50uM protein/20nM DNA from row 1,3,5,7 of 96well to 
+384well
+    p300m.transfer(40, plate96.rows()[0][0].bottom(1.75), 
+plate384.rows()[0][0])
+    p300m.transfer(40, plate96.rows()[0][2].bottom(1.75), 
+plate384.rows()[1][0])
     p300m.transfer(40, plate96.rows()[0][4].bottom(1.75),
                    plate384.rows()[0][12])
     p300m.transfer(40, plate96.rows()[0][6].bottom(1.75),
@@ -71,12 +80,14 @@ def run(protocol: protocol_api.ProtocolContext):
     p20m.pick_up_tip()
     p20m.aspirate(20, plate384.rows()[1][10])
     p20m.drop_tip()
-    p20m.transfer(20, plate384.rows()[0][12:22], plate384.rows()[0][13:23],
+    p20m.transfer(20, plate384.rows()[0][12:22], 
+plate384.rows()[0][13:23],
                   mix_after=(3, 20), new_tip='once')
     p20m.pick_up_tip()
     p20m.aspirate(20, plate384.rows()[0][22])
     p20m.drop_tip()
-    p20m.transfer(20, plate384.rows()[1][12:22], plate384.rows()[1][13:23],
+    p20m.transfer(20, plate384.rows()[1][12:22], 
+plate384.rows()[1][13:23],
                   mix_after=(3, 20), new_tip='once')
     p20m.pick_up_tip()
     p20m.aspirate(20, plate384.rows()[1][22])
