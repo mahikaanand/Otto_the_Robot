@@ -1,5 +1,5 @@
 from opentrons import protocol_api
-
+import time
 
 metadata = {
     'protocolName': '384 well plate, 32x12 1:1 Serial Dilution',
@@ -11,16 +11,18 @@ metadata = {
                       fill well 1 of each dilution and the adjacent well in the
                       96 well plate will provide the dilution buffer for the
                       other 11 wells of each dilution.''',
-    'apiLevel': '2.5'
+    'apiLevel': '2.8'
     }
 
 def run(protocol: protocol_api.ProtocolContext):
 
     #turn on robot rail lights
     i = 0
-    while i < 20:
+    while i < 10:
         protocol.set_rail_lights(True)
+        time.sleep(0.25)
         protocol.set_rail_lights(False)
+        time.sleep(0.25)
         i += 1
     protocol.set_rail_lights(True)
     
@@ -40,9 +42,9 @@ def run(protocol: protocol_api.ProtocolContext):
     p300m.transfer(40, plate96.rows()[0][0].bottom(1.75), plate384.rows()[0][0])
     p300m.transfer(40, plate96.rows()[0][2].bottom(1.75), plate384.rows()[1][0])
     p300m.transfer(40, plate96.rows()[0][4].bottom(1.75),
-                   plate384.rows()[0][13])
+                   plate384.rows()[0][12])
     p300m.transfer(40, plate96.rows()[0][6].bottom(1.75),
-                   plate384.rows()[1][13])
+                   plate384.rows()[1][12])
 
     p300m.flow_rate.dispense = 10
 
@@ -56,36 +58,26 @@ def run(protocol: protocol_api.ProtocolContext):
     p300m.distribute(20, plate96.rows()[0][7].bottom(1.75),
                      plate384.rows()[1][13:24], disposal_volume=5)
 
+    p20m.flow_rate.aspirate = 5
+
     #1:1 serial dilution 20ul 1:1 from 1-11 in 384well
-    p20m.pick_up_tip()
     p20m.transfer(20, plate384.rows()[0][0:10], plate384.rows()[0][1:11],
-                  mix_after=(3, 20), blow_out=True,
-                  blow_out_location='source well', new_tip='never')
-    p20m.drop_tip()
+                  mix_after=(3, 20), new_tip='once')
     p20m.pick_up_tip()
     p20m.aspirate(20, plate384.rows()[0][10])
     p20m.drop_tip()
-    p20m.pick_up_tip()
     p20m.transfer(20, plate384.rows()[1][0:10], plate384.rows()[1][1:11],
-                  mix_after=(3, 20), blow_out=True,
-                  blow_out_location='source well', new_tip='never')
-    p20m.drop_tip()
+                  mix_after=(3, 20), new_tip='once')
     p20m.pick_up_tip()
     p20m.aspirate(20, plate384.rows()[1][10])
     p20m.drop_tip()
-    p20m.pick_up_tip()
     p20m.transfer(20, plate384.rows()[0][12:22], plate384.rows()[0][13:23],
-                  mix_after=(3, 20), blow_out=True,
-                  blow_out_location='source well', new_tip='never')
-    p20m.drop_tip()
+                  mix_after=(3, 20), new_tip='once')
     p20m.pick_up_tip()
     p20m.aspirate(20, plate384.rows()[0][22])
     p20m.drop_tip()
-    p20m.pick_up_tip()
     p20m.transfer(20, plate384.rows()[1][12:22], plate384.rows()[1][13:23],
-                  mix_after=(3, 20), blow_out=True,
-                  blow_out_location='source well', new_tip='never')
-    p20m.drop_tip()
+                  mix_after=(3, 20), new_tip='once')
     p20m.pick_up_tip()
     p20m.aspirate(20, plate384.rows()[1][22])
     p20m.drop_tip()
