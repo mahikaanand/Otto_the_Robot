@@ -4,7 +4,7 @@ import sys
 
 
 metadata = {
-    'protocolName': '384 well plate, 32x12 1:1 Serial Dilution',
+    'protocolName': '384 well plate, 32x12 1:1 Serial Dilution Condensed',
     'author': 'Shawn Laursen',
     'description': '''This protocol will make 32x12well dilutions in a 384 well
                       plate. The dilutions are 1:1 across the the plate and
@@ -16,6 +16,7 @@ metadata = {
     'apiLevel': '2.8'
     }
 
+def run(protocol):
     #setup
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 6)
@@ -24,23 +25,24 @@ metadata = {
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-                                     tip_racks=[tips20])
+                                     tip_racks=[tips20]) 
+    
+    equiptment = [tips300, tips20, plate96, plate384, p300m, p20m]
 
-def run(protocol: protocol_api.ProtocolContext):
     #turn on robot rail lights
-    strobe(5)
+    strobe(5, protocol)
 
     #do titration
-    titrate(1, 0, 0, 'odd')
-    test_titrate(3, 2, 0, 'even')
-    #titrate(5, 4, 12, 'odd')
-    #titrate(7, 6, 12, 'even')
+    #titrate(1, 0, 0, 'odd', protocol, equiptment)
+    #test_titrate(3, 2, 0, 'even', protocol, equiptment)
+    titrate(5, 4, 12, 'odd', protocol, equiptment)
+    test_titrate(7, 6, 12, 'even', protocol, equiptment)
 
     #turn off robot rail lights
-    strobe(5)
+    strobe(5, protocol)
     protocol.set_rail_lights(False)
 
-def strobe(blinks):
+def strobe(blinks, protocol):
     i = 0
     while i < blinks:
         protocol.set_rail_lights(True)
@@ -50,7 +52,19 @@ def strobe(blinks):
         i += 1
     protocol.set_rail_lights(True)
 
-def titrate(buff_96col, protien_96col, start_384well, which_rows):
+def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol, equiptment):
+    # #setup
+    # tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
+    # tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 6)
+    # plate96 = protocol.load_labware('costar_96_wellplate_200ul', 2)
+    # plate384 = protocol.load_labware('corning3575_384well_alt', 5)
+    # p300m = protocol.load_instrument('p300_multi_gen2', 'left',
+    #                                  tip_racks=[tips300])
+    # p20m = protocol.load_instrument('p20_multi_gen2', 'right',
+    #                                  tip_racks=[tips20]) 
+
+    tips300, tips20, plate96, plate384, p300m, p20m = equiptment[0], equiptment[1],equiptment[2],equiptment[3],equiptment[4],equiptment[5]
+    
     if which_rows == 'odd':
         which_rows = 0
     elif which_rows == 'even':
@@ -60,22 +74,25 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows):
 
     p300m.flow_rate.aspirate = 5
     p300m.flow_rate.dispense = 10
-    p20m.pick_up_tip()
+    p300m.pick_up_tip()
     p300m.distribute(20, plate96.rows()[0][buff_96col].bottom(1.75),
-                     plate384.rows()[which_rows][(start_384well+1):(start_384well+12)],
+                     plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=5, new_tip='never')
     p300m.flow_rate.dispense = 5
     p300m.transfer(40, plate96.rows()[0][protien_96col].bottom(1.75),
-                   plate384.rows()[0][0])
+                   plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.drop_tip()
+    p20m.flow_rate.aspirate = 5
     p20m.pick_up_tip()
-    p20m.transfer(20, plate384.rows()[which_rows][start_384well:(start_384well+10)],
-                  plate384.rows()[which_rows][(start_384well+1):(start_384well+11)],
+    p20m.transfer(20, plate384.rows()[which_rows][start_384well:start_384well+10],
+                  plate384.rows()[which_rows][start_384well+1:start_384well+11],
                   mix_after=(3, 20), new_tip='never')
-    p20m.aspirate(20, plate384.rows()[which_rows][(start_384well+10)])
+    p20m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
     p20m.drop_tip()
 
-def test_titrate(buff_96col, protien_96col, start_384well, which_rows):
+def test_titrate(buff_96col, protien_96col, start_384well, which_rows, protocol, equiptment):
+    tips300, tips20, plate96, plate384, p300m, p20m = equiptment[0], equiptment[1],equiptment[2],equiptment[3],equiptment[4],equiptment[5]
+
     if which_rows == 'odd':
         which_rows = 0
     elif which_rows == 'even':
@@ -83,17 +100,19 @@ def test_titrate(buff_96col, protien_96col, start_384well, which_rows):
     else:
         sys.exit('Wrong value for which_rows.')
 
+    equiptment = tips300, tips20, plate96, plate384, p300m, p20m
+
     p300m.flow_rate.aspirate = 5
     p300m.flow_rate.dispense = 10
-    p20m.pick_up_tip()
+    p300m.pick_up_tip()
     p300m.distribute(20, plate96.rows()[0][buff_96col].bottom(1.75),
-                     plate384.rows()[which_rows][(start_384well+1):(start_384well+12)],
+                     plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=5, new_tip='never')
     p300m.flow_rate.dispense = 5
     p300m.transfer(40, plate96.rows()[0][protien_96col].bottom(1.75),
-                   plate384.rows()[0][0])
-    p300m.transfer(20, plate384.rows()[which_rows][start_384well:(start_384well+10)],
-                  plate384.rows()[which_rows][(start_384well+1):(start_384well+11)],
+                   plate384.rows()[which_rows][start_384well], new_tip='never')
+    p300m.transfer(20, plate384.rows()[which_rows][start_384well:start_384well+10],
+                  plate384.rows()[which_rows][start_384well+1:start_384well+11],
                   mix_after=(3, 20), new_tip='never')
-    p300m.aspirate(20, plate384.rows()[which_rows][(start_384well+10)])
+    p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
     p300m.drop_tip()
