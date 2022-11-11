@@ -17,13 +17,21 @@ metadata = {
     }
 
 def run(protocol):
+    #setup
+    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
+    plate96 = protocol.load_labware('costar_96_wellplate_200ul', 2)
+    plate384 = protocol.load_labware('corning3575_384well_alt', 5)
+    p300m = protocol.load_instrument('p300_multi_gen2', 'left',
+                                     tip_racks=[tips300])
+    equiptment = [tips300, plate96, plate384, p300m]
+
     #turn on robot rail lights
     strobe(5, protocol)
 
     #do titration
-    titrate(1, 0, 0, 'odd', protocol)
-    titrate(3, 2, 0, 'even', protocol)
-    titrate(5, 4, 12, 'odd', protocol)
+    titrate(1, 0, 0, 'odd', protocol, equiptment)
+    titrate(3, 2, 0, 'even', protocol, equiptment)
+    titrate(5, 4, 12, 'odd', protocol, equiptment)
 
     #turn off robot rail lights
     strobe(5, protocol)
@@ -39,16 +47,8 @@ def strobe(blinks, protocol):
         i += 1
     protocol.set_rail_lights(True)
 
-def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol):
-    #setup
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
-    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 6)
-    plate96 = protocol.load_labware('costar_96_wellplate_200ul', 2)
-    plate384 = protocol.load_labware('corning3575_384well_alt', 5)
-    p300m = protocol.load_instrument('p300_multi_gen2', 'left',
-                                     tip_racks=[tips300])
-    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-
+def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol, equiptment):
+    tips300, plate96, plate384, p300m = equiptment[0], equiptment[1], equiptment[2], equiptment[3]
 
     if which_rows == 'odd':
         which_rows = 0
@@ -56,8 +56,6 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol):
         which_rows = 1
     else:
         sys.exit('Wrong value for which_rows.')
-
-    equiptment = tips300, tips20, plate96, plate384, p300m, p20m
 
     p300m.flow_rate.aspirate = 5
     p300m.flow_rate.dispense = 10
