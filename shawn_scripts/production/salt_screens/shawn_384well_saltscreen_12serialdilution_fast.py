@@ -107,8 +107,6 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol,
     else:
         sys.exit('Wrong value for which_rows.')
 
-    p300m.flow_rate.aspirate = 5
-    p300m.flow_rate.dispense = 10
     p300m.pick_up_tip()
 
     if buff_96col == 1:
@@ -131,7 +129,6 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol,
     p300m.distribute(20, plate96.rows()[0][buff_96col].bottom(1.75),
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=0, new_tip='never')
-    p300m.flow_rate.dispense = 5
     p300m.transfer(40, plate96.rows()[0][protien_96col].bottom(1.75),
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.transfer(20,
@@ -147,8 +144,6 @@ def titrate_salt(protocol, equiptment, which_tips, tip):
 
     for column in range(0,12):
         if column in (0,2,4,6):
-            p300m.flow_rate.aspirate = 5
-            p300m.flow_rate.dispense = 10
             p300m.pick_up_tip(tips300[which_tips[tip]])
             tip += 1
             for row in range(1,6):
@@ -161,8 +156,6 @@ def titrate_salt(protocol, equiptment, which_tips, tip):
             p300m.pick_up_tip(tips300[which_tips[tip]])
             tip += 1
             for row in range(1,6):
-                p300m.flow_rate.aspirate = 10
-                p300m.flow_rate.dispense = 10
                 p300m.aspirate(125, plate96.rows()[row][column].bottom(1.75))
                 p300m.dispense(125, plate96.rows()[row+1][column].bottom(1.75))
                 p300m.mix(3,50)
@@ -181,8 +174,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
     protein = temp_buffs.wells_by_name()['A1']
     dna = temp_buffs.wells_by_name()['A2']
     dna_extra = temp_buffs.wells_by_name()['D2']
-    p300m.flow_rate.aspirate = 10
-    p300m.flow_rate.dispense = 10
 
     hi_prot_dna_vol = 150
     lo_prot_dna_vol = 350
@@ -381,16 +372,13 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
 def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
     tips300, tips300_2, plate96 = equiptment[0], equiptment[1], equiptment[2]
     plate384, p300m, tempdeck = equiptment[3], equiptment[4], equiptment[5]
-    p300m.flow_rate.dispense = 10
 
     #move protein wells
     column = 0
     for buff in range(0,len(buffs)):
         p300m.pick_up_tip(tips300[which_tips[tip]])
         tip += 1
-        p300m.flow_rate.aspirate = 10
         p300m.mix(3,50, temp_buffs.rows()[0][buff+2])
-        p300m.flow_rate.aspirate = 5
         p300m.aspirate(100, temp_buffs.rows()[0][buff+2].bottom(-2))
         p300m.dispense(100, plate96.rows()[1][column].bottom(1.75))
         p300m.blow_out(plate96.rows()[1][column])
@@ -398,9 +386,7 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
 
         p300m.pick_up_tip(tips300[which_tips[tip]])
         tip += 1
-        p300m.flow_rate.aspirate = 10
         p300m.mix(3,100, temp_buffs.rows()[1][buff+2])
-        p300m.flow_rate.aspirate = 5
         p300m.aspirate(300, temp_buffs.rows()[1][buff+2].bottom(-2))
         for row in [7,6,5,4,3,2]:
             p300m.dispense(50, plate96.rows()[row][column].bottom(1.75))
@@ -414,7 +400,6 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
     for buff in range(0,len(buffs)):
         p300m.pick_up_tip(tips300[which_tips[tip]])
         tip += 1
-        p300m.flow_rate.aspirate = 10
         p300m.mix(3,250, temp_buffs.rows()[2][buff+2])
         p300m.aspirate(250, temp_buffs.rows()[2][buff+2].bottom(-2))
         p300m.dispense(250, plate96.rows()[1][column].bottom(1.75))
@@ -439,9 +424,7 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
     #move controls
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
-    p300m.flow_rate.aspirate = 10
     p300m.mix(3,50, temp_buffs.rows()[1][0])
-    p300m.flow_rate.aspirate = 5
     p300m.aspirate(100, temp_buffs.rows()[1][0].bottom(-2))
     p300m.dispense(50, plate96.rows()[0][0].bottom(1.75))
     p300m.dispense(50, plate96.rows()[0][2].bottom(1.75))
@@ -450,9 +433,7 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
-    p300m.flow_rate.aspirate = 10
     p300m.mix(3,50, temp_buffs.rows()[2][0])
-    p300m.flow_rate.aspirate = 5
     p300m.aspirate(100, temp_buffs.rows()[2][0].bottom(-2))
     p300m.dispense(50, plate96.rows()[0][4].bottom(1.75))
     p300m.dispense(50, plate96.rows()[0][6].bottom(1.75))
@@ -461,9 +442,7 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
-    p300m.flow_rate.aspirate = 10
     p300m.mix(3,250, temp_buffs.rows()[1][1])
-    p300m.flow_rate.aspirate = 5
     p300m.aspirate(250, temp_buffs.rows()[1][1].bottom(-2))
     p300m.dispense(125, plate96.rows()[0][1].bottom(1.75))
     p300m.dispense(125, plate96.rows()[0][3].bottom(1.75))
@@ -476,7 +455,6 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
-    p300m.flow_rate.aspirate = 10
     p300m.mix(3,250, temp_buffs.rows()[2][1])
     p300m.aspirate(250, temp_buffs.rows()[2][1].bottom(-2))
     p300m.dispense(125, plate96.rows()[0][5].bottom(1.75))
