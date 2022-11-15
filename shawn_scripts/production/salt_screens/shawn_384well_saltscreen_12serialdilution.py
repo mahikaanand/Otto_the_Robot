@@ -193,7 +193,7 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
     lpdv1 = (lo_prot_dna_vol)/5
     hdv1 = (hi_dna_vol)/5
     ldv1 = (lo_dna_vol)/5
-    
+
     #make high protein + DNA
     if make_high:
         #add edta
@@ -206,10 +206,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(lpdv1, temp_buffs.rows()[1][buff+2].top())
                 p300m.touch_tip()
                 p300m.dispense(hdv1, temp_buffs.rows()[2][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(edta)
-                p300m.aspirate((ldv1), edta)
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(edta)
                 p300m.aspirate((ldv1), edta)
@@ -242,10 +238,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(low_salt)
-                p300m.aspirate((ldv1), low_salt)
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(low_salt)
         p300m.drop_tip()
 
         #add water
@@ -254,10 +246,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
         for buff in range(0,len(buffs)):
                 p300m.aspirate((hdv1), water)
                 p300m.dispense(hdv1, temp_buffs.rows()[2][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(water)
-                p300m.aspirate((ldv1), water)
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(water)
                 p300m.aspirate((ldv1), water)
@@ -294,10 +282,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(dna)
-                p300m.aspirate((ldv1), dna_extra.bottom(-2))
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(dna_extra)
         p300m.drop_tip()
 
         #add buff
@@ -310,10 +294,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(lpdv1, temp_buffs.rows()[1][buff+2].top())
                 p300m.touch_tip()
                 p300m.dispense(hdv1, temp_buffs.rows()[2][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(buffs[buff])
-                p300m.aspirate((ldv1), buffs[buff])
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(buffs[buff])
                 p300m.aspirate((ldv1), buffs[buff])
@@ -334,10 +314,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(edta)
-                p300m.aspirate((ldv1), edta)
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(edta)
         p300m.drop_tip()
 
         #add low_salt
@@ -352,20 +328,12 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(low_salt)
-                p300m.aspirate((ldv1), low_salt)
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(low_salt)
         p300m.drop_tip()
 
         #add water
         p300m.pick_up_tip(tips300[which_tips[tip]])
         tip += 1
         for buff in range(0,len(buffs)):
-                p300m.aspirate((ldv1), water)
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(water)
                 p300m.aspirate((ldv1), water)
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
@@ -394,10 +362,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(dna)
-                p300m.aspirate((ldv1), dna_extra.bottom(-2))
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(dna_extra)
         p300m.drop_tip()
 
         #add buff
@@ -412,11 +376,6 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(buffs[buff])
-                p300m.aspirate((ldv1), buffs[buff])
-                p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
-                p300m.touch_tip()
-                p300m.blow_out(buffs[buff])
-                p300m.drop_tip()
     return tip
 
 def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
