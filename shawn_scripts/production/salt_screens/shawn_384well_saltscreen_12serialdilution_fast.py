@@ -5,7 +5,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'Salt screen 4x7x12 1:1 Serial Dilutions',
+    'protocolName': 'Fast Salt screen 4x7x12 1:1 Serial Dilutions',
     'author': 'Shawn Laursen',
     'description': '''This protocol will dilute buffer and protein stocks in 96
                       well, making 4(pH)x7(salt) conditions. You will need 16
@@ -269,10 +269,10 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(hdv1, temp_buffs.rows()[2][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(dna)
-                p300m.aspirate((ldv1), extra_dna.bottom(-2))
+                p300m.aspirate((ldv1), dna_extra.bottom(-2))
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
-                p300m.blow_out(extra_dna)
+                p300m.blow_out(dna_extra)
         p300m.drop_tip()
 
         #add buff
@@ -349,10 +349,10 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.dispense(lpdv1, temp_buffs.rows()[1][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(dna)
-                p300m.aspirate((ldv1), extra_dna.bottom(-2))
+                p300m.aspirate((ldv1), dna_extra.bottom(-2))
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
-                p300m.blow_out(extra_dna)
+                p300m.blow_out(dna_extra)
         p300m.drop_tip()
 
         #add buff
@@ -388,7 +388,7 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
         tip += 1
         p300m.mix(3,100, temp_buffs.rows()[1][buff+2])
         p300m.aspirate(300, temp_buffs.rows()[1][buff+2].bottom(-2))
-        for row in [7,6,5,4,3,2]:
+        for row in range(2,8):
             p300m.dispense(50, plate96.rows()[row][column].bottom(1.75))
         p300m.blow_out(plate96.rows()[2][column])
         p300m.drop_tip()
@@ -412,7 +412,7 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
         p300m.pick_up_tip(tips300[which_tips[tip]])
         tip += 1
         p300m.mix(3,250, temp_buffs.rows()[3][buff+2])
-        for row in [7,6,5,4,3,2]:
+        for row in range(2,8):
             p300m.aspirate(250, temp_buffs.rows()[3][buff+2].bottom(-2))
             p300m.dispense(125, plate96.rows()[row][column].bottom(1.75))
             p300m.dispense(125, plate96.rows()[row][extra].bottom(1.75))
