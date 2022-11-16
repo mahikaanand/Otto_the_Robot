@@ -100,6 +100,8 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol,
     tips300, tips300_2, plate96 = equiptment[0], equiptment[1], equiptment[2]
     plate384, p300m = equiptment[3], equiptment[4]
 
+    p300m.flow_rate.aspirate = 25
+
     if which_rows == 'odd':
         which_rows = 0
     elif which_rows == 'even':
@@ -126,12 +128,8 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol,
                        plate96.rows()[0][7],
                        new_tip='never')
 
-    if start_384well == 0:
-        dest_wells = [11,10,9,8,7,6,5,4,3,2,1]
-    elif start_384well == 12:
-        dest_wells = [23,22,21,20,19,18,17,16,15,14,13]
     p300m.distribute(20, plate96.rows()[0][buff_96col].bottom(1.75),
-                     plate384.rows()[which_rows][dest_wells],
+                     plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
     p300m.transfer(40, plate96.rows()[0][protien_96col].bottom(1.75),
