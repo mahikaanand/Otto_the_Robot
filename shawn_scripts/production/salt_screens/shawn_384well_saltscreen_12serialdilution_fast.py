@@ -418,12 +418,12 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
         p300m.pick_up_tip(tips300[which_tips[tip]])
         tip += 1
         p300m.mix(3,250, temp_buffs.rows()[2][buff+2])
-        p300m.aspirate(230, temp_buffs.rows()[2][buff+2].bottom(-2))
-        p300m.dispense(230, plate96.rows()[1][column].bottom(1.75))
-        p300m.blow_out(plate96.rows()[1][column])
         p300m.aspirate(270, temp_buffs.rows()[2][buff+2].bottom(-2))
         p300m.dispense(270, plate96.rows()[1][extra].bottom(1.75))
         p300m.blow_out(plate96.rows()[1][extra].bottom(1.75))
+        p300m.aspirate(230, temp_buffs.rows()[2][buff+2].bottom(-2))
+        p300m.dispense(230, plate96.rows()[1][column].bottom(1.75))
+        p300m.blow_out(plate96.rows()[1][column])
         p300m.drop_tip()
 
         p300m.pick_up_tip(tips300[which_tips[tip]])
@@ -431,8 +431,8 @@ def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
         p300m.mix(3,250, temp_buffs.rows()[3][buff+2])
         for row in range(2,8):
             p300m.aspirate(250, temp_buffs.rows()[3][buff+2].bottom(-2))
-            p300m.dispense(115, plate96.rows()[row][column].bottom(1.75))
             p300m.dispense(135, plate96.rows()[row][extra].bottom(1.75))
+            p300m.dispense(115, plate96.rows()[row][column].bottom(1.75))
             p300m.blow_out(plate96.rows()[row][extra])
         p300m.drop_tip()
         column += 2
