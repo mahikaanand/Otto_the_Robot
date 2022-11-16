@@ -133,6 +133,8 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol,
     p300m.distribute(20, plate96.rows()[0][buff_96col].bottom(1.75),
                      plate384.rows()[which_rows][dest_wells],
                      disposal_volume=0, new_tip='never')
+    p300m.flow_rate.aspirate = 25
+    p300m.flow_rate.dispense = 25
     p300m.transfer(40, plate96.rows()[0][protien_96col].bottom(1.75),
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.transfer(20,
