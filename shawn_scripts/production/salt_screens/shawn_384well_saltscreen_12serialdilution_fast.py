@@ -22,6 +22,7 @@ metadata = {
 
 def run(protocol):
     #setup
+    global trough, tips300, tips300_2, plate96, plate384, p300m, tempdeck
     trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
     tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
@@ -30,22 +31,36 @@ def run(protocol):
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300, tips300_2])
     tempdeck = protocol.load_module('temperature module gen2', 10)
+
+    global temp_buffs, buffa, buffb, buffc, buffd, high_salt, low_salt, edta, water, buffs, protein, dna, dna_extra
     temp_buffs = tempdeck.load_labware(
                  'opentrons_24_aluminumblock_nest_1.5ml_snapcap')
-    equiptment = [tips300, tips300_2, plate96, plate384, p300m, tempdeck,
-                  trough]
-
     buffa = trough.wells()[0]
     buffb = trough.wells()[1]
     buffc = trough.wells()[2]
     buffd = trough.wells()[3]
+    buffs = [buffa, buffb, buffc, buffd]
     high_salt = trough.wells()[4]
     low_salt = trough.wells()[5]
     edta = trough.wells()[6]
     water = trough.wells()[7]
-    general_buffs = [edta, high_salt, low_salt, water, temp_buffs]
-    buffs = [buffa, buffb, buffc, buffd]
+    protein = temp_buffs.wells_by_name()['A1']
+    dna = temp_buffs.wells_by_name()['A2']
+    dna_extra = temp_buffs.wells_by_name()['D2']
 
+    global hi_prot_dna_vol, lo_prot_dna_vol, hi_dna_vol, lo_dna_vol
+    hi_prot_dna_vol = 150
+    lo_prot_dna_vol = 350
+    hi_dna_vol = 550
+    lo_dna_vol = 1500
+
+    global hpdv1, lpdv1, hdv1, ldv1
+    hpdv1 = (hi_prot_dna_vol)/5
+    lpdv1 = (lo_prot_dna_vol)/5
+    hdv1 = (hi_dna_vol)/5
+    ldv1 = (lo_dna_vol)/5
+
+    global which_tips, tip
     tip_row_list = ['H','G','F','E','D','C','B','A']
     which_tips = []
     for i in range(0,96):
@@ -56,30 +71,29 @@ def run(protocol):
     strobe(5, 8, protocol)
 
     #make buffs
-    tip = make_buffs(protocol, equiptment, general_buffs, buffs, True,
-                     which_tips, tip)
+    tip = make_buffs(True, tip, protocol)
 
     #transfer buffs to 96well
-    tip = fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs)
+    tip = fill_96well(tip, protocol)
 
     #titrate salt
-    tip = titrate_salt(protocol, equiptment, which_tips, tip)
+    tip = titrate_salt(tip, protocol)
 
     #do titration
     if len(buffs) == 1:
-        titrate(1, 0, 0, 'odd', protocol, equiptment)
+        titrate(1, 0, 0, 'odd', protocol)
     elif len(buffs) == 2:
-        titrate(1, 0, 0, 'odd', protocol, equiptment)
-        titrate(3, 2, 0, 'even', protocol, equiptment)
+        titrate(1, 0, 0, 'odd', protocol)
+        titrate(3, 2, 0, 'even', protocol)
     elif len(buffs) == 3:
-        titrate(1, 0, 0, 'odd', protocol, equiptment)
-        titrate(3, 2, 0, 'even', protocol, equiptment)
-        titrate(5, 4, 12, 'odd', protocol, equiptment)
+        titrate(1, 0, 0, 'odd', protocol)
+        titrate(3, 2, 0, 'even', protocol)
+        titrate(5, 4, 12, 'odd', protocol)
     elif len(buffs) == 4:
-        titrate(1, 0, 0, 'odd', protocol, equiptment)
-        titrate(3, 2, 0, 'even', protocol, equiptment)
-        titrate(5, 4, 12, 'odd', protocol, equiptment)
-        titrate(7, 6, 12, 'even', protocol, equiptment)
+        titrate(1, 0, 0, 'odd', protocol)
+        titrate(3, 2, 0, 'even', protocol)
+        titrate(5, 4, 12, 'odd', protocol)
+        titrate(7, 6, 12, 'even', protocol)
 
     #turn off robot rail lights
     strobe(5, 8, protocol)
@@ -95,11 +109,7 @@ def strobe(blinks, hz, protocol):
         i += 1
     protocol.set_rail_lights(True)
 
-def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol,
-            equiptment):
-    tips300, tips300_2, plate96 = equiptment[0], equiptment[1], equiptment[2]
-    plate384, p300m = equiptment[3], equiptment[4]
-
+def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol):
     p300m.flow_rate.aspirate = 25
 
     if which_rows == 'odd':
@@ -143,10 +153,7 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol,
     p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
     p300m.drop_tip()
 
-def titrate_salt(protocol, equiptment, which_tips, tip):
-    tips300, tips300_2, plate96 = equiptment[0], equiptment[1], equiptment[2]
-    plate384, p300m = equiptment[3], equiptment[4]
-
+def titrate_salt(tip, protocol):
     for column in range(0,12):
         if column in (0,2,4,6):
             p300m.pick_up_tip(tips300[which_tips[tip]])
@@ -178,28 +185,7 @@ def titrate_salt(protocol, equiptment, which_tips, tip):
 
     return tip
 
-def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
-               which_tips, tip):
-    tips300, tips300_2, plate96 = equiptment[0], equiptment[1], equiptment[2]
-    plate384, p300m, tempdeck = equiptment[3], equiptment[4], equiptment[5]
-    trough = equiptment[6]
-    edta, high_salt = general_buffs[0], general_buffs[1]
-    low_salt, water = general_buffs[2], general_buffs[3]
-    temp_buffs = general_buffs[4]
-    protein = temp_buffs.wells_by_name()['A1']
-    dna = temp_buffs.wells_by_name()['A2']
-    dna_extra = temp_buffs.wells_by_name()['D2']
-
-    hi_prot_dna_vol = 150
-    lo_prot_dna_vol = 350
-    hi_dna_vol = 550
-    lo_dna_vol = 1500
-
-    hpdv1 = (hi_prot_dna_vol)/5
-    lpdv1 = (lo_prot_dna_vol)/5
-    hdv1 = (hi_dna_vol)/5
-    ldv1 = (lo_dna_vol)/5
-
+def make_buffs(make_high, tip, protocol):
     #make high protein + DNA
     if make_high:
         #add edta
@@ -384,10 +370,7 @@ def make_buffs(protocol, equiptment, general_buffs, buffs, make_high,
                 p300m.blow_out(buffs[buff])
     return tip
 
-def fill_96well(protocol, equiptment, which_tips, tip, buffs, temp_buffs):
-    tips300, tips300_2, plate96 = equiptment[0], equiptment[1], equiptment[2]
-    plate384, p300m, tempdeck = equiptment[3], equiptment[4], equiptment[5]
-
+def fill_96well(tip, protocol):
     #move protein wells
     column = 0
     for buff in range(0,len(buffs)):
