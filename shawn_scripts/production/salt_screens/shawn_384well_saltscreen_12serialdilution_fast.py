@@ -22,6 +22,29 @@ metadata = {
 
 def run(protocol):
     #setup
+    setup(protocol)
+
+    #turn on robot rail lights
+    strobe(5, 8, protocol)
+
+    #make buffs
+    make_mixes(True, protocol)
+
+    #transfer buffs to 96well
+    fill_96well(protocol)
+
+    #titrate salt
+    titrate_salt(protocol)
+
+    #do titration
+    for i in range(0,len(buffs)):
+        titrate(titrations[i])
+
+    #turn off robot rail lights
+    strobe(5, 8, protocol)
+    protocol.set_rail_lights(False)
+
+def setup(protocol):
     global trough, tips300, tips300_2, plate96, plate384, p300m, tempdeck
     trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
@@ -32,7 +55,8 @@ def run(protocol):
                                      tip_racks=[tips300, tips300_2])
     tempdeck = protocol.load_module('temperature module gen2', 10)
 
-    global temp_buffs, buffa, buffb, buffc, buffd, high_salt, low_salt, edta, water, buffs, protein, dna, dna_extra
+    global temp_buffs, buffa, buffb, buffc, buffd, high_salt, low_salt, edta
+    global water, buffs, protein, dna, dna_extra
     temp_buffs = tempdeck.load_labware(
                  'opentrons_24_aluminumblock_nest_1.5ml_snapcap')
     buffa = trough.wells()[0]
@@ -61,43 +85,15 @@ def run(protocol):
     ldv1 = (lo_dna_vol)/5
 
     global which_tips, tip
-    tip_row_list = ['H','G','F','E','D','C','B','A']
     which_tips = []
+    tip = 0
+    tip_row_list = ['H','G','F','E','D','C','B','A']
     for i in range(0,96):
         which_tips.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
-    tip = 0
 
-    #turn on robot rail lights
-    strobe(5, 8, protocol)
-
-    #make buffs
-    tip = make_buffs(True, tip, protocol)
-
-    #transfer buffs to 96well
-    tip = fill_96well(tip, protocol)
-
-    #titrate salt
-    tip = titrate_salt(tip, protocol)
-
-    #do titration
-    if len(buffs) == 1:
-        titrate(1, 0, 0, 'odd', protocol)
-    elif len(buffs) == 2:
-        titrate(1, 0, 0, 'odd', protocol)
-        titrate(3, 2, 0, 'even', protocol)
-    elif len(buffs) == 3:
-        titrate(1, 0, 0, 'odd', protocol)
-        titrate(3, 2, 0, 'even', protocol)
-        titrate(5, 4, 12, 'odd', protocol)
-    elif len(buffs) == 4:
-        titrate(1, 0, 0, 'odd', protocol)
-        titrate(3, 2, 0, 'even', protocol)
-        titrate(5, 4, 12, 'odd', protocol)
-        titrate(7, 6, 12, 'even', protocol)
-
-    #turn off robot rail lights
-    strobe(5, 8, protocol)
-    protocol.set_rail_lights(False)
+    global titrations
+    titrations = [[1, 0, 0, 'odd', protocol], [3, 2, 0, 'even', protocol],
+                  [5, 4, 12, 'odd', protocol], [7, 6, 12, 'even', protocol]]
 
 def strobe(blinks, hz, protocol):
     i = 0
@@ -109,7 +105,12 @@ def strobe(blinks, hz, protocol):
         i += 1
     protocol.set_rail_lights(True)
 
-def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol):
+def titrate(titration):
+    buff_96col = titration[0]
+    protien_96col = titration[1]
+    start_384well = titration[2]
+    which_rows = titration[3]
+    protocol = titration [4]
     p300m.flow_rate.aspirate = 25
 
     if which_rows == 'odd':
@@ -153,7 +154,8 @@ def titrate(buff_96col, protien_96col, start_384well, which_rows, protocol):
     p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
     p300m.drop_tip()
 
-def titrate_salt(tip, protocol):
+def titrate_salt(protocol):
+    global tip
     for column in range(0,12):
         if column in (0,2,4,6):
             p300m.pick_up_tip(tips300[which_tips[tip]])
@@ -183,9 +185,8 @@ def titrate_salt(tip, protocol):
             p300m.aspirate(135, plate96.rows()[6][column].bottom(1.75))
             p300m.drop_tip()
 
-    return tip
-
-def make_buffs(make_high, tip, protocol):
+def make_mixes(make_high, protocol):
+    global tip
     #make high protein + DNA
     if make_high:
         #add edta
@@ -368,9 +369,9 @@ def make_buffs(make_high, tip, protocol):
                 p300m.dispense(ldv1, temp_buffs.rows()[3][buff+2].top())
                 p300m.touch_tip()
                 p300m.blow_out(buffs[buff])
-    return tip
 
-def fill_96well(tip, protocol):
+def fill_96well(protocol):
+    global tip
     #move protein wells
     column = 0
     for buff in range(0,len(buffs)):
@@ -463,5 +464,3 @@ def fill_96well(tip, protocol):
     p300m.dispense(135, plate96.rows()[0][11].bottom(1.75))
     p300m.blow_out(temp_buffs.rows()[2][1])
     p300m.drop_tip()
-
-    return tip
