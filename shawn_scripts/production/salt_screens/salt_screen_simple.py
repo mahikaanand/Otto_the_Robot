@@ -2,7 +2,7 @@ from opentrons import protocol_api
 import time
 import sys
 import math
-import pyttsx3
+#import pyttsx3
 import random
 
 
@@ -17,7 +17,7 @@ metadata = {
     }
 
 def run(protocol):
-    welcome()
+    #welcome(protocol)
     strobe(12, 8, True, protocol)
     setup(4, protocol)
     for buff in buffs:
@@ -26,7 +26,7 @@ def run(protocol):
         plate_controls(buff, protocol)
         salt_titration(buff, protocol)
         protein_titration(buff, protocol)
-    goodbye()
+    #goodbye(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -286,7 +286,7 @@ def say_message(message):
     engine.say(message)
     engine.runAndWait()
 
-def welcome():
+def welcome(protocol):
     if not protocol.is_simulating():
         mytime = time.localtime()
         if mytime.tm_hour < 5:
@@ -316,7 +316,7 @@ def welcome():
         music('/data/songs/'+song, protocol)
     else:
         None
-def goodbye():
+def goodbye(protocol):
     if not protocol.is_simulating():
         mytime = time.localtime()
         if mytime.tm_hour < 5:
