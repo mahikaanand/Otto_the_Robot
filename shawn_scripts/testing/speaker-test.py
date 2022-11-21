@@ -13,7 +13,7 @@ AUDIO_FILE_PATH = '/data/songs/get_it_started.mp3'
 
 
 def run_quiet_process(command):
-    subprocess.check_output('{} &> /dev/null'.format(command), shell=True)
+    subprocess.check_output('{} &'.format(command), shell=True)
 
 
 def test_speaker(protocol):
