@@ -2,6 +2,8 @@ from opentrons import protocol_api
 import time
 import sys
 import math
+import pyttsx3
+import random
 
 
 metadata = {
@@ -11,20 +13,21 @@ metadata = {
                       Plates mixes into 96well.
                       Titrates salt mixes in 96well.
                       Titrates protein in 384well. ''',
-    'apiLevel': '2.8'
+    'apiLevel': '2.11'
     }
 
 def run(protocol):
-    strobe(24, 8, True, protocol)
+    welcome()
+    strobe(12, 8, True, protocol)
     setup(4, protocol)
     for buff in buffs:
-        if buffs.index(buff) > 0:
-            make_mixes(buff, protocol)
-            plate_96well(buff, protocol)
-            plate_controls(buff, protocol)
-            salt_titration(buff, protocol)
-            protein_titration(buff, protocol)
-    strobe(24, 8, False, protocol)
+        make_mixes(buff, protocol)
+        plate_96well(buff, protocol)
+        plate_controls(buff, protocol)
+        salt_titration(buff, protocol)
+        protein_titration(buff, protocol)
+    goodbye()
+    strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
     i = 0
@@ -179,7 +182,7 @@ def plate_controls(buff, protocol):
     prot_col = buffs.index(buff)*2
     buff_col = prot_col+1
     extra_col = buffs.index(buff)+8
-    if buffs.index(buff) < 3:
+    if buffs.index(buff) < 2:
         pr = 1
         br = 1
     else:
@@ -246,7 +249,7 @@ def protein_titration(buff, protocol):
     else:
         which_rows = 1
 
-    if buffs.index(buff) < 3:
+    if buffs.index(buff) < 2:
         start_384well = 0
     else:
         start_384well = 12
@@ -270,3 +273,73 @@ def protein_titration(buff, protocol):
     p300m.blow_out()
     p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
     p300m.drop_tip()
+
+def say_message(message):
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    nationality = 'uk'
+    if nationality == 'French':
+        engine.setProperty('voice', voices[38].id)
+    else:
+        engine.setProperty('voice', voices[7].id)
+
+    engine.say(message)
+    engine.runAndWait()
+
+def welcome():
+    mytime = time.localtime()
+    if mytime.tm_hour < 5:
+        tod = 'My stars, you\'re here early. Let\'s get you pumped up.'
+        song = '2001.mp3'
+    elif mytime.tm_hour < 11:
+        operas = [['Puccini', 'puccini.mp3'],
+                  ['Verdi', 'verdi.mp3'],
+                  ['Mozart','mozart.mp3'],
+                  ['Haydn', 'haydn.mp3'],
+                  ['Beethoven', 'beethoven.mp3']]
+        num = random.randint(0, len(operas)-1)
+        opera = operas[num]
+        print(opera)
+        tod = 'Good morning Johannes, how about some {}?'.format(opera[0])
+        song = opera[1]
+    elif mytime.tm_hour < 16:
+        tod = 'Let\'s do some pipetting!'
+        song = 'get_it_started.mp3'
+    else:
+        tod = 'You\'re here late!'
+        song = 'rockabye.mp3'
+
+    general = 'Go take a break, I\'ve got this.'
+    say_message(tod)
+    say_message(general)
+    music('/data/songs/'+song, protocol)
+
+def goodbye():
+    mytime = time.localtime()
+    if mytime.tm_hour < 5:
+        tod = 'Make this a great day!'
+    elif mytime.tm_hour > 11:
+        tod = 'Have a great rest of your day!'
+    elif mytime.tm_hour < 16:
+        tod = 'Almost done for the day!'
+    else:
+        tod = 'Now go to bed!'
+
+    general = 'That\'s all for me! '
+    say_message(general)
+    say_message(tod)
+
+def run_quiet_process(command):
+    subprocess.Popen('{} &'.format(command), shell=True)
+
+def music(song, protocol):
+    print('Speaker')
+    print('Next\t--> CTRL-C')
+    try:
+        if not protocol.is_simulating():
+            run_quiet_process('mpg123 {}'.format(song))
+        else:
+            print('Not playing mp3, simulating')
+    except KeyboardInterrupt:
+        pass
+        print()
