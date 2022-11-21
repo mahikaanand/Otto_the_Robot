@@ -318,7 +318,7 @@ def goodbye():
     mytime = time.localtime()
     if mytime.tm_hour < 5:
         tod = 'Make this a great day!'
-    elif mytime.tm_hour > 11:
+    elif mytime.tm_hour < 11:
         tod = 'Have a great rest of your day!'
     elif mytime.tm_hour < 16:
         tod = 'Almost done for the day!'
