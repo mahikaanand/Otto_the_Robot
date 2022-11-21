@@ -4,6 +4,7 @@ import sys
 import math
 #import pyttsx3
 import random
+import subprocess
 
 
 metadata = {
@@ -17,7 +18,7 @@ metadata = {
     }
 
 def run(protocol):
-    #welcome(protocol)
+    welcome(protocol)
     strobe(12, 8, True, protocol)
     setup(4, protocol)
     for buff in buffs:
@@ -311,8 +312,8 @@ def welcome(protocol):
             song = 'rockabye.mp3'
 
         general = 'Go take a break, I\'ve got this.'
-        say_message(tod)
-        say_message(general)
+        #say_message(tod)
+        #say_message(general)
         music('/data/songs/'+song, protocol)
     else:
         None
