@@ -287,48 +287,52 @@ def say_message(message):
     engine.runAndWait()
 
 def welcome():
-    mytime = time.localtime()
-    if mytime.tm_hour < 5:
-        tod = 'My stars, you\'re here early. Let\'s get you pumped up.'
-        song = '2001.mp3'
-    elif mytime.tm_hour < 11:
-        operas = [['Puccini', 'puccini.mp3'],
-                  ['Verdi', 'verdi.mp3'],
-                  ['Mozart','mozart.mp3'],
-                  ['Haydn', 'haydn.mp3'],
-                  ['Beethoven', 'beethoven.mp3']]
-        num = random.randint(0, len(operas)-1)
-        opera = operas[num]
-        print(opera)
-        tod = 'Good morning Johannes, how about some {}?'.format(opera[0])
-        song = opera[1]
-    elif mytime.tm_hour < 16:
-        tod = 'Let\'s do some pipetting!'
-        song = 'get_it_started.mp3'
+    if not protocol.is_simulating():
+        mytime = time.localtime()
+        if mytime.tm_hour < 5:
+            tod = 'My stars, you\'re here early. Let\'s get you pumped up.'
+            song = '2001.mp3'
+        elif mytime.tm_hour < 11:
+            operas = [['Puccini', 'puccini.mp3'],
+                      ['Verdi', 'verdi.mp3'],
+                      ['Mozart','mozart.mp3'],
+                      ['Haydn', 'haydn.mp3'],
+                      ['Beethoven', 'beethoven.mp3']]
+            num = random.randint(0, len(operas)-1)
+            opera = operas[num]
+            print(opera)
+            tod = 'Good morning Johannes, how about some {}?'.format(opera[0])
+            song = opera[1]
+        elif mytime.tm_hour < 16:
+            tod = 'Let\'s do some pipetting!'
+            song = 'get_it_started.mp3'
+        else:
+            tod = 'You\'re here late!'
+            song = 'rockabye.mp3'
+
+        general = 'Go take a break, I\'ve got this.'
+        say_message(tod)
+        say_message(general)
+        music('/data/songs/'+song, protocol)
     else:
-        tod = 'You\'re here late!'
-        song = 'rockabye.mp3'
-
-    general = 'Go take a break, I\'ve got this.'
-    say_message(tod)
-    say_message(general)
-    music('/data/songs/'+song, protocol)
-
+        None
 def goodbye():
-    mytime = time.localtime()
-    if mytime.tm_hour < 5:
-        tod = 'Make this a great day!'
-    elif mytime.tm_hour < 11:
-        tod = 'Have a great rest of your day!'
-    elif mytime.tm_hour < 16:
-        tod = 'Almost done for the day!'
+    if not protocol.is_simulating():
+        mytime = time.localtime()
+        if mytime.tm_hour < 5:
+            tod = 'Make this a great day!'
+        elif mytime.tm_hour < 11:
+            tod = 'Have a great rest of your day!'
+        elif mytime.tm_hour < 16:
+            tod = 'Almost done for the day!'
+        else:
+            tod = 'Now go to bed!'
+
+        general = 'That\'s all for me! '
+        say_message(general)
+        say_message(tod)
     else:
-        tod = 'Now go to bed!'
-
-    general = 'That\'s all for me! '
-    say_message(general)
-    say_message(tod)
-
+        None
 def run_quiet_process(command):
     subprocess.Popen('{} &'.format(command), shell=True)
 
