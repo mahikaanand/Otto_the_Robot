@@ -11,10 +11,8 @@ metadata = {
 
 AUDIO_FILE_PATH = '/data/songs/get_it_started.mp3'
 
-
 def run_quiet_process(command):
-    subprocess.check_output('{} &'.format(command), shell=True)
-
+    subprocess.Popen('{} &'.format(command), shell=True)
 
 def test_speaker(protocol):
     print('Speaker')
@@ -38,6 +36,6 @@ def strobe(blinks, hz, protocol):
         i += 1
     protocol.set_rail_lights(True)
 
-def run(protocol: protocol_api.ProtocolContext):
+def run(protocol):
     test_speaker(protocol)
     strobe(50, 3, protocol)

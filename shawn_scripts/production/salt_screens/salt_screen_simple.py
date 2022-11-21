@@ -18,11 +18,12 @@ def run(protocol):
     strobe(24, 8, True, protocol)
     setup(4, protocol)
     for buff in buffs:
-        make_mixes(buff, protocol)
-        plate_96well(buff, protocol)
-        plate_controls(buff, protocol)
-        salt_titration(buff, protocol)
-        protein_titration(buff, protocol)
+        if buffs.index(buff) > 0:
+            make_mixes(buff, protocol)
+            plate_96well(buff, protocol)
+            plate_controls(buff, protocol)
+            salt_titration(buff, protocol)
+            protein_titration(buff, protocol)
     strobe(24, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -85,7 +86,13 @@ def setup(num_buffs, protocol):
     tip_row_list = ['H','G','F','E','D','C','B','A']
     for i in range(0,96):
         which_tips.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
-    print(which_tips)
+
+    #tip columns
+    global which_tip_col, tip_col
+    which_tip_col = []
+    tip_col = 0
+    for i in range(1,13):
+        which_tip_col.append('A'+str(i))
 
 def make_mixes(buff, protocol):
     global tip
@@ -151,7 +158,7 @@ def plate_96well(buff, protocol):
     p300m.mix(3, 250, hd['loc'])
     p300m.aspirate(270, hd['loc'].bottom(-2))
     p300m.dispense(270, plate96.rows()[1][extra_col].bottom(1.75))
-    p300m.blow_out(plate96.rows()[1][extra_col].bottom(1.75))
+    p300m.blow_out(plate96.rows()[1][extra_col])
     p300m.aspirate(230, hd['loc'].bottom(-2))
     p300m.dispense(230, plate96.rows()[1][buff_col].bottom(1.75))
     p300m.blow_out(plate96.rows()[1][buff_col])
@@ -230,6 +237,7 @@ def salt_titration(buff, protocol):
     p300m.drop_tip()
 
 def protein_titration(buff, protocol):
+    global tip_col
     prot_col = buffs.index(buff)*2
     buff_col = prot_col+1
     extra_col = buffs.index(buff)+8
@@ -243,7 +251,8 @@ def protein_titration(buff, protocol):
     else:
         start_384well = 12
 
-    p300m.pick_up_tip()
+    p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
+    tip_col += 1
     p300m.transfer(125, plate96.rows()[0][extra_col].bottom(1.75),
                    plate96.rows()[0][buff_col],
                    new_tip='never')
