@@ -66,6 +66,7 @@ def setup(num_buffs, protocol):
 
     #components
     global components
+    high_salt = trough.wells()[4]
     low_salt = trough.wells()[5]
     edta = trough.wells()[6]
     water = trough.wells()[7]
