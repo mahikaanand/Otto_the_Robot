@@ -27,7 +27,7 @@ def run(protocol):
         plate_controls(buff, protocol)
         salt_titration(buff, protocol)
         protein_titration(buff, protocol)
-    #goodbye(protocol)
+    goodbye(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -275,23 +275,11 @@ def protein_titration(buff, protocol):
     p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
     p300m.drop_tip()
 
-def say_message(message):
-    engine = pyttsx3.init()
-    voices = engine.getProperty('voices')
-    nationality = 'uk'
-    if nationality == 'French':
-        engine.setProperty('voice', voices[38].id)
-    else:
-        engine.setProperty('voice', voices[7].id)
-
-    engine.say(message)
-    engine.runAndWait()
-
 def welcome(protocol):
     if not protocol.is_simulating():
         mytime = time.localtime()
         if mytime.tm_hour in [6,7,8,9,10,11,12]:
-            tod = 'My stars, you\'re here early. Let\'s get you pumped up.'
+            tod = 'welcome_morning.mp3'
             song = '2001.mp3'
         elif mytime.tm_hour in [13,14,15,16,17,18]:
             operas = [['Puccini', 'puccini.mp3'],
@@ -301,19 +289,18 @@ def welcome(protocol):
                       ['Beethoven', 'beethoven.mp3']]
             num = random.randint(0, len(operas)-1)
             opera = operas[num]
-            print(opera)
-            tod = 'Good morning Johannes, how about some {}?'.format(opera[0])
+            tod = 'welcome_{}.mp3'.format(opera[0])
             song = opera[1]
         elif mytime.tm_hour in [19,20,21,22,23]:
-            tod = 'Let\'s do some pipetting!'
+            tod = 'welcome_midday.mp3'
             song = 'get_it_started.mp3'
         else:
-            tod = 'You\'re here late!'
+            tod = 'welcome_late.mp3'
             song = 'rockabye.mp3'
 
-        general = 'Go take a break, I\'ve got this.'
-        #say_message(tod)
-        #say_message(general)
+        general = 'welcome_general.mp3'
+        music('/data/songs/'+tod, protocol)
+        music('/data/songs/'+general, protocol)
         music('/data/songs/'+song, protocol)
     else:
         None
@@ -322,20 +309,20 @@ def goodbye(protocol):
     if not protocol.is_simulating():
         mytime = time.localtime()
         if mytime.tm_hour in [6,7,8,9,10,11,12]:
-            tod = 'Make this a great day!'
+            tod = 'goodbye_morning.mp3'
         elif mytime.tm_hour in [13,14,15,16,17,18]:
-            tod = 'Have a great rest of your day!'
+            tod = 'goodbye_midmorning.mp3'
         elif mytime.tm_hour in [19,20,21,22,23]:
-            tod = 'Almost done for the day!'
+            tod = 'goodbye_midday.mp3'
         else:
-            tod = 'Now go to bed!'
+            tod = 'goodbye_late.mp3'
 
-        general = 'That\'s all for me! '
-        say_message(general)
-        say_message(tod)
+        general = 'goodbye_general.mp3'
+        music('/data/songs/'+tod, protocol)
+        music('/data/songs/'+general, protocol)
     else:
         None
-        
+
 def run_quiet_process(command):
     subprocess.Popen('{} &'.format(command), shell=True)
 
