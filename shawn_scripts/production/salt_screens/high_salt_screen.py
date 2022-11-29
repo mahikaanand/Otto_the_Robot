@@ -2,7 +2,6 @@ from opentrons import protocol_api
 import time
 import sys
 import math
-#import pyttsx3
 import random
 import subprocess
 
@@ -44,7 +43,7 @@ def strobe(blinks, hz, leave_on, protocol):
 def setup(num_buffs, protocol):
     #equiptment
     global trough, tips300, tips300_2, plate96, plate384, p300m, tempdeck
-    trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
+    trough = protocol.load_labware('nest_12_reservoir_15ml', 2)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
     tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
@@ -67,14 +66,13 @@ def setup(num_buffs, protocol):
 
     #components
     global components
-    high_salt = trough.wells()[4]
     low_salt = trough.wells()[5]
     edta = trough.wells()[6]
     water = trough.wells()[7]
     protein = temp_buffs.wells_by_name()['A1']
     dna = temp_buffs.wells_by_name()['A2']
     dna_extra = temp_buffs.wells_by_name()['D2']
-    components = [high_salt, low_salt, edta, water, protein, dna, dna_extra]
+    components = [low_salt, edta, water, protein, dna, dna_extra]
 
     #mixes
     global mixes, hpd, lpd, hd, ld
@@ -294,14 +292,15 @@ def welcome(protocol):
             song = opera[1]
         elif mytime.tm_hour in [19,20,21,22,23]:
             tod = 'welcome_midday.mp3'
-            song = 'get_it_started.mp3'
+            song = '2001.mp3'
+            #song = 'get_it_started.mp3'
         else:
             tod = 'welcome_late.mp3'
             song = 'rockabye.mp3'
 
         general = 'welcome_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
+        music('/data/songs/'+tod, True, protocol)
+        music('/data/songs/'+general, True, protocol)
         music('/data/songs/'+song, protocol)
     else:
         None
@@ -319,20 +318,23 @@ def goodbye(protocol):
             tod = 'goodbye_late.mp3'
 
         general = 'goodbye_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
+        music('/data/songs/'+tod, True, protocol)
+        music('/data/songs/'+general, True, protocol)
     else:
         None
 
 def run_quiet_process(command):
     subprocess.Popen('{} &'.format(command), shell=True)
 
-def music(song, protocol):
+def music(song, wait, protocol):
     print('Speaker')
     print('Next\t--> CTRL-C')
     try:
         if not protocol.is_simulating():
-            run_quiet_process('mpg123 {}'.format(song))
+            if wait is True:
+                run_quiet_process('mpg123 {} &'.format(song))
+            else:
+                run_quiet_process('mpg123 {}'.format(song))
         else:
             print('Not playing mp3, simulating')
     except KeyboardInterrupt:
