@@ -98,10 +98,10 @@ def say_message(message):
 def welcome(protocol):
     if not protocol.is_simulating():
         mytime = time.localtime()
-        if mytime.tm_hour < 5:
+        if mytime.tm_hour in [6,7,8,9,10,11,12]:
             tod = 'My stars, you\'re here early. Let\'s get you pumped up.'
             song = '2001.mp3'
-        elif mytime.tm_hour < 11:
+        elif mytime.tm_hour in [13,14,15,16,17,18]:
             operas = [['Puccini', 'puccini.mp3'],
                       ['Verdi', 'verdi.mp3'],
                       ['Mozart','mozart.mp3'],
@@ -112,7 +112,7 @@ def welcome(protocol):
             print(opera)
             tod = 'Good morning Johannes, how about some {}?'.format(opera[0])
             song = opera[1]
-        elif mytime.tm_hour < 16:
+        elif mytime.tm_hour in [19,20,21,22,23]:
             tod = 'Let\'s do some pipetting!'
             song = 'get_it_started.mp3'
         else:
@@ -125,14 +125,15 @@ def welcome(protocol):
         music('/data/songs/'+song, protocol)
     else:
         None
+
 def goodbye(protocol):
     if not protocol.is_simulating():
         mytime = time.localtime()
-        if mytime.tm_hour < 5:
+        if mytime.tm_hour in [6,7,8,9,10,11,12]:
             tod = 'Make this a great day!'
-        elif mytime.tm_hour < 11:
+        elif mytime.tm_hour in [13,14,15,16,17,18]:
             tod = 'Have a great rest of your day!'
-        elif mytime.tm_hour < 16:
+        elif mytime.tm_hour in [19,20,21,22,23]:
             tod = 'Almost done for the day!'
         else:
             tod = 'Now go to bed!'
@@ -142,6 +143,7 @@ def goodbye(protocol):
         say_message(tod)
     else:
         None
+        
 def run_quiet_process(command):
     subprocess.Popen('{} &'.format(command), shell=True)
 
