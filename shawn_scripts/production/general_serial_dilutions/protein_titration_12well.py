@@ -8,7 +8,7 @@ import subprocess
 
 
 metadata = {
-    'protocolName': 'Protien titration - 12 well',
+    'protocolName': 'Protein titration - 12 well',
     'author': 'Shawn Laursen',
     'description': '''Put mixes (50ul of protein+dna) and 250ul of (dna) next to
                       each other in 96 well plate
