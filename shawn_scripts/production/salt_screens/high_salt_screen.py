@@ -18,7 +18,7 @@ metadata = {
     }
 
 def run(protocol):
-    welcome(protocol)
+    #welcome(protocol)
     strobe(12, 8, True, protocol)
     setup(4, protocol)
     for buff in buffs:
@@ -27,7 +27,7 @@ def run(protocol):
         plate_controls(buff, protocol)
         salt_titration(buff, protocol)
         protein_titration(buff, protocol)
-    goodbye(protocol)
+    #goodbye(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -332,10 +332,7 @@ def music(song, wait, protocol):
     print('Next\t--> CTRL-C')
     try:
         if not protocol.is_simulating():
-            if wait is True:
-                run_quiet_process('mpg123 {} &'.format(song))
-            else:
-                run_quiet_process('mpg123 {}'.format(song))
+            run_quiet_process('mpg123 {}'.format(song))
         else:
             print('Not playing mp3, simulating')
     except KeyboardInterrupt:

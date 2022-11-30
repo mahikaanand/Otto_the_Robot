@@ -331,10 +331,7 @@ def music(song, protocol):
     print('Next\t--> CTRL-C')
     try:
         if not protocol.is_simulating():
-            if wait is True:
-                run_quiet_process('mpg123 {} &'.format(song))
-            else:
-                run_quiet_process('mpg123 {}'.format(song))
+            run_quiet_process('mpg123 {}'.format(song))
         else:
             print('Not playing mp3, simulating')
     except KeyboardInterrupt:

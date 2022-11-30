@@ -17,12 +17,12 @@ metadata = {
     }
 
 def run(protocol):
-    welcome(protocol)
+    #welcome(protocol)
     strobe(12, 8, True, protocol)
     setup(2, protocol)
     for buff in buffs:
         protein_titration(buff, protocol)
-    goodbye(protocol)
+    #goodbye(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
