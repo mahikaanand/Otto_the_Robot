@@ -22,7 +22,7 @@ metadata = {
 def run(protocol):
     welcome(protocol)
     strobe(12, 8, True, protocol)
-    setup(1, protocol)
+    setup(3, protocol)
     for buff in buffs:
         make_mixes(buff, protocol)
         plate_96well(buff, protocol)
@@ -60,7 +60,9 @@ def setup(num_buffs, protocol):
     #buffs
     global buffs, buffa, buffb, buffc, buffd
     dnaa = temp_buffs.wells_by_name()['A2']
-    buffs = [dnaa]
+    dnab = temp_buffs.wells_by_name()['D1']
+    dnac = temp_buffs.wells_by_name()['D2']
+    buffs = [dnaa, dnab, dnac]
     del buffs[num_buffs:]
 
     #components
