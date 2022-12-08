@@ -91,7 +91,7 @@ def protein_titration(buff, protocol):
     tip_col += 1
     p300m.distribute(20, trough.wells()[0],
                      plate384.rows()[which_rows][start_384well+1:start_384well+24],
-                     disposal_volume=20, new_tip='never')
+                     disposal_volume=0, new_tip='never')
     p300m.blow_out()
     p300m.transfer(30,
                    plate384.rows()[which_rows][start_384well:start_384well+21],
