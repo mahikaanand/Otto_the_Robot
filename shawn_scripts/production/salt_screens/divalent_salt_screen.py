@@ -59,9 +59,9 @@ def setup(num_buffs, protocol):
 
     #buffs
     global buffs, buffa, buffb, buffc, buffd
-    dnaa = temp_buffs.wells_by_name()['A2']
-    dnab = temp_buffs.wells_by_name()['D1']
-    dnac = temp_buffs.wells_by_name()['D2']
+    dnaa = temp_buffs.wells_by_name()['A2'].bottom(-2)
+    dnab = temp_buffs.wells_by_name()['D1'].bottom(-2)
+    dnac = temp_buffs.wells_by_name()['D2'].bottom(-2)
     buffs = [dnaa, dnab, dnac]
     del buffs[num_buffs:]
 
