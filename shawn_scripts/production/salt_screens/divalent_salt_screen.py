@@ -20,16 +20,16 @@ metadata = {
     }
 
 def run(protocol):
-    welcome(protocol)
+    #welcome(protocol)
     strobe(12, 8, True, protocol)
     setup(3, protocol)
     for buff in buffs:
         make_mixes(buff, protocol)
-        plate_96well(buff, protocol)
         plate_controls(buff, protocol)
+        plate_96well(buff, protocol)
         salt_titration(buff, protocol)
         protein_titration(buff, protocol)
-    goodbye(protocol)
+    #goodbye(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -76,12 +76,13 @@ def setup(num_buffs, protocol):
     components = [high_salt, low_salt, salt, water, protein, buffer]
 
     #mixes
-    global mixes, hpd, lpd, hd, ld
+    global mixes, hpd, lpd, hd, ld, ld_more
     hpd = {'comps': [salt, high_salt, buffer, protein], 'vol': 150, 'loc': None}
     lpd = {'comps': [salt, low_salt, buffer, protein], 'vol': 350, 'loc': None}
     hd = {'comps': [salt, high_salt, water, buffer], 'vol': 550, 'loc': None}
     ld = {'comps': [salt, low_salt, water, buffer], 'vol': 1500, 'loc': None}
-    mixes = [hpd, lpd, hd, ld]
+    ld_more = {'comps': [salt, low_salt, water, buffer], 'vol': 100, 'loc': None}
+    mixes = [hpd, lpd, hd, ld, ld_more]
 
     #single tips
     global which_tips, tip
@@ -105,6 +106,7 @@ def make_mixes(buff, protocol):
     lpd['loc'] = temp_buffs.rows()[1][bc].top()
     hd['loc'] = temp_buffs.rows()[2][bc].top()
     ld['loc'] = temp_buffs.rows()[3][bc].top()
+    ld_more['loc'] = temp_buffs.rows()[3][bc].top()
 
     for component in components:
         p300m.pick_up_tip(tips300[which_tips[tip]])
@@ -137,25 +139,6 @@ def plate_96well(buff, protocol):
     buff_col = prot_col+1
     extra_col = buffs.index(buff)+8
 
-    #plate high salt protein
-    p300m.pick_up_tip(tips300[which_tips[tip]])
-    tip += 1
-    p300m.mix(3, 50, hpd['loc'])
-    p300m.aspirate(100, hpd['loc'].bottom(-2))
-    p300m.dispense(100, plate96.rows()[1][prot_col].bottom(1.75))
-    p300m.blow_out(plate96.rows()[1][prot_col])
-    p300m.drop_tip()
-
-    #plate low salt protein
-    p300m.pick_up_tip(tips300[which_tips[tip]])
-    tip += 1
-    p300m.mix(3, 100, lpd['loc'])
-    p300m.aspirate(300, lpd['loc'].bottom(-2))
-    for row in range(2,8):
-        p300m.dispense(50, plate96.rows()[row][prot_col].bottom(1.75))
-    p300m.blow_out(plate96.rows()[7][prot_col])
-    p300m.drop_tip()
-
     #move buff wells
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
@@ -176,6 +159,25 @@ def plate_96well(buff, protocol):
         p300m.dispense(135, plate96.rows()[row][extra_col].bottom(1.75))
         p300m.dispense(115, plate96.rows()[row][buff_col].bottom(1.75))
         p300m.blow_out(plate96.rows()[row][extra_col])
+    p300m.drop_tip()
+
+    #plate high salt protein
+    p300m.pick_up_tip(tips300[which_tips[tip]])
+    tip += 1
+    p300m.mix(3, 50, hpd['loc'])
+    p300m.aspirate(100, hpd['loc'].bottom(-2))
+    p300m.dispense(100, plate96.rows()[1][prot_col].bottom(1.75))
+    p300m.blow_out(plate96.rows()[1][prot_col])
+    p300m.drop_tip()
+
+    #plate low salt protein
+    p300m.pick_up_tip(tips300[which_tips[tip]])
+    tip += 1
+    p300m.mix(3, 100, lpd['loc'])
+    p300m.aspirate(300, lpd['loc'].bottom(-2))
+    for row in range(2,8):
+        p300m.dispense(50, plate96.rows()[row][prot_col].bottom(1.75))
+    p300m.blow_out(plate96.rows()[7][prot_col])
     p300m.drop_tip()
 
 def plate_controls(buff, protocol):
@@ -264,9 +266,11 @@ def protein_titration(buff, protocol):
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
+    p300m.flow_rate.aspirate = 10
     p300m.transfer(40, plate96.rows()[0][prot_col].bottom(1.75),
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.blow_out()
+    p300m.flow_rate.aspirate = 96
     p300m.transfer(20,
                    plate384.rows()[which_rows][start_384well:start_384well+10],
                    plate384.rows()[which_rows][start_384well+1:start_384well+11],
