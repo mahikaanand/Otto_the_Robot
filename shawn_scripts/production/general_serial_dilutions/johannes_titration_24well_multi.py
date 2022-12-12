@@ -76,6 +76,7 @@ def protein_titration(buff, protocol):
     p300m.aspirate(250, plate96.rows()[0][start_96well].bottom(1.75))
     for j in range(0,24):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
+        p300m.touch_tip()
     p300m.blow_out()
     p300m.drop_tip()
     start_96well += 1
