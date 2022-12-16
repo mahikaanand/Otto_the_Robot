@@ -7,19 +7,20 @@ import math
 metadata = {
     'protocolName': 'Protein crosslinking experiment',
     'author': 'Shawn Laursen',
-    'description': '''This protocol will do a 12 well titration of crosslinker
+    'description': '''This protocol will do a 7 well titration of crosslinker
                       (like BS3) from a stock with We 1:3 (1 in 4)
                       dilutions, add set amount of protein to each well and
                       quench 30mins later.
                       Advised to spin down plate to mix after plating.
+                      Advised to spin down plate after quenching.
 
                       Puts 60ul buffer in 384 well plate from trough (no Tris,
                       glycine, or DTT).
                       Adds 80ul high concentration crosslinker (ex 5mM) from
                       column 1 of 96 well to 384 well and titrates 11 times with
-                      20ul (1:), leaving last well as control.
-                      Adds 10ul of protein (ex 5uM) from 96 well plate to all
-                      wells of 384 well.
+                      20ul (1:3), leaving last well as control.
+                      Adds 10ul of protein (ex 5uM) from column 2 of 96 well
+                      plate to all wells of 384 well.
                       Waits until 30min has elapsed from start of addition of
                       protein and adds 10ul of glycine from trough to each well.
                       ''',
@@ -28,11 +29,11 @@ metadata = {
 
 def run(protocol):
     strobe(12, 8, True, protocol)
-    setup(2, 0, protocol)
+    setup(1, 0, protocol)
     for buff in buffs:
         xl_titration(buff, protocol)
     for buff in buffs:
-        quench(buff, 0.5, protocol)
+        quench(buff, 30, protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -89,27 +90,28 @@ def xl_titration(buff, protocol):
 
     p300m.pick_up_tip()
     p300m.distribute(60, buffer,
-                     plate384.rows()[which_rows][start_384well+1:start_384well+12],
+                     plate384.rows()[which_rows][start_384well+1:start_384well+7],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
     p300m.transfer(80, plate96.rows()[0][xl_col].bottom(1.75),
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.blow_out()
     p300m.transfer(20,
-                   plate384.rows()[which_rows][start_384well:start_384well+10],
-                   plate384.rows()[which_rows][start_384well+1:start_384well+11],
+                   plate384.rows()[which_rows][start_384well:start_384well+5],
+                   plate384.rows()[which_rows][start_384well+1:start_384well+6],
                    mix_after=(3, 20), new_tip='never')
     p300m.blow_out()
-    p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
+    p300m.aspirate(20, plate384.rows()[which_rows][start_384well+5])
     p300m.drop_tip()
 
     global start_times
     start_times.append(time.time())
 
     p300m.pick_up_tip()
-    p300m.distribute(10, plate96.rows()[0][prot_col].bottom(1.75),
-                     plate384.rows()[which_rows][start_384well:start_384well+12],
-                     disposal_volume=0, new_tip='never', touch_tip=True)
+    p300m.aspirate(80, plate96.rows()[0][prot_col].bottom(1.75))
+    for j in range(0,7):
+        p300m.dispense(10, plate384.rows()[which_rows][j].top())
+        p300m.touch_tip()
     p300m.drop_tip()
 
 
@@ -137,7 +139,8 @@ def quench(buff, wait_mins, protocol):
         print()
 
     p300m.pick_up_tip()
-    p300m.distribute(10, glycine,
-                     plate384.rows()[which_rows][start_384well:start_384well+12],
-                     disposal_volume=0, new_tip='never', touch_tip=True)
+    p300m.aspirate(80, glycine)
+    for j in range(0,7):
+        p300m.dispense(10, plate384.rows()[which_rows][j].top())
+        p300m.touch_tip()
     p300m.drop_tip()
