@@ -109,7 +109,7 @@ def xl_titration(buff, protocol):
     p300m.pick_up_tip()
     p300m.distribute(10, plate96.rows()[0][prot_col].bottom(1.75),
                      plate384.rows()[which_rows][start_384well:start_384well+12],
-                     disposal_volume=0, new_tip='never')
+                     disposal_volume=0, new_tip='never', touch_tip=True)
     p300m.drop_tip()
 
 
@@ -139,5 +139,5 @@ def quench(buff, wait_mins, protocol):
     p300m.pick_up_tip()
     p300m.distribute(10, glycine,
                      plate384.rows()[which_rows][start_384well:start_384well+12],
-                     disposal_volume=0, new_tip='never')
+                     disposal_volume=0, new_tip='never', touch_tip=True)
     p300m.drop_tip()
