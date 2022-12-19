@@ -86,7 +86,7 @@ def xl_titration(buff, protocol):
     xl_col = (buffs.index(buff)*2)+start_96well
     prot_col = xl_col+1
     buff_col = xl_col+2
-    buff_col1 = xl_col+2
+    buff_col1 = xl_col+3
 
     if ((buffs.index(buff) % 2) + start_quad) == 0:
         which_rows = 0
@@ -129,12 +129,12 @@ def xl_titration(buff, protocol):
 
 
 def quench(buff, wait_mins, protocol):
-    if (buffs.index(buff) % 2) == 0:
+    if ((buffs.index(buff) % 2) + start_quad) == 0:
         which_rows = 0
     else:
         which_rows = 1
 
-    if buffs.index(buff) < 2:
+    if (buffs.index(buff) + start_quad) < 2:
         start_384well = 0
     else:
         start_384well = 12
@@ -153,7 +153,7 @@ def quench(buff, wait_mins, protocol):
 
     p300m.pick_up_tip()
     p300m.aspirate(80, glycine)
-    for j in range(0,7):
+    for j in range(start_384well, start_384well+7):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
         p300m.touch_tip()
     p300m.drop_tip()
