@@ -30,7 +30,7 @@ metadata = {
 def run(protocol):
     num_buffs = 1 #up to 4
     well_96start = 2 #index from 0
-    quad_start = 1 #index from 0
+    quad_start = 2 #index from 0
     quench_time = 30 #in minutes
 
     strobe(12, 8, True, protocol)
@@ -88,7 +88,7 @@ def xl_titration(buff, protocol):
     buff_col = xl_col+2
     buff_col1 = xl_col+3
 
-    if ((buffs.index(buff) % 2) + start_quad) == 0:
+    if ((buffs.index(buff)+start_quad) % 2) == 0:
         which_rows = 0
     else:
         which_rows = 1
@@ -122,14 +122,14 @@ def xl_titration(buff, protocol):
 
     p300m.pick_up_tip()
     p300m.aspirate(80, plate96.rows()[0][prot_col].bottom(1.75))
-    for j in range(0,7):
+    for j in range(start_384well, start_384well+7):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
         p300m.touch_tip()
     p300m.drop_tip()
 
 
 def quench(buff, wait_mins, protocol):
-    if ((buffs.index(buff) % 2) + start_quad) == 0:
+    if ((buffs.index(buff)+ start_quad) % 2) == 0:
         which_rows = 0
     else:
         which_rows = 1
