@@ -73,7 +73,7 @@ def protein_titration(buff, protocol):
     p300m.aspirate(30, plate384.rows()[which_rows][start_384well+21])
     p300m.drop_tip()
     p300m.pick_up_tip()
-    p300m.aspirate(250, plate96.rows()[0][start_96well].bottom(1.75))
+    p300m.aspirate(250, plate96.rows()[0][start_96well].bottom(1.5))
     for j in range(0,24):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
         p300m.touch_tip()
