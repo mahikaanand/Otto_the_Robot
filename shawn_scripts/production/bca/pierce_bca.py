@@ -59,7 +59,7 @@ def setup(num_buffs, well_96start, protocol):
     global buffer, working, bsa
     buffer = trough.wells()[0]
     working = trough.wells()[1]
-    bsa = temp_buffs.wells_by_name()['A1']
+    bsa = temp_buffs.wells_by_name()['A1'].bottom(-2)
 
     global start_96well
     start_96well = well_96start
@@ -82,11 +82,11 @@ def setup(num_buffs, well_96start, protocol):
 def make_standards(protocol):
     global tip, tip_col
 
-    dilutants = [0,25,65,35,65,65,65,80]
+    dilutants = [25,65,35,65,65,65,80]
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     for strip in [0,1]:
-        count = 0
+        count = 1
         for dilute in dilutants:
             p300m.aspirate(dilute, buffer)
             p300m.dispense(dilute, pcr_strips.rows()[count][strip])
@@ -110,8 +110,8 @@ def make_standards(protocol):
             p300m.aspirate(standard[0], standard[1])
             p300m.dispense(standard[0], pcr_strips.rows()[count][strip])
             p300m.mix(3,40)
-            p300m.blow_out()
             p300m.drop_tip()
+            count += 1
 
         p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
         tip_col += 1
@@ -137,14 +137,14 @@ def titrate(sample, protocol):
         p300m.aspirate(25, plate96.rows()[row][start_96well+sample+2])
         p300m.dispense(25, plate96.rows()[row+1][start_96well+sample+2])
         p300m.mix(3,25)
-    p300m.aspirate(25, plate96.rows()[6][start_96well+sample+2])
+    p300m.aspirate(25, plate96.rows()[7][start_96well+sample+2])
     p300m.drop_tip()
 
 def add_wr(num_samples, protocol):
     global tip_col
 
     p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
-    for col in range(start_96well, start_96well+num_samples+3):
+    for col in range(start_96well, start_96well+num_samples+2):
         p300m.distribute(200, working, plate96.rows()[0][col].top(),
                          disposal_volume=0, new_tip='never')
     p300m.drop_tip()
