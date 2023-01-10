@@ -17,9 +17,11 @@ metadata = {
     }
 
 def run(protocol):
+    well_96start = 6 #index from 0
+
     #welcome(protocol)
     strobe(12, 8, True, protocol)
-    setup(2, protocol)
+    setup(2, well_96start, protocol)
     for buff in buffs:
         protein_titration(buff, protocol)
     #goodbye(protocol)
@@ -35,7 +37,7 @@ def strobe(blinks, hz, leave_on, protocol):
         i += 1
     protocol.set_rail_lights(leave_on)
 
-def setup(num_buffs, protocol):
+def setup(num_buffs, well_96start, protocol):
     #equiptment
     global tips300, plate96, plate384, p300m, tempdeck
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
@@ -53,8 +55,11 @@ def setup(num_buffs, protocol):
     buffs = [buffa, buffb, buffc, buffd]
     del buffs[num_buffs:]
 
+    global start_96well
+    start_96well = well_96start
+
 def protein_titration(buff, protocol):
-    prot_col = buffs.index(buff)*3
+    prot_col = (buffs.index(buff)*3)+start_96well
     buff_col = prot_col+1
     extra_buff_col = buff_col+1
     start_384well = 0
@@ -72,9 +77,10 @@ def protein_titration(buff, protocol):
                      plate384.rows()[which_rows][start_384well+12:start_384well+24],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
+    p300m.flow_rate.aspirate = 40
+    p300m.flow_rate.dispense = 40
     p300m.transfer(40, plate96.rows()[0][prot_col].bottom(1.75),
                    plate384.rows()[which_rows][start_384well], new_tip='never')
-    p300m.blow_out()
     p300m.transfer(20,
                    plate384.rows()[which_rows][start_384well:start_384well+22],
                    plate384.rows()[which_rows][start_384well+1:start_384well+23],
