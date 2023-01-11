@@ -29,8 +29,8 @@ metadata = {
 
 def run(protocol):
     num_buffs = 1 #up to 4
-    well_96start = 2 #index from 0
-    quad_start = 2 #index from 0
+    well_96start = 0 #index from 0
+    quad_start = 0 #index from 0
     quench_time = 30 #in minutes
 
     strobe(12, 8, True, protocol)
@@ -82,6 +82,9 @@ def setup(num_buffs, well_96start, quad_start, protocol):
     global start_times
     start_times = []
 
+    p300m.flow_rate.aspirate = 40
+    p300m.flow_rate.dispense = 40
+
 def xl_titration(buff, protocol):
     xl_col = (buffs.index(buff)*2)+start_96well
     prot_col = xl_col+1
@@ -99,10 +102,10 @@ def xl_titration(buff, protocol):
         start_384well = 12
 
     p300m.pick_up_tip()
-    p300m.distribute(60, plate96.rows()[0][buff_col].bottom(1.5),
+    p300m.distribute(60, plate96.rows()[0][buff_col].bottom(1.75),
                      plate384.rows()[which_rows][start_384well+1:start_384well+4],
                      disposal_volume=0, new_tip='never')
-    p300m.distribute(60, plate96.rows()[0][buff_col1].bottom(1.5),
+    p300m.distribute(60, plate96.rows()[0][buff_col1].bottom(1.75),
                      plate384.rows()[which_rows][start_384well+4:start_384well+7],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
