@@ -9,21 +9,29 @@ metadata = {
     'author': 'Shawn Laursen',
     'description': '''This protocol will perform the Pierce BCA protocol.
                       Place 500ul of 2mg/ml BSA in A1 of Temp deck 24well.
-                      Place 50ul protein in top row in the third column and on.
-                      Place 2 x 8 strip tubes in 96well aluminum block.
+                      Place 60ul protein in top row in the third column and on.
+                      Place 2 (+ num samples) x 8 strip tubes in 96well aluminum block.
                       Place dilution buffer in column 1 of trough.
                       Place 1200ul x # samples + 5000ul of mixed BCA reagent
-                      in column 2 of trough.
+                      in column 2 of trough. Robot will make BSA standard dilution
+                      in first 2 columns specified, put 60ul your protein(s) in
+                      first tube of third (and on strips). Robot will make 1:1
+                      dilution series of your protein. After standard and
+                      experimental dilutions are made, robot will add 200ul of
+                      working reagent to each well (30ul of protein is used in
+                      all wells). Don't forget alter the program with number of
+                      samples and where to start on the 96well plate (indexed
+                      from 0).
                       ''',
     'apiLevel': '2.11'
     }
 
 def run(protocol):
-    num_samples = 3 #up to 4
+    num_samples = 1
     well_96start = 0 #index from 0
 
     strobe(12, 8, True, protocol)
-    setup(num_samples, well_96start, protocol)
+    setup(well_96start, protocol)
     make_standards(protocol)
     for sample in range(0, num_samples):
         titrate(sample, protocol)
@@ -40,7 +48,7 @@ def strobe(blinks, hz, leave_on, protocol):
         i += 1
     protocol.set_rail_lights(leave_on)
 
-def setup(num_buffs, well_96start, protocol):
+def setup(well_96start, protocol):
     #equiptment
     global tips300, tips300_2, trough, plate384, p300m, plate96, pcr_strips
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
@@ -48,6 +56,8 @@ def setup(num_buffs, well_96start, protocol):
     trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300, tips300_2])
+    p300m.flow_rate.aspirate = 40
+    p300m.flow_rate.dispense = 40
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 5)
     pcr_strips = protocol.load_labware(
                  'opentrons_96_aluminumblock_generic_pcr_strip_200ul', 6)
@@ -90,7 +100,6 @@ def make_standards(protocol):
         for dilute in dilutants:
             p300m.aspirate(dilute, buffer)
             p300m.dispense(dilute, pcr_strips.rows()[count][strip])
-            p300m.blow_out()
             count += 1
     p300m.drop_tip()
 
@@ -115,29 +124,34 @@ def make_standards(protocol):
 
         p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
         tip_col += 1
-        p300m.transfer(25, pcr_strips.rows()[0][strip],
+        p300m.transfer(30, pcr_strips.rows()[0][strip],
                        plate96.rows()[0][start_96well+strip],
                        new_tip='never')
-        p300m.blow_out()
         p300m.drop_tip()
 
 def titrate(sample, protocol):
-    global tip
+    global tip, tip_col
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
-    p300m.aspirate(175, buffer)
+    p300m.aspirate(210, buffer)
     for row in range(1,8):
-        p300m.dispense(25, plate96.rows()[row][start_96well+sample+2])
+        p300m.dispense(30, pcr_strips.rows()[row][sample+1])
     p300m.drop_tip()
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     for row in range(0,7):
-        p300m.aspirate(25, plate96.rows()[row][start_96well+sample+2])
-        p300m.dispense(25, plate96.rows()[row+1][start_96well+sample+2])
-        p300m.mix(3,25)
-    p300m.aspirate(25, plate96.rows()[7][start_96well+sample+2])
+        p300m.aspirate(30, pcr_strips.rows()[row][sample+1])
+        p300m.dispense(30, pcr_strips.rows()[row+1][sample+1])
+        p300m.mix(3,30)
+    p300m.aspirate(30, pcr_strips.rows()[7][sample+1])
+    p300m.drop_tip()
+
+    p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
+    tip_col += 1
+    p300m.transfer(30, pcr_strips.rows()[0][sample+1],
+                   plate96.rows()[0][start_96well+sample+2], new_tip='never')
     p300m.drop_tip()
 
 def add_wr(num_samples, protocol):
