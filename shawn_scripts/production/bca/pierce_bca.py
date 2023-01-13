@@ -32,7 +32,7 @@ def run(protocol):
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    make_standards(protocol)
+    #make_standards(protocol)
     for sample in range(0, num_samples):
         titrate(sample, protocol)
     add_wr(num_samples, protocol)
@@ -136,21 +136,21 @@ def titrate(sample, protocol):
     tip += 1
     p300m.aspirate(210, buffer)
     for row in range(1,8):
-        p300m.dispense(30, pcr_strips.rows()[row][sample+1])
+        p300m.dispense(30, pcr_strips.rows()[row][sample+2])
     p300m.drop_tip()
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     for row in range(0,7):
-        p300m.aspirate(30, pcr_strips.rows()[row][sample+1])
-        p300m.dispense(30, pcr_strips.rows()[row+1][sample+1])
+        p300m.aspirate(30, pcr_strips.rows()[row][sample+2])
+        p300m.dispense(30, pcr_strips.rows()[row+1][sample+2])
         p300m.mix(3,30)
-    p300m.aspirate(30, pcr_strips.rows()[7][sample+1])
+    p300m.aspirate(30, pcr_strips.rows()[7][sample+2])
     p300m.drop_tip()
 
     p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
     tip_col += 1
-    p300m.transfer(30, pcr_strips.rows()[0][sample+1],
+    p300m.transfer(30, pcr_strips.rows()[0][sample+2],
                    plate96.rows()[0][start_96well+sample+2], new_tip='never')
     p300m.drop_tip()
 
