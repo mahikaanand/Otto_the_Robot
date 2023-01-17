@@ -124,7 +124,7 @@ def make_standards(protocol):
 
         p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
         tip_col += 1
-        p300m.transfer(25, pcr_strips.rows()[0][strip],
+        p300m.transfer(30, pcr_strips.rows()[0][strip],
                        plate96.rows()[0][start_96well+strip],
                        new_tip='never')
         p300m.drop_tip()
@@ -150,7 +150,7 @@ def titrate(sample, protocol):
 
     p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
     tip_col += 1
-    p300m.transfer(25, pcr_strips.rows()[0][sample+2],
+    p300m.transfer(30, pcr_strips.rows()[0][sample+2],
                    plate96.rows()[0][start_96well+sample+2], new_tip='never')
     p300m.drop_tip()
 
