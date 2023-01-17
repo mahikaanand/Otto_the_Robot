@@ -2,7 +2,6 @@ from opentrons import protocol_api
 import time
 import sys
 import math
-#import pyttsx3
 import random
 import subprocess
 
@@ -10,7 +9,8 @@ import subprocess
 metadata = {
     'protocolName': 'High salt buffer screen',
     'author': 'Shawn Laursen',
-    'description': '''You make buffers. Put in 24well.
+    'description': '''Makes buffers from stocks in 24 well thermal module.
+                      Does not make high salt buffs -> make and put in 24well.
                       Plates mixes into 96well.
                       Titrates salt mixes in 96well.
                       Titrates protein in 384well. ''',
@@ -22,6 +22,7 @@ def run(protocol):
     strobe(12, 8, True, protocol)
     setup(4, protocol)
     for buff in buffs:
+        make_mixes(buff, protocol)
         plate_96well(buff, protocol)
         plate_controls(buff, protocol)
         salt_titration(buff, protocol)
@@ -42,7 +43,7 @@ def strobe(blinks, hz, leave_on, protocol):
 def setup(num_buffs, protocol):
     #equiptment
     global trough, tips300, tips300_2, plate96, plate384, p300m, tempdeck
-    trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
+    trough = protocol.load_labware('nest_12_reservoir_15ml', 2)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
     tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
@@ -72,15 +73,15 @@ def setup(num_buffs, protocol):
     protein = temp_buffs.wells_by_name()['A1']
     dna = temp_buffs.wells_by_name()['A2']
     dna_extra = temp_buffs.wells_by_name()['D2']
-    components = [high_salt, low_salt, edta, water, protein, dna, dna_extra]
+    components = [low_salt, edta, water, protein, dna, dna_extra]
 
     #mixes
     global mixes, hpd, lpd, hd, ld
     hpd = {'comps': [edta, high_salt, dna, protein], 'vol': 150, 'loc': None}
     lpd = {'comps': [edta, low_salt, dna, protein], 'vol': 350, 'loc': None}
     hd = {'comps': [edta, high_salt, water, dna], 'vol': 550, 'loc': None}
-    ld = {'comps': [edta, low_salt, water, dna_extra], 'vol': 1550, 'loc': None}
-    mixes = [hpd, lpd, hd, ld]
+    ld = {'comps': [edta, low_salt, water, dna_extra], 'vol': 1500, 'loc': None}
+    mixes = [lpd, ld]
 
     #single tips
     global which_tips, tip
@@ -96,6 +97,34 @@ def setup(num_buffs, protocol):
     tip_col = 0
     for i in range(1,13):
         which_tip_col.append('A'+str(i))
+
+def make_mixes(buff, protocol):
+    global tip
+    bc = buffs.index(buff)+2
+    hpd['loc'] = temp_buffs.rows()[0][bc].top()
+    lpd['loc'] = temp_buffs.rows()[1][bc].top()
+    hd['loc'] = temp_buffs.rows()[2][bc].top()
+    ld['loc'] = temp_buffs.rows()[3][bc].top()
+
+    for component in components:
+        p300m.pick_up_tip(tips300[which_tips[tip]])
+        tip += 1
+        for mix in mixes:
+            if component in mix['comps']:
+                p300m.aspirate(mix['vol']/5, component)
+                p300m.dispense(mix['vol']/5, mix['loc'])
+                p300m.touch_tip()
+                p300m.blow_out(mix['loc'])
+        p300m.drop_tip()
+
+    p300m.pick_up_tip(tips300[which_tips[tip]])
+    tip += 1
+    for mix in mixes:
+        p300m.aspirate(mix['vol']/5, buff)
+        p300m.dispense(mix['vol']/5, mix['loc'])
+        p300m.touch_tip()
+        p300m.blow_out(mix['loc'])
+    p300m.drop_tip()
 
 def plate_96well(buff, protocol):
     global tip
@@ -264,14 +293,15 @@ def welcome(protocol):
             song = opera[1]
         elif mytime.tm_hour in [19,20,21,22,23]:
             tod = 'welcome_midday.mp3'
-            song = 'get_it_started.mp3'
+            song = '2001.mp3'
+            #song = 'get_it_started.mp3'
         else:
             tod = 'welcome_late.mp3'
             song = 'rockabye.mp3'
 
         general = 'welcome_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
+        music('/data/songs/'+tod, True, protocol)
+        music('/data/songs/'+general, True, protocol)
         music('/data/songs/'+song, protocol)
     else:
         None
@@ -289,15 +319,15 @@ def goodbye(protocol):
             tod = 'goodbye_late.mp3'
 
         general = 'goodbye_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
+        music('/data/songs/'+tod, True, protocol)
+        music('/data/songs/'+general, True, protocol)
     else:
         None
 
 def run_quiet_process(command):
     subprocess.Popen('{} &'.format(command), shell=True)
 
-def music(song, protocol):
+def music(song, wait, protocol):
     print('Speaker')
     print('Next\t--> CTRL-C')
     try:
