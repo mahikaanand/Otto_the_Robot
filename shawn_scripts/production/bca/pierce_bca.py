@@ -32,7 +32,7 @@ def run(protocol):
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    #make_standards(protocol)
+    make_standards(protocol)
     for sample in range(0, num_samples):
         titrate(sample, protocol)
     add_wr(num_samples, protocol)
@@ -101,9 +101,9 @@ def make_standards(protocol):
             p300m.aspirate(dilute, buffer)
             p300m.dispense(dilute, pcr_strips.rows()[count][strip])
             count += 1
-    p300m.drop_tip()
+        p300m.drop_tip()
 
-    for strip in [0,1]:
+        p300m.pick_up_tip(tips300[which_tips[tip]])
         count = 0
         standards = [[60, bsa],
                      [75, bsa],
