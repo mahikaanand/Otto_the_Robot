@@ -93,9 +93,9 @@ def make_standards(protocol):
     global tip, tip_col
 
     dilutants = [25,65,35,65,65,65,80]
-    p300m.pick_up_tip(tips300[which_tips[tip]])
-    tip += 1
     for strip in [0,1]:
+        p300m.pick_up_tip(tips300[which_tips[tip]])
+        tip += 1
         count = 1
         for dilute in dilutants:
             p300m.aspirate(dilute, buffer)
@@ -103,7 +103,6 @@ def make_standards(protocol):
             count += 1
         p300m.drop_tip()
 
-        p300m.pick_up_tip(tips300[which_tips[tip]])
         count = 0
         standards = [[60, bsa],
                      [75, bsa],
