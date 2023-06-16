@@ -2,25 +2,28 @@ from opentrons import protocol_api
 import time
 import sys
 import math
-#import pyttsx3
 import random
 import subprocess
 
 
 metadata = {
-    'protocolName': 'Protein titration - 12 well',
+    'protocolName': 'Protein titration - 12 well, add fluor after',
     'author': 'Shawn Laursen',
-    'description': '''Put mixes (50ul of protein+dna) and 250ul of (dna) next to
-                      each other in 96 well plate
-                      Titrates protein in 384well. ''',
+    'description': '''You put mixes in 96 well plate: 
+                        - 30ul of protein col 0 
+                        - 150ul of dilutant col 1 
+                        - 150ul of fluor col 2
+                      Robot:
+                        - Titrates protein 12 times in 384well 
+                        - Add 10ul of fluor to all wells''',
     'apiLevel': '2.11'
     }
 
 def run(protocol):
-
     well_96start = 0 #index from 0
+
     strobe(12, 8, True, protocol)
-    setup(4, well_96start, protocol)
+    setup(2, well_96start, protocol)
     for buff in buffs:
         protein_titration(buff, protocol)
     strobe(12, 8, False, protocol)
@@ -37,10 +40,13 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(num_buffs, well_96start, protocol):
     #equiptment
-    global tips300, plate96, plate384, p300m, tempdeck
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
+    global tips20, plate96, plate384, p20m, p300m
+    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
+    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
     plate384 = protocol.load_labware('corning3575_384well_alt', 5)
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
+                                     tip_racks=[tips20])
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
 
@@ -57,30 +63,35 @@ def setup(num_buffs, well_96start, protocol):
     start_96well = well_96start
 
 def protein_titration(buff, protocol):
-    prot_col = (buffs.index(buff)*2)+start_96well
+    prot_col = (buffs.index(buff)*3)+start_96well
     buff_col = prot_col+1
+    fluor_col = buff_col+1
+    start_384well = 0
     if (buffs.index(buff) % 2) == 0:
         which_rows = 0
     else:
         which_rows = 1
 
-    if buffs.index(buff) < 2:
-        start_384well = 0
-    else:
-        start_384well = 12
-
     p300m.pick_up_tip()
-    p300m.distribute(20, plate96.rows()[0][buff_col],
+    p300m.distribute(10, plate96.rows()[0][buff_col],
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
-    p300m.transfer(40, plate96.rows()[0][prot_col],
+    p300m.drop_tip()
+    p20m.pick_up_tip()
+    p20m.transfer(20, plate96.rows()[0][prot_col],
                    plate384.rows()[which_rows][start_384well], new_tip='never')
-    p300m.blow_out()
-    p300m.transfer(20,
+    p20m.transfer(10,
                    plate384.rows()[which_rows][start_384well:start_384well+10],
                    plate384.rows()[which_rows][start_384well+1:start_384well+11],
-                   mix_after=(3, 20), new_tip='never')
-    p300m.blow_out()
-    p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
+                   mix_after=(3, 10), new_tip='never')
+    p20m.blow_out()
+    p20m.aspirate(10, plate384.rows()[which_rows][start_384well+10])
+    p20m.drop_tip()
+    p300m.pick_up_tip()
+    p300m.aspirate(130, plate96.rows()[0][fluor_col])
+    for j in range(start_384well, start_384well+12):
+        p300m.dispense(10, plate384.rows()[which_rows][j].top())
+        p300m.blow_out()
+        p300m.touch_tip()
     p300m.drop_tip()

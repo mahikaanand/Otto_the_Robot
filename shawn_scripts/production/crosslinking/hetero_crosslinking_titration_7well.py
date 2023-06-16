@@ -5,7 +5,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'Protein crosslinking experiment - hetero',
+    'protocolName': 'Crosslinker titration - hetero',
     'author': 'Shawn Laursen',
     'description': '''This protocol will add set amount of protein to each well,
                       do a 7 well titration of a second protein from a stock with
@@ -96,14 +96,14 @@ def protein_titration(buff, protocol):
                      plate384.rows()[which_rows][start_384well+1:start_384well+7],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
-    p300m.aspirate(80, plate96.rows()[0][prot_col].bottom(1.75))
+    p300m.aspirate(80, plate96.rows()[0][prot_col])
     for j in range(0,7):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
         p300m.touch_tip()
     p300m.drop_tip()
 
     p300m.pick_up_tip()
-    p300m.transfer(70, plate96.rows()[0][prot2_col].bottom(1.75),
+    p300m.transfer(70, plate96.rows()[0][prot2_col],
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.blow_out()
     p300m.transfer(20,
@@ -118,7 +118,7 @@ def protein_titration(buff, protocol):
     start_times.append(time.time())
 
     p300m.pick_up_tip()
-    p300m.aspirate(80, plate96.rows()[0][prot_col].bottom(1.75))
+    p300m.aspirate(80, plate96.rows()[0][prot_col])
     for j in range(0,7):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
         p300m.touch_tip()

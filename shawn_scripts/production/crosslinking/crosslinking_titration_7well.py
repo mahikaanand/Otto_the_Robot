@@ -5,7 +5,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'Protein crosslinking experiment',
+    'protocolName': 'Crosslinker titration',
     'author': 'Shawn Laursen',
     'description': '''This protocol will do a 7 well titration of crosslinker
                       (like BS3) from a stock with We 1:3 (1 in 4)
@@ -102,14 +102,14 @@ def xl_titration(buff, protocol):
         start_384well = 12
 
     p300m.pick_up_tip()
-    p300m.distribute(60, plate96.rows()[0][buff_col].bottom(1.75),
+    p300m.distribute(60, plate96.rows()[0][buff_col],
                      plate384.rows()[which_rows][start_384well+1:start_384well+4],
                      disposal_volume=0, new_tip='never')
-    p300m.distribute(60, plate96.rows()[0][buff_col1].bottom(1.75),
+    p300m.distribute(60, plate96.rows()[0][buff_col1],
                      plate384.rows()[which_rows][start_384well+4:start_384well+7],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
-    p300m.transfer(80, plate96.rows()[0][xl_col].bottom(1.75),
+    p300m.transfer(80, plate96.rows()[0][xl_col],
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.blow_out()
     p300m.transfer(20,
@@ -124,7 +124,7 @@ def xl_titration(buff, protocol):
     start_times.append(time.time())
 
     p300m.pick_up_tip()
-    p300m.aspirate(80, plate96.rows()[0][prot_col].bottom(1.75))
+    p300m.aspirate(80, plate96.rows()[0][prot_col])
     for j in range(start_384well, start_384well+7):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
         p300m.touch_tip()

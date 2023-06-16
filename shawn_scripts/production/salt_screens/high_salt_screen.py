@@ -18,7 +18,6 @@ metadata = {
     }
 
 def run(protocol):
-    #welcome(protocol)
     strobe(12, 8, True, protocol)
     setup(4, protocol)
     for buff in buffs:
@@ -26,7 +25,6 @@ def run(protocol):
         plate_controls(buff, protocol)
         salt_titration(buff, protocol)
         protein_titration(buff, protocol)
-    #goodbye(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -113,7 +111,7 @@ def plate_96well(buff, protocol):
     tip += 1
     p300m.mix(3, 50, hpd['loc'])
     p300m.aspirate(100, hpd['loc'].bottom(-2))
-    p300m.dispense(100, plate96.rows()[1][prot_col].bottom(1.75))
+    p300m.dispense(100, plate96.rows()[1][prot_col])
     p300m.blow_out(plate96.rows()[1][prot_col])
     p300m.drop_tip()
 
@@ -123,7 +121,7 @@ def plate_96well(buff, protocol):
     p300m.mix(3, 100, lpd['loc'])
     p300m.aspirate(300, lpd['loc'].bottom(-2))
     for row in range(2,8):
-        p300m.dispense(50, plate96.rows()[row][prot_col].bottom(1.75))
+        p300m.dispense(50, plate96.rows()[row][prot_col])
     p300m.blow_out(plate96.rows()[7][prot_col])
     p300m.drop_tip()
 
@@ -132,10 +130,10 @@ def plate_96well(buff, protocol):
     tip += 1
     p300m.mix(3, 250, hd['loc'])
     p300m.aspirate(270, hd['loc'].bottom(-2))
-    p300m.dispense(270, plate96.rows()[1][extra_col].bottom(1.75))
+    p300m.dispense(270, plate96.rows()[1][extra_col])
     p300m.blow_out(plate96.rows()[1][extra_col])
     p300m.aspirate(230, hd['loc'].bottom(-2))
-    p300m.dispense(230, plate96.rows()[1][buff_col].bottom(1.75))
+    p300m.dispense(230, plate96.rows()[1][buff_col])
     p300m.blow_out(plate96.rows()[1][buff_col])
     p300m.drop_tip()
 
@@ -144,8 +142,8 @@ def plate_96well(buff, protocol):
     p300m.mix(3, 250, ld['loc'])
     for row in range(2,8):
         p300m.aspirate(250, ld['loc'].bottom(-2))
-        p300m.dispense(135, plate96.rows()[row][extra_col].bottom(1.75))
-        p300m.dispense(115, plate96.rows()[row][buff_col].bottom(1.75))
+        p300m.dispense(135, plate96.rows()[row][extra_col])
+        p300m.dispense(115, plate96.rows()[row][buff_col])
         p300m.blow_out(plate96.rows()[row][extra_col])
     p300m.drop_tip()
 
@@ -165,7 +163,7 @@ def plate_controls(buff, protocol):
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     p300m.aspirate(50, temp_buffs.rows()[pr][0].bottom(-2))
-    p300m.dispense(50, plate96.rows()[0][prot_col].bottom(1.75))
+    p300m.dispense(50, plate96.rows()[0][prot_col])
     p300m.blow_out(plate96.rows()[0][prot_col])
     p300m.drop_tip()
 
@@ -173,8 +171,8 @@ def plate_controls(buff, protocol):
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     p300m.aspirate(250, temp_buffs.rows()[br][1].bottom(-2))
-    p300m.dispense(115, plate96.rows()[0][buff_col].bottom(1.75))
-    p300m.dispense(135, plate96.rows()[0][extra_col].bottom(1.75))
+    p300m.dispense(115, plate96.rows()[0][buff_col])
+    p300m.dispense(135, plate96.rows()[0][extra_col])
     p300m.blow_out()
     p300m.drop_tip()
 
@@ -187,28 +185,28 @@ def salt_titration(buff, protocol):
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     for row in range(1,6):
-        p300m.aspirate(50, plate96.rows()[row][prot_col].bottom(1.75))
-        p300m.dispense(50, plate96.rows()[row+1][prot_col].bottom(1.75))
+        p300m.aspirate(50, plate96.rows()[row][prot_col])
+        p300m.dispense(50, plate96.rows()[row+1][prot_col])
         p300m.mix(3,50)
-    p300m.aspirate(50, plate96.rows()[6][prot_col].bottom(1.75))
+    p300m.aspirate(50, plate96.rows()[6][prot_col])
     p300m.drop_tip()
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     for row in range(1,6):
-        p300m.aspirate(115, plate96.rows()[row][buff_col].bottom(1.75))
-        p300m.dispense(115, plate96.rows()[row+1][buff_col].bottom(1.75))
+        p300m.aspirate(115, plate96.rows()[row][buff_col])
+        p300m.dispense(115, plate96.rows()[row+1][buff_col])
         p300m.mix(3,115)
-    p300m.aspirate(115, plate96.rows()[6][buff_col].bottom(1.75))
+    p300m.aspirate(115, plate96.rows()[6][buff_col])
     p300m.drop_tip()
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     for row in range(1,6):
-        p300m.aspirate(135, plate96.rows()[row][extra_col].bottom(1.75))
-        p300m.dispense(135, plate96.rows()[row+1][extra_col].bottom(1.75))
+        p300m.aspirate(135, plate96.rows()[row][extra_col])
+        p300m.dispense(135, plate96.rows()[row+1][extra_col])
         p300m.mix(3,135)
-    p300m.aspirate(135, plate96.rows()[6][extra_col].bottom(1.75))
+    p300m.aspirate(135, plate96.rows()[6][extra_col])
     p300m.drop_tip()
 
 def protein_titration(buff, protocol):
@@ -228,14 +226,14 @@ def protein_titration(buff, protocol):
 
     p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
     tip_col += 1
-    p300m.transfer(125, plate96.rows()[0][extra_col].bottom(1.75),
+    p300m.transfer(125, plate96.rows()[0][extra_col],
                    plate96.rows()[0][buff_col],
                    new_tip='never')
-    p300m.distribute(20, plate96.rows()[0][buff_col].bottom(1.75),
+    p300m.distribute(20, plate96.rows()[0][buff_col],
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
-    p300m.transfer(40, plate96.rows()[0][prot_col].bottom(1.75),
+    p300m.transfer(40, plate96.rows()[0][prot_col],
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.blow_out()
     p300m.transfer(20,
@@ -245,66 +243,3 @@ def protein_titration(buff, protocol):
     p300m.blow_out()
     p300m.aspirate(20, plate384.rows()[which_rows][start_384well+10])
     p300m.drop_tip()
-
-def welcome(protocol):
-    if not protocol.is_simulating():
-        mytime = time.localtime()
-        if mytime.tm_hour in [6,7,8,9,10,11,12]:
-            tod = 'welcome_morning.mp3'
-            song = '2001.mp3'
-        elif mytime.tm_hour in [13,14,15,16,17,18]:
-            operas = [['Puccini', 'puccini.mp3'],
-                      ['Verdi', 'verdi.mp3'],
-                      ['Mozart','mozart.mp3'],
-                      ['Haydn', 'haydn.mp3'],
-                      ['Beethoven', 'beethoven.mp3']]
-            num = random.randint(0, len(operas)-1)
-            opera = operas[num]
-            tod = 'welcome_{}.mp3'.format(opera[0])
-            song = opera[1]
-        elif mytime.tm_hour in [19,20,21,22,23]:
-            tod = 'welcome_midday.mp3'
-            song = 'get_it_started.mp3'
-        else:
-            tod = 'welcome_late.mp3'
-            song = 'rockabye.mp3'
-
-        general = 'welcome_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
-        music('/data/songs/'+song, protocol)
-    else:
-        None
-
-def goodbye(protocol):
-    if not protocol.is_simulating():
-        mytime = time.localtime()
-        if mytime.tm_hour in [6,7,8,9,10,11,12]:
-            tod = 'goodbye_morning.mp3'
-        elif mytime.tm_hour in [13,14,15,16,17,18]:
-            tod = 'goodbye_midmorning.mp3'
-        elif mytime.tm_hour in [19,20,21,22,23]:
-            tod = 'goodbye_midday.mp3'
-        else:
-            tod = 'goodbye_late.mp3'
-
-        general = 'goodbye_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
-    else:
-        None
-
-def run_quiet_process(command):
-    subprocess.Popen('{} &'.format(command), shell=True)
-
-def music(song, protocol):
-    print('Speaker')
-    print('Next\t--> CTRL-C')
-    try:
-        if not protocol.is_simulating():
-            run_quiet_process('mpg123 {}'.format(song))
-        else:
-            print('Not playing mp3, simulating')
-    except KeyboardInterrupt:
-        pass
-        print()
