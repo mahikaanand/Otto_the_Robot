@@ -17,14 +17,12 @@ metadata = {
     }
 
 def run(protocol):
-    well_96start = 6 #index from 0
+    well_96start = 0 #index from 0
 
-    #welcome(protocol)
     strobe(12, 8, True, protocol)
     setup(2, well_96start, protocol)
     for buff in buffs:
         protein_titration(buff, protocol)
-    #goodbye(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -69,17 +67,17 @@ def protein_titration(buff, protocol):
         which_rows = 1
 
     p300m.pick_up_tip()
-    p300m.distribute(20, plate96.rows()[0][buff_col].bottom(1.75),
+    p300m.distribute(20, plate96.rows()[0][buff_col],
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
-    p300m.distribute(20, plate96.rows()[0][extra_buff_col].bottom(1.75),
+    p300m.distribute(20, plate96.rows()[0][extra_buff_col],
                      plate384.rows()[which_rows][start_384well+12:start_384well+24],
                      disposal_volume=0, new_tip='never')
     p300m.blow_out()
     p300m.flow_rate.aspirate = 40
     p300m.flow_rate.dispense = 40
-    p300m.transfer(40, plate96.rows()[0][prot_col].bottom(1.75),
+    p300m.transfer(40, plate96.rows()[0][prot_col],
                    plate384.rows()[which_rows][start_384well], new_tip='never')
     p300m.transfer(20,
                    plate384.rows()[which_rows][start_384well:start_384well+22],
@@ -88,66 +86,3 @@ def protein_titration(buff, protocol):
     p300m.blow_out()
     p300m.aspirate(20, plate384.rows()[which_rows][start_384well+22])
     p300m.drop_tip()
-
-def welcome(protocol):
-    if not protocol.is_simulating():
-        mytime = time.localtime()
-        if mytime.tm_hour in [6,7,8,9,10,11,12]:
-            tod = 'welcome_morning.mp3'
-            song = '2001.mp3'
-        elif mytime.tm_hour in [13,14,15,16,17,18]:
-            operas = [['Puccini', 'puccini.mp3'],
-                      ['Verdi', 'verdi.mp3'],
-                      ['Mozart','mozart.mp3'],
-                      ['Haydn', 'haydn.mp3'],
-                      ['Beethoven', 'beethoven.mp3']]
-            num = random.randint(0, len(operas)-1)
-            opera = operas[num]
-            tod = 'welcome_{}.mp3'.format(opera[0])
-            song = opera[1]
-        elif mytime.tm_hour in [19,20,21,22,23]:
-            tod = 'welcome_midday.mp3'
-            song = 'get_it_started.mp3'
-        else:
-            tod = 'welcome_late.mp3'
-            song = 'rockabye.mp3'
-
-        general = 'welcome_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
-        music('/data/songs/'+song, protocol)
-    else:
-        None
-
-def goodbye(protocol):
-    if not protocol.is_simulating():
-        mytime = time.localtime()
-        if mytime.tm_hour in [6,7,8,9,10,11,12]:
-            tod = 'goodbye_morning.mp3'
-        elif mytime.tm_hour in [13,14,15,16,17,18]:
-            tod = 'goodbye_midmorning.mp3'
-        elif mytime.tm_hour in [19,20,21,22,23]:
-            tod = 'goodbye_midday.mp3'
-        else:
-            tod = 'goodbye_late.mp3'
-
-        general = 'goodbye_general.mp3'
-        music('/data/songs/'+tod, protocol)
-        music('/data/songs/'+general, protocol)
-    else:
-        None
-
-def run_quiet_process(command):
-    subprocess.Popen('{} &'.format(command), shell=True)
-
-def music(song, protocol):
-    print('Speaker')
-    print('Next\t--> CTRL-C')
-    try:
-        if not protocol.is_simulating():
-            run_quiet_process('mpg123 {}'.format(song))
-        else:
-            print('Not playing mp3, simulating')
-    except KeyboardInterrupt:
-        pass
-        print()
