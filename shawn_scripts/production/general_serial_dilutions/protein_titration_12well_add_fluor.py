@@ -23,7 +23,7 @@ def run(protocol):
     well_96start = 0 #index from 0
 
     strobe(12, 8, True, protocol)
-    setup(2, well_96start, protocol)
+    setup(4, well_96start, protocol)
     for buff in buffs:
         protein_titration(buff, protocol)
     strobe(12, 8, False, protocol)
@@ -72,6 +72,11 @@ def protein_titration(buff, protocol):
     else:
         which_rows = 1
 
+    if buffs.index(buff) < 2:
+        start_384well = 0
+    else:
+        start_384well = 12
+
     p300m.pick_up_tip()
     p300m.distribute(10, plate96.rows()[0][buff_col],
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
@@ -92,5 +97,5 @@ def protein_titration(buff, protocol):
     p300m.aspirate(130, plate96.rows()[0][fluor_col])
     for j in range(start_384well, start_384well+12):
         p300m.dispense(10, plate384.rows()[which_rows][j].top())
-        p300m.touch_tip(radius=0.75, v_offset=1)
+        p300m.touch_tip(radius=0.75, v_offset=0)
     p300m.drop_tip()
