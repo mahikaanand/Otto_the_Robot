@@ -8,19 +8,17 @@ import subprocess
 
 
 metadata = {
-    'protocolName': 'Protein titration - 24 well',
+    'protocolName': 'Test plate',
     'author': 'Shawn Laursen',
-    'description': '''Put mixes (50ul of protein+dna) and 2x250ul of (dna) next to
-                      each other in 96 well plate
-                      Titrates protein in 384well. ''',
+    'description': '''Puts 20ul in all wells. Uses diiferent overage for even wells.''',
     'apiLevel': '2.11'
     }
 
 def run(protocol):
     well_96start = 0 #index from 0
-
+    welcome(protocol)
     strobe(12, 8, True, protocol)
-    setup(2, well_96start, protocol)
+    setup(1, well_96start, protocol)
     for buff in buffs:
         protein_titration(buff, protocol)
     strobe(12, 8, False, protocol)
@@ -57,31 +55,48 @@ def setup(num_buffs, well_96start, protocol):
     start_96well = well_96start
 
 def protein_titration(buff, protocol):
-    prot_col = (buffs.index(buff)*3)+start_96well
-    buff_col = prot_col+1
+    buff_col = 4
     extra_buff_col = buff_col+1
     start_384well = 0
-    if (buffs.index(buff) % 2) == 0:
-        which_rows = 0
-    else:
-        which_rows = 1
+    which_rows = 0
 
     p300m.pick_up_tip()
     p300m.distribute(20, plate96.rows()[0][buff_col],
-                     plate384.rows()[which_rows][start_384well+1:start_384well+12],
+                     plate384.rows()[which_rows][start_384well:start_384well+12],
                      disposal_volume=10, new_tip='never')
     p300m.distribute(20, plate96.rows()[0][extra_buff_col],
                      plate384.rows()[which_rows][start_384well+12:start_384well+24],
                      disposal_volume=10, new_tip='never')
-    
-    p300m.flow_rate.aspirate = 40
-    p300m.flow_rate.dispense = 40
-
-    p300m.transfer(40, plate96.rows()[0][prot_col],
-                   plate384.rows()[which_rows][start_384well], new_tip='never')
-    p300m.transfer(20,
-                   plate384.rows()[which_rows][start_384well:start_384well+22],
-                   plate384.rows()[which_rows][start_384well+1:start_384well+23],
-                   mix_after=(3, 20), new_tip='never')
-    p300m.aspirate(20, plate384.rows()[which_rows][start_384well+22])
     p300m.drop_tip()
+
+    which_rows = 1
+
+    p300m.pick_up_tip()
+    p300m.distribute(20, plate96.rows()[0][extra_buff_col+1],
+                     plate384.rows()[which_rows][start_384well:start_384well+12],
+                     disposal_volume=10, new_tip='never')
+    p300m.distribute(20, plate96.rows()[0][extra_buff_col+2],
+                     plate384.rows()[which_rows][start_384well+12:start_384well+24],
+                     disposal_volume=10, new_tip='never')
+    p300m.drop_tip()
+
+def welcome(protocol):
+    music('/data/songs/puccini.mp3', protocol)
+
+def run_quiet_process(command):
+    subprocess.Popen('{} &'.format(command), shell=True)
+
+def music(song, protocol):
+    print('Speaker')
+    print('Next\t--> CTRL-C')
+    try:
+        if not protocol.is_simulating():
+            run_quiet_process('mpg123 {}'.format(song))
+        else:
+            print('Not playing mp3, simulating')
+    except KeyboardInterrupt:
+        pass
+        print()
+
+if __name__=='__main__':
+    main()

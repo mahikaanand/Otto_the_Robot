@@ -80,8 +80,7 @@ def protein_titration(buff, protocol):
     p300m.pick_up_tip()
     p300m.distribute(10, plate96.rows()[0][buff_col],
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
-                     disposal_volume=0, new_tip='never')
-    p300m.blow_out()
+                     disposal_volume=10, new_tip='never')
     p300m.drop_tip()
     p20m.pick_up_tip()
     p20m.transfer(20, plate96.rows()[0][prot_col],
