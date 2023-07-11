@@ -73,8 +73,10 @@ def protein_titration(buff, protocol):
     p300m.distribute(20, plate96.rows()[0][buff_col],
                      plate384.rows()[which_rows][start_384well+1:start_384well+12],
                      disposal_volume=10, new_tip='never')
+    p300m.flow_rate.aspirate = 40
     p300m.transfer(40, plate96.rows()[0][prot_col],
                    plate384.rows()[which_rows][start_384well], new_tip='never')
+    p300m.flow_rate.aspirate = 96
     p300m.transfer(20,
                    plate384.rows()[which_rows][start_384well:start_384well+10],
                    plate384.rows()[which_rows][start_384well+1:start_384well+11],
