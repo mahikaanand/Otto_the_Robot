@@ -194,7 +194,7 @@ def plate_controls(buff, protocol):
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     p300m.aspirate(50, temp_buffs.rows()[pr][0].bottom(-2))
-    p300m.dispense(50, plate96.rows()[0][prot_col].bottom(1.75))
+    p300m.dispense(50, plate96.rows()[0][prot_col])
     p300m.blow_out(plate96.rows()[0][prot_col])
     p300m.drop_tip()
 
