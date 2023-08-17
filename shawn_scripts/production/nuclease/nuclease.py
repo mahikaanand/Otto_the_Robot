@@ -44,11 +44,12 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(well_96start, protocol):
     #equiptment
-    global tips20, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
+    global tips20, tips201, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
+    tips201 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-                                     tip_racks=[tips20])
+                                     tip_racks=[tips20, tips201])
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
@@ -59,8 +60,8 @@ def setup(well_96start, protocol):
     global start_96well
     start_96well = well_96start
 
-def incubate(minutes, protocol):
-    end_time = time.time() + minutes*60
+def incubate(start_time, minutes, protocol):
+    end_time = start_time + minutes*60
 
     try:
         if not protocol.is_simulating():
@@ -76,7 +77,7 @@ def nuclease(protocol):
     enzy_col = start_96well
     buff_col = enzy_col+1
     samp_col = buff_col+1
-    sdsb_col = samp_col
+    sdsb_col = samp_col+1
 
     tempdeck.set_temperature(celsius=37)
 
@@ -98,21 +99,23 @@ def nuclease(protocol):
     p20m.drop_tip()
 
     #add nucleic acid
-    p20m.distribute(10, plate96.rows()[0][samp_col],
-                     temp_pcr.rows()[0][1:7],
+    p20m.transfer(10, plate96.rows()[0][samp_col],
+                     temp_pcr.rows()[0][0:7],
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
     
     #incubate 15mins at 37C
-    incubate(0.1, protocol)
+    start_time1=time.time()
+    incubate(start_time1, 15, protocol)
 
     #add sds buff to samples
-    p300m.distribute(20, plate96.rows()[0][sdsb_col],
+    p20m.transfer(20, plate96.rows()[0][sdsb_col],
                      temp_pcr.rows()[0][1:7],
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
 
     #heat inactive at 90C for 10mins
     tempdeck.set_temperature(celsius=90)
-    incubate(0.1, protocol)
+    start_time2=time.time()
+    incubate(start_time2, 10, protocol)
     tempdeck.deactivate()
