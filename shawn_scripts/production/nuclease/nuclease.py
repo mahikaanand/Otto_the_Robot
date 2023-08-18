@@ -84,23 +84,23 @@ def nuclease(protocol):
     #add buffer
     p300m.pick_up_tip()
     p300m.distribute(10, plate96.rows()[0][buff_col],
-                     temp_pcr.rows()[0][1:7],
+                     temp_pcr.rows()[0][1:7].bottom(1.5),
                      disposal_volume=10, new_tip='never')
     p300m.drop_tip()
 
     #titrate enzymes
     p20m.pick_up_tip()
     p20m.transfer(20, plate96.rows()[0][enzy_col],
-                   temp_pcr.rows()[0][0], new_tip='never')
-    p20m.transfer(10, temp_pcr.rows()[0][0:5],
-                   temp_pcr.rows()[0][1:6],
+                   temp_pcr.rows()[0][0].bottom(1.5), new_tip='never')
+    p20m.transfer(10, temp_pcr.rows()[0][0:5].bottom(1.5),
+                   temp_pcr.rows()[0][1:6].bottom(1.5),
                    mix_after=(3, 10), new_tip='never')
-    p20m.aspirate(10, temp_pcr.rows()[0][5])
+    p20m.aspirate(10, temp_pcr.rows()[0][5].bottom(1.5))
     p20m.drop_tip()
 
     #add nucleic acid
     p20m.transfer(10, plate96.rows()[0][samp_col],
-                     temp_pcr.rows()[0][0:7],
+                     temp_pcr.rows()[0][0:7].bottom(1.5),
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
     
@@ -110,7 +110,7 @@ def nuclease(protocol):
 
     #add sds buff to samples
     p20m.transfer(20, plate96.rows()[0][sdsb_col],
-                     temp_pcr.rows()[0][1:7],
+                     temp_pcr.rows()[0][0:7].bottom(1.5),
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
 
