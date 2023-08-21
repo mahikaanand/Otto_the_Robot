@@ -55,7 +55,7 @@ def setup(well_96start, protocol):
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
     tempdeck = protocol.load_module('temperature module gen2', 10)
     temp_pcr = tempdeck.load_labware(
-                 'opentrons_96_aluminumblock_generic_pcr_strip_200ul')
+                 'thermo_96_aluminumblock_200ul')
 
     global start_96well
     start_96well = well_96start
