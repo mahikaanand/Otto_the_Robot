@@ -79,12 +79,20 @@ def nuclease(protocol):
     samp_col = buff_col+1
     sdsb_col = samp_col+1
 
-    tempdeck.set_temperature(celsius=37)
-
     #add buffer
-    p20m.pick_up_tip()
-    p20m.distribute(10, plate96.rows()[0][enzy_col],
-                     temp_pcr.rows()[0][0:7],
+    p300m.pick_up_tip()
+    p300m.distribute(10, plate96.rows()[0][buff_col],
+                     temp_pcr.rows()[0][1:7],
                      disposal_volume=10, new_tip='never')
+    p300m.drop_tip()
+
+    #titrate enzymes
+    p20m.pick_up_tip()
+    p20m.transfer(20, plate96.rows()[0][enzy_col],
+                   temp_pcr.rows()[0][0], new_tip='never')
+    p20m.transfer(10, temp_pcr.rows()[0][0:5],
+                   temp_pcr.rows()[0][1:6],
+                   mix_after=(3, 10), new_tip='never')
+    p20m.aspirate(10, temp_pcr.rows()[0][5])
     p20m.drop_tip()
 
