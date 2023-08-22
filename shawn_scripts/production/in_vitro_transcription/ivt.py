@@ -28,7 +28,7 @@ def run(protocol):
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    nuclease(protocol)
+    ivt(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -73,7 +73,7 @@ def incubate(start_time, minutes, protocol):
         pass
         print()
 
-def nuclease(protocol):
+def ivt(protocol):
     enzy_col = start_96well
     buff_col = enzy_col+1
     temp_col = buff_col+1
