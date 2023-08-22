@@ -44,7 +44,7 @@ def strobe(blinks, hz, leave_on, protocol):
 def setup(well_96start, protocol):
     #equiptment
     global tips20, tips201, tips202, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
-    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
+    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 7)
     tips201 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
     tips202 = protocol.load_labware('opentrons_96_tiprack_20ul', 1)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
