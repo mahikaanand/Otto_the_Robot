@@ -1,9 +1,5 @@
 from opentrons import protocol_api
 import time
-import sys
-import math
-import random
-import subprocess
 
 
 metadata = {
@@ -14,13 +10,15 @@ metadata = {
                         - 100ul buffer in col 1 
                         - 100ul nucleic acid/protein in col 2
                         - 200ul SDS-urea buffer in col 3
+                        - 300ul of formamide in col 4
                       Robot:
                         - Heat block to 37C
                         - Titrate 2x enzymes in pcr tubes 1:1 6 times, leaving #7 as control (10ul)
                         - Add 2x nucleic acid/protein stock (10ul) 
                         - Incubate at 37C for 15mins
                         - Add SDS buff to all wells from stock (20ul)
-                        - Denature at 90C for 10mins''',
+                        - Add Formamide (40ul)
+                        - Denature at 95C for 10mins''',
     'apiLevel': '2.11'
     }
 
@@ -46,8 +44,8 @@ def setup(well_96start, protocol):
     #equiptment
     global tips20, tips201, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
-    tips201 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    tips201 = protocol.load_labware('opentrons_96_tiprack_20ul', 1)
+    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 5)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
                                      tip_racks=[tips20, tips201])
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
@@ -78,6 +76,7 @@ def nuclease(protocol):
     buff_col = enzy_col+1
     samp_col = buff_col+1
     sdsb_col = samp_col+1
+    form_col = sdsb_col+1
 
     tempdeck.set_temperature(celsius=37)
 
@@ -99,13 +98,13 @@ def nuclease(protocol):
     p20m.drop_tip()
 
     #add nucleic acid
+    start_time1=time.time()
     p20m.transfer(10, plate96.rows()[0][samp_col],
                      temp_pcr.rows()[0][0:7],
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
     
     #incubate 15mins at 37C
-    start_time1=time.time()
     incubate(start_time1, 15, protocol)
 
     #add sds buff to samples
@@ -114,8 +113,14 @@ def nuclease(protocol):
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
 
-    #heat inactive at 90C for 10mins
-    tempdeck.set_temperature(celsius=90)
+    #add formamide buff to samples
+    p300m.transfer(40, plate96.rows()[0][form_col],
+                     temp_pcr.rows()[0][0:7],
+                     disposal_volume=0, new_tip='always', 
+                     mix_after=(3,40))
+
+    #heat inactive at 95C for 10mins
+    tempdeck.set_temperature(celsius=95)
     start_time2=time.time()
     incubate(start_time2, 10, protocol)
     tempdeck.deactivate()
