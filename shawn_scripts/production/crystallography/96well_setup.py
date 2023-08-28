@@ -9,7 +9,7 @@ metadata = {
     'description': '''Makes 4 x 24 screen in 96 well block.
                       Makes 900ul of each.
                       Uses buffs from trough.
-                      Each screen gets 5 buffs:
+                      Each screen gets 10ml of 5 buffs:
                         - 10x buff in 1
                         - 4x 1D (salt)
                         - 4x 2D (precip)
