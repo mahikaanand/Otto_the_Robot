@@ -9,18 +9,18 @@ metadata = {
     'description': '''Makes 4 x 24 screen in 96 well block.
                       Makes 900ul of each.
                       Uses buffs from trough.
-                      Each screen gets 4 buffs:
+                      Each screen gets 5 buffs:
                         - 10x buff in 1
                         - 4x 1D (salt)
                         - 4x 2D (precip)
-                        - 4x static (other)
-                      Water in next well after buffs
+                        - 4x static (other)/water
+                        - water
                       Protocol (for loop each buff)
-                        - 1x buffer in all wells
-                        - correct amount of water in each
-                        - 1D amounts
-                        - 2D amounts
-                        - Add 1x static''',
+                        - Buff
+                        - 1D 
+                        - 2D 
+                        - static/water
+                        - water''',
     'apiLevel': '2.11'
     }
 
@@ -32,8 +32,8 @@ def run(protocol):
         add_buff(buff, protocol)
         add_1d(buff, protocol)
         add_2d(buff, protocol)
-        add_water(buff, protocol)
         add_static(buff, protocol)
+        add_water(buff, protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -58,10 +58,10 @@ def setup(num_buffs, protocol):
 
     #buffs
     global buffs, buffa, buffb, buffc, buffd, water
-    buffa = [trough.wells()[0],trough.wells()[1],trough.wells()[2],trough.wells()[3]]
-    buffb = [trough.wells()[4],trough.wells()[5],trough.wells()[6],trough.wells()[7]]
-    buffc = [trough.wells()[8],trough.wells()[9],trough.wells()[10],trough.wells()[11]]
-    buffd = [trough2.wells()[0],trough2.wells()[1],trough2.wells()[2],trough2.wells()[3]]
+    buffa = [trough.wells()[0],trough.wells()[1],trough.wells()[2],trough.wells()[3],trough.wells()[4]]
+    buffb = [trough.wells()[5],trough.wells()[6],trough.wells()[7],trough.wells()[8],trough.wells()[9]]
+    buffc = [trough.wells()[10],trough.wells()[11],trough2.wells()[1],trough2.wells()[2],trough2.wells()[3]]
+    buffd = [trough2.wells()[4],trough2.wells()[5],trough2.wells()[6],trough2.wells()[7],trough2.wells()[8]]
     buffs = [buffa, buffb, buffc, buffd]
     water = trough2.wells()[4]
     del buffs[num_buffs:]
@@ -93,7 +93,7 @@ def def_xy(buff,protocol):
 def add_buff(buff, protocol):
     global tip
 
-    while (tip % 4) != 0:
+    while (tip % 8) != 0:
         tip += 1
     tip += 3
     p300m.pick_up_tip(tips300[which_tips[tip]])
@@ -107,17 +107,17 @@ def add_buff(buff, protocol):
 def add_1d(buff, protocol):
     global tip
 
-    while (tip % 4) != 0:
+    while (tip % 8) != 0:
         tip += 1
     tip += 3
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
     vol = 300
-    for col in range(0,6):
+    for col in range(0,5):
         p300m.aspirate(vol, buff[1])
         p300m.dispense(vol, plate96.rows()[buffx][buffy+col].top())  
         p300m.touch_tip()  
-        vol -= 50
+        vol -= 60
     p300m.drop_tip()
 
 def add_2d(buff, protocol):
@@ -125,12 +125,26 @@ def add_2d(buff, protocol):
 
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
-    for i in range(0,4):
+    for i in range(0,3):
         vol = (3-i)*100
         for col in range(0,6):
             p300m.aspirate(vol, buff[2])
             p300m.dispense(vol, plate96.rows()[buffx+i][buffy+col].top())  
             p300m.touch_tip()        
+    p300m.drop_tip()
+
+def add_static(buff, protocol):
+    global tip
+
+    while (tip % 8) != 0:
+        tip += 1
+    tip += 3
+    p300m.pick_up_tip(tips300[which_tips[tip]])
+    tip += 1
+    for col in range(0,6):
+        p300m.aspirate(300, buff[3])
+        p300m.dispense(300, plate96.rows()[buffx][buffy+col].top())  
+        p300m.touch_tip()  
     p300m.drop_tip()
 
 def add_water(buff, protocol):
@@ -142,7 +156,7 @@ def add_water(buff, protocol):
         vol = i*100
         for col in range(0,6):
             if vol > 300:
-                p300m.aspirate(300, water)
+                p300m.aspirate(300, buff[4])
                 p300m.dispense(300, plate96.rows()[buffx+i][buffy+col].top())  
                 p300m.touch_tip() 
                 p300m.aspirate(vol-300, water)
@@ -153,18 +167,4 @@ def add_water(buff, protocol):
                 p300m.dispense(vol, plate96.rows()[buffx+i][buffy+col].top())  
                 p300m.touch_tip()   
             vol += 50         
-    p300m.drop_tip()
-
-def add_static(buff, protocol):
-    global tip
-
-    while (tip % 4) != 0:
-        tip += 1
-    tip += 3
-    p300m.pick_up_tip(tips300[which_tips[tip]])
-    tip += 1
-    for col in range(0,6):
-        p300m.aspirate(300, buff[3])
-        p300m.dispense(300, plate96.rows()[buffx][buffy+col].top())  
-        p300m.touch_tip()  
     p300m.drop_tip()
