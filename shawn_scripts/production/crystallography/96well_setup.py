@@ -13,7 +13,7 @@ metadata = {
                         - 10x buff + static in 1
                         - 4x 1D (salt)
                         - 4x 2D (precip)
-                        - water
+                        - water (need 12ml)
                       Protocol (for loop each buff)
                         - Buff
                         - 1D 
@@ -156,7 +156,7 @@ def add_water(buff, protocol):
         vol = i*150
         for col in range(0,6):
             if vol == 0:
-                continue
+                None
             elif vol > 600:
                 p300m.aspirate(300, buff[3])
                 p300m.dispense(300, plate96.rows()[buffx+i][buffy+col].top())  
