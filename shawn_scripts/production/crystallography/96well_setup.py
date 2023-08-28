@@ -11,8 +11,8 @@ metadata = {
                       Uses buffs from trough.
                       Each screen gets 10ml of 5 buffs:
                         - 10x buff + static in 1
-                        - 4x 1D (salt)
-                        - 4x 2D (precip)
+                        - 2.2x 1D (6well titration)
+                        - 2.2x 2D (4well titration)
                         - water (need 12ml)
                       Protocol (for loop each buff)
                         - Buff
