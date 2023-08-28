@@ -57,13 +57,12 @@ def setup(num_buffs, protocol):
                                      tip_racks=[tips300])
 
     #buffs
-    global buffs, buffa, buffb, buffc, buffd, water
+    global buffs, buffa, buffb, buffc, buffd
     buffa = [trough.wells()[0],trough.wells()[1],trough.wells()[2],trough.wells()[3],trough.wells()[4]]
     buffb = [trough.wells()[5],trough.wells()[6],trough.wells()[7],trough.wells()[8],trough.wells()[9]]
     buffc = [trough.wells()[10],trough.wells()[11],trough2.wells()[1],trough2.wells()[2],trough2.wells()[3]]
     buffd = [trough2.wells()[4],trough2.wells()[5],trough2.wells()[6],trough2.wells()[7],trough2.wells()[8]]
     buffs = [buffa, buffb, buffc, buffd]
-    water = trough2.wells()[4]
     del buffs[num_buffs:]
 
     #single tips
@@ -93,8 +92,9 @@ def def_xy(buff,protocol):
 def add_buff(buff, protocol):
     global tip
 
-    while (tip % 8) != 0:
-        tip += 1
+    if (tip % 4) != 0:
+        while (tip % 8) != 0:
+            tip += 1
     tip += 3
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
@@ -107,8 +107,9 @@ def add_buff(buff, protocol):
 def add_1d(buff, protocol):
     global tip
 
-    while (tip % 8) != 0:
-        tip += 1
+    if (tip % 4) != 0:
+        while (tip % 8) != 0:
+            tip += 1
     tip += 3
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
@@ -136,8 +137,9 @@ def add_2d(buff, protocol):
 def add_static(buff, protocol):
     global tip
 
-    while (tip % 8) != 0:
-        tip += 1
+    if (tip % 4) != 0:
+        while (tip % 8) != 0:
+            tip += 1
     tip += 3
     p300m.pick_up_tip(tips300[which_tips[tip]])
     tip += 1
@@ -159,11 +161,11 @@ def add_water(buff, protocol):
                 p300m.aspirate(300, buff[4])
                 p300m.dispense(300, plate96.rows()[buffx+i][buffy+col].top())  
                 p300m.touch_tip() 
-                p300m.aspirate(vol-300, water)
+                p300m.aspirate(vol-300, buff[4])
                 p300m.dispense(vol-300, plate96.rows()[buffx+i][buffy+col].top())  
                 p300m.touch_tip() 
             else:  
-                p300m.aspirate(vol, water)
+                p300m.aspirate(vol, buff[4])
                 p300m.dispense(vol, plate96.rows()[buffx+i][buffy+col].top())  
                 p300m.touch_tip()   
             vol += 50         
