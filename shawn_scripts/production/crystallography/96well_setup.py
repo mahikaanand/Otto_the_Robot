@@ -4,7 +4,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'Crystallography - set up 96 well',
+    'protocolName': 'Crystallography - set up 96 well with 4 4x6 screens',
     'author': 'Shawn Laursen',
     'description': '''Makes 4 x 24 screen in 96 well block.
                       Makes 900ul of each.
