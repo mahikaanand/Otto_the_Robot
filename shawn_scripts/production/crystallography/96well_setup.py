@@ -58,7 +58,7 @@ def setup(num_buffs, protocol):
     buffa = [trough.wells()[0],trough.wells()[1],trough.wells()[2],trough.wells()[3]]
     buffb = [trough.wells()[4],trough.wells()[5],trough.wells()[6],trough.wells()[7]]
     buffc = [trough.wells()[8],trough.wells()[9],trough.wells()[10],trough.wells()[11]]
-    buffd = [trough2.wells()[1],trough2.wells()[2],trough2.wells()[3],trough2.wells()[4]]
+    buffd = [trough2.wells()[0],trough2.wells()[1],trough2.wells()[2],trough2.wells()[3]]
     buffs = [buffa, buffb, buffc, buffd]
     del buffs[num_buffs:]
 
