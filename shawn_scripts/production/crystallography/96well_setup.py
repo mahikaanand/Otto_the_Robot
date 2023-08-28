@@ -155,7 +155,9 @@ def add_water(buff, protocol):
     for i in range(0,4):
         vol = i*150
         for col in range(0,6):
-            if vol > 600:
+            if vol == 0:
+                continue
+            elif vol > 600:
                 p300m.aspirate(300, buff[3])
                 p300m.dispense(300, plate96.rows()[buffx+i][buffy+col].top())  
                 p300m.touch_tip() 
