@@ -198,10 +198,12 @@ def mix_em(protocol):
     p300m.pick_up_tip()
     for col in reversed(range(0,6)):
         p300m.mix(repetitions=5, volume=300, location=plate96.rows()[0][col])
+        protocol.delay(seconds=10)
     p300m.drop_tip()
     
     p300m.pick_up_tip()
     for col in reversed(range(6,12)):
         p300m.mix(repetitions=5, volume=300, location=plate96.rows()[0][col])
+        protocol.delay(seconds=10)
     p300m.drop_tip()
 
