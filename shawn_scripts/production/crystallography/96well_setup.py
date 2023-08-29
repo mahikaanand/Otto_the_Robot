@@ -103,7 +103,7 @@ def add_buff(buff, protocol):
 
 def add_1d(buff, protocol):
     global tip
-
+    
     if (tip % 4) != 0:
         while (tip % 8) != 0:
             tip += 1
@@ -113,15 +113,27 @@ def add_1d(buff, protocol):
     vol = 450
     for col in range(0,5):
         if vol > 300:
-            p300m.aspirate(300, buff[1])
-            p300m.dispense(300, plate96.rows()[buffx][buffy+col].top())  
+            p300m.aspirate(300, buff[1], rate=0.1)
+            protocol.delay(seconds=20)
+            p300m.default_speed /= 10
+            p300m.dispense(300, plate96.rows()[buffx][buffy+col].top(), rate=0.1)
+            p300m.default_speed *= 10
+            protocol.delay(seconds=20) 
             p300m.touch_tip() 
-            p300m.aspirate(vol-300, buff[1])
-            p300m.dispense(vol-300, plate96.rows()[buffx][buffy+col].top())  
+            p300m.aspirate(vol-300, buff[1], rate=0.1)
+            protocol.delay(seconds=20)
+            p300m.default_speed /= 10
+            p300m.dispense(vol-300, plate96.rows()[buffx][buffy+col].top(), rate=0.1)
+            p300m.default_speed *= 10
+            protocol.delay(seconds=20)  
             p300m.touch_tip() 
         else:  
-            p300m.aspirate(vol, buff[1])
-            p300m.dispense(vol, plate96.rows()[buffx][buffy+col].top())  
+            p300m.aspirate(vol, buff[1], rate=0.1)
+            protocol.delay(seconds=20)
+            p300m.default_speed /= 10
+            p300m.dispense(vol, plate96.rows()[buffx][buffy+col].top(), rate=0.1)
+            p300m.default_speed *= 10
+            protocol.delay(seconds=20)  
             p300m.touch_tip() 
         vol -= 90
     p300m.drop_tip()
@@ -180,3 +192,4 @@ def add_water(buff, protocol):
                 p300m.touch_tip()   
             vol += 90         
     p300m.drop_tip()
+
