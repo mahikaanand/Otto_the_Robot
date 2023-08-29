@@ -45,7 +45,7 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(num_buffs, protocol):
     #equiptment
-    global trough, trough2, water, tips300, plate96, p300m
+    global trough, trough2, tips300, plate96, p300m
     trough = protocol.load_labware('nest_12_reservoir_15ml', 4)
     trough2 = protocol.load_labware('nest_12_reservoir_15ml', 1)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 6)
