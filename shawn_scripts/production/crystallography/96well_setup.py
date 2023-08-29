@@ -31,6 +31,7 @@ def run(protocol):
         add_1d(buff, protocol)
         add_2d(buff, protocol)
         add_water(buff, protocol)
+    mix_em(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -191,5 +192,16 @@ def add_water(buff, protocol):
                 p300m.dispense(vol, plate96.rows()[buffx+i][buffy+col].top())  
                 p300m.touch_tip()   
             vol += 90         
+    p300m.drop_tip()
+
+def mix_em(protocol):
+    p300m.pick_up_tip()
+    for col in reversed(range(0,6)):
+        p300m.mix(repetitions=5, volume=300, location=plate96.rows()[0][col])
+    p300m.drop_tip()
+    
+    p300m.pick_up_tip()
+    for col in reversed(range(6,12)):
+        p300m.mix(repetitions=5, volume=300, location=plate96.rows()[0][col])
     p300m.drop_tip()
 
