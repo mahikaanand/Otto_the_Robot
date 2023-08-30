@@ -21,13 +21,12 @@ metadata = {
 
 def run(protocol):
     #setup
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
+    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
-    plate384 = protocol.load_labware('corning3575_384well_alt', 5)
-    p300m = protocol.load_instrument('p300_multi_gen2', 'left',
-                                     tip_racks=[tips300])
-    p300m.pick_up_tip()
-    p300m.transfer(125, plate96.rows()[0][0].bottom(1.75), plate96.rows()[0][5], 
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
+                                     tip_racks=[tips20])
+    p20m.pick_up_tip()
+    p20m.transfer(20, plate96.rows()[0][0], plate96.rows()[0][5], 
                    new_tip='never')
-    p300m.transfer(125, plate96.rows()[0][11].bottom(1.75), plate96.rows()[0][7], 
+    p20m.transfer(20, plate96.rows()[0][11].bottom(1.75), plate96.rows()[0][7], 
                        new_tip='never')
