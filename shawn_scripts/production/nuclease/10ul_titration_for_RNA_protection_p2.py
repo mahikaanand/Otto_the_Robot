@@ -6,8 +6,8 @@ metadata = {
     'protocolName': 'Nuclease - prep samples for gel (part 2)',
     'author': 'Shawn Laursen',
     'description': '''You put mixes in 96 well plate: 
-                        - 200ul SDS-urea buffer in col 2 (index from 0)
-                        - 300ul of formamide in col 3 (index from 0)
+                        - 200ul SDS-urea buffer in col 3 (index from 0)
+                        - 300ul of formamide in col 4 (index from 0)
                       Robot:
                         - Add SDS buff to all wells from stock (20ul)
                         - Add Formamide (40ul)
