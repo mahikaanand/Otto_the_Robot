@@ -76,3 +76,9 @@ def titrate(protocol):
         p20m.blow_out(location=trash)
     p20m.aspirate(2, temp_pcr.rows()[0][5])
     p20m.drop_tip()
+
+    #add nucleic acid
+    p20m.transfer(10, plate96.rows()[0][samp_col],
+                     temp_pcr.rows()[0][0:7],
+                     disposal_volume=0, new_tip='always', 
+                     mix_after=(3,10))
