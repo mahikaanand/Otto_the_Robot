@@ -3,13 +3,21 @@ import time
 
 
 metadata = {
-    'protocolName': 'test_48well',
+    'protocolName': 'Crystallography - 2 x 48well Crystal Tray Setup',
     'author': 'Shawn Laursen',
-    'description': '''Test of 48well.''',
+    'description': '''Takes 96well block and sets up 2x48well trays
+                      with protein drops. Need a little overage of 
+                      protein. 
+                      >300ul of each 96well condition in block.
+                      12xprot_drop + ~5ul of protein in each tube 
+                      of strip tube.''',
     'apiLevel': '2.11'
     }
 
 def run(protocol):
+    global prot_drop, buff_drop
+    prot_drop = 3
+    buff_drop = 3
     strobe(12, 8, True, protocol)
     setup(4, protocol)
     for plate in plates:
@@ -30,8 +38,12 @@ def setup(num_buffs, protocol):
     screen_block = protocol.load_labware('thermoscientificnunc_96_wellplate_2000ul', 2)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
                                      tip_racks=[tips20, tips20_2])
+    p20m.flow_rate.aspirate = 2
+    p20m.flow_rate.dispense = 2
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
+    p20m.flow_rate.aspirate = 30
+    p20m.flow_rate.dispense = 30
     tempdeck = protocol.load_module('temperature module gen2', 10)
     temp_pcr = tempdeck.load_labware(
                  'opentrons_96_aluminumblock_generic_pcr_strip_200ul')
@@ -55,20 +67,20 @@ def add_screen(plate, protocol):
     elif plate == plate48_2:
         buffx = 6
 
-    p300m.transfer(200, 
+    p300m.transfer(200+buff_drop, 
                    screen_block.rows()[0][buffx:buffx+6],
                    plate.rows()[0][1:13:2], 
                    new_tip='always')
 
 def add_drop(plate, protocol):
-    p20m.transfer(2, 
+    p20m.transfer(buff_drop, 
                    plate.rows()[0][1:13:2],
                    plate.rows()[0][0:12:2], 
                    new_tip='always')
 
 def add_protein(plate, protocol):
-    p20m.transfer(2, 
+    p20m.transfer(prot_drop, 
                    temp_pcr.rows()[0][0],
                    plate.rows()[0][0:12:2], 
                    new_tip='always',
-                   mix_after=(3,2))
+                   mix_after=(3,prot_drop))
