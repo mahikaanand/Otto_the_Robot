@@ -20,12 +20,10 @@ def run(protocol):
     buff_drop = 2
     strobe(12, 8, True, protocol)
     setup(4, protocol)
-    tempdeck.set_temperature(celsius=4)
     for plate in plates:
-        add_screen(plate, protocol)
-        add_drop(plate, protocol)
+        #add_screen(plate, protocol)
+        #add_drop(plate, protocol)
         add_protein(plate, protocol)
-    tempdeck.deactivate()
     strobe(12, 8, False, protocol)
 
 
@@ -40,6 +38,8 @@ def setup(num_buffs, protocol):
     screen_block = protocol.load_labware('thermoscientificnunc_96_wellplate_2000ul', 2)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
                                      tip_racks=[tips20, tips20_2])
+    p20m.flow_rate.aspirate = 2
+    p20m.flow_rate.dispense = 2
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
     p20m.flow_rate.aspirate = 30
@@ -61,28 +61,28 @@ def strobe(blinks, hz, leave_on, protocol):
         i += 1
     protocol.set_rail_lights(leave_on)
 
-def add_screen(plate, protocol):
-    if plate == plate48:
-        buffx = 0
-    elif plate == plate48_2:
-        buffx = 6
+# def add_screen(plate, protocol):
+#     if plate == plate48:
+#         buffx = 0
+#     elif plate == plate48_2:
+#         buffx = 6
 
-    p300m.transfer(200+buff_drop, 
-                   screen_block.rows()[0][buffx:buffx+6],
-                   plate.rows()[0][1:13:2], 
-                   new_tip='always')
+#     p300m.transfer(200+buff_drop, 
+#                    screen_block.rows()[0][buffx:buffx+6],
+#                    plate.rows()[0][1:13:2], 
+#                    new_tip='always')
 
-def add_drop(plate, protocol):
-    for i in range(0,12,2):
-        p20m.pick_up_tip()
-        p20m.aspirate(buff_drop, plate.rows()[0][i+1])
-        p20m.dispense(buff_drop, plate.rows()[0][i].top(-1.8))
-        p20m.drop_tip()
+# def add_drop(plate, protocol):
+#     p20m.transfer(buff_drop, 
+#                    plate.rows()[0][1:13:2],
+#                    plate.rows()[0][0:12:2], 
+#                    new_tip='always')
 
 def add_protein(plate, protocol):
-    for i in range(0,12,2):
+    for i in range(4,12,2):
         p20m.pick_up_tip()
         p20m.aspirate(prot_drop, temp_pcr.rows()[0][0].bottom(0))
         p20m.dispense(prot_drop, plate.rows()[0][i].top(-1.8))
-        p20m.mix(repetitions=3, volume=prot_drop)
+        p20m.mix(repetitions=2, volume=prot_drop)
         p20m.drop_tip()
+
