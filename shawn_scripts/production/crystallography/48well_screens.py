@@ -64,8 +64,7 @@ def add_drop(plate, protocol):
     p20m.transfer(2, 
                    plate.rows()[0][1:13:2],
                    plate.rows()[0][0:12:2], 
-                   new_tip='always',
-                   mix_after=(3,2))
+                   new_tip='always')
 
 def add_protein(plate, protocol):
     p20m.transfer(2, 
