@@ -21,7 +21,7 @@ def run(protocol):
 
 def setup(num_buffs, protocol):
     #equiptment
-    global tips20, tips20_2 tips300, plate48, plate48_2, screen_block, p20m, p300m, tempdeck, temp_pcr
+    global tips20, tips20_2, tips300, plate48, plate48_2, screen_block, p20m, p300m, tempdeck, temp_pcr
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
     tips20_2 = protocol.load_labware('opentrons_96_tiprack_20ul', 6)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 5)
@@ -56,7 +56,7 @@ def add_screen(plate, protocol):
         buffx = 6
 
     p300m.transfer(200, 
-                   screen_block.rows()[0][buffx, buffx+6],
+                   screen_block.rows()[0][buffx:buffx+6],
                    plate.rows()[0][1:13:2], 
                    new_tip='always')
 
