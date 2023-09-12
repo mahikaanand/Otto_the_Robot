@@ -19,14 +19,15 @@ def run(protocol):
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
                                      tip_racks=[tips20])
-    
+
+    strobe(12, 8, True, protocol)  
     p300m.pick_up_tip()
     p300m.transfer(20, 
-                   plate48.rows()[0][1:9:2],
-                   plate48.rows()[0][3:11:2], 
+                   plate48.rows()[0][1:11:2],
+                   plate48.rows()[0][3:13:2], 
                    new_tip='never')
     p300m.drop_tip()
-    strobe(12, 8, True, protocol)
+
     p20m.pick_up_tip()
     p20m.transfer(2, 
                    plate48.rows()[0][0:10:2],
