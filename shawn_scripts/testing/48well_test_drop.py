@@ -30,8 +30,8 @@ def run(protocol):
     strobe(12, 8, True, protocol)
     p20m.pick_up_tip()
     p20m.transfer(2, 
-                   plate48_drop.rows()[0][0:4],
-                   plate48_drop.rows()[0][1:5], 
+                   plate48_drop.rows()[0][0:5],
+                   plate48_drop.rows()[0][1:6], 
                    new_tip='never')
     p20m.drop_tip()
     strobe(12, 8, False, protocol)
