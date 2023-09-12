@@ -16,14 +16,16 @@ metadata = {
 
 def run(protocol):
     global prot_drop, buff_drop
-    prot_drop = 3
-    buff_drop = 3
+    prot_drop = 2
+    buff_drop = 2
     strobe(12, 8, True, protocol)
     setup(4, protocol)
+    tempdeck.set_temperature(celsius=4)
     for plate in plates:
         add_screen(plate, protocol)
         add_drop(plate, protocol)
         add_protein(plate, protocol)
+    tempdeck.deactivate()
     strobe(12, 8, False, protocol)
 
 
