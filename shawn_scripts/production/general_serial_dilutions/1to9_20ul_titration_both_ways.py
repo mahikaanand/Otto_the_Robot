@@ -44,7 +44,7 @@ def setup(well_96start, protocol):
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 5)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-                                     tip_racks=[tips20, tips201])
+                                     tip_racks=[tips20])
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
