@@ -39,10 +39,9 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(well_96start, protocol):
     #equiptment
-    global trash, tips20, tips201, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
+    global trash, tips20, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
     trash = protocol.fixed_trash['A1']
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
-    tips201 = protocol.load_labware('opentrons_96_tiprack_20ul', 1)
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 5)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
                                      tip_racks=[tips20, tips201])
