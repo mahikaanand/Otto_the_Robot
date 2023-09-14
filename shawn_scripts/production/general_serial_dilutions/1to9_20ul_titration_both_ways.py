@@ -1,16 +1,20 @@
 from opentrons import protocol_api
 import time
+import math
 
 
 metadata = {
-    'protocolName': 'Nuclease - titration for overweekend (part 1)',
+    'protocolName': 'Titration - 1 to 9, both ways',
     'author': 'Shawn Laursen',
-    'description': '''You put mixes in 96 well plate: 
-                        - 30ul 2x protein+RNA in col 0
-                        - 100ul RNA in col 1 
-
-                      Robot:
-                        - Titrate protein in pcr tubes 1:1 6 times, leaving #7 as control (10ul)''',
+    'description': '''Row1:
+                      30ul 2x protein
+                      100ul buff
+                      100ul 2x DNA
+                      Row2:
+                      50ul 1x DNA+protein
+                      200ul 1x DNA
+                      
+                      2 strip tubes in temp block.''',
     'apiLevel': '2.11'
     }
 
@@ -19,7 +23,8 @@ def run(protocol):
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    titrate(protocol)
+    titrate_add_after(protocol)
+    titrate_together(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -51,30 +56,43 @@ def setup(well_96start, protocol):
     global start_96well
     start_96well = well_96start
 
-def titrate(protocol):
+    #single tips
+    global which_tips20, tip20
+    which_tips20 = []
+    tip20 = 0
+    tip_row_list = ['H','G','F','E','D','C','B','A']
+    for i in range(0,96):
+        which_tips20.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
+
+    #single tips
+    global which_tips300, tip300
+    which_tips300 = []
+    tip300 = 0
+    tip_row_list = ['H','G','F','E','D','C','B','A']
+    for i in range(0,96):
+        which_tips300.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
+
+def titrate_add_after(protocol):
+    global tip20, tip300
     enzy_col = start_96well
     buff_col = enzy_col+1
     samp_col = buff_col+1
-    sdsb_col = samp_col+1
-    form_col = sdsb_col+1
 
-    #add buffer
-    p300m.pick_up_tip()
+    #add buff
+    p300m.pick_up_tip(tips300[which_tips300[tip300]])
     p300m.distribute(10, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][1:7],
                      disposal_volume=10, new_tip='never')
     p300m.drop_tip()
 
     #titrate enzymes
-    p20m.pick_up_tip()
+    p20m.pick_up_tip(tips20[which_tips20[tip20]])
     p20m.transfer(12, plate96.rows()[0][enzy_col],
                    temp_pcr.rows()[0][0], new_tip='never')
-    for i in range(0,5):
+    for i in range(0,4):
         p20m.transfer(2, temp_pcr.rows()[0][i],
                    temp_pcr.rows()[0][i+1],
-                   mix_after=(3, 10), new_tip='never')
-        p20m.aspirate(10, temp_pcr.rows()[0][i+1])
-        p20m.blow_out(location=trash)
+                   mix_after=(3, 5), new_tip='never')
     p20m.aspirate(2, temp_pcr.rows()[0][5])
     p20m.drop_tip()
 
@@ -83,3 +101,29 @@ def titrate(protocol):
                      temp_pcr.rows()[0][0:7],
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
+
+def titrate_together(protocol):
+    global tip20, tip300
+    enzy_col = start_96well
+    buff_col = enzy_col+1
+    samp_col = buff_col+1
+    
+    #add buff
+    p300m.pick_up_tip(tips300[which_tips300[tip300]])
+    p300m.aspirate(175, plate96.rows()[1][buff_col])
+    for i in range(1,7):
+        p300m.dispense(20, temp_pcr.rows()[1][i])
+    p300m.drop_tip()
+
+    #titrate
+    p300m.pick_up_tip(tips300[which_tips300[tip300]])
+    p300m.aspirate(22, plate96.rows()[1][enzy_col])
+    p300m.dispense(22, temp_pcr.rows()[1][0])    
+    p300m.drop_tip()
+    p20m.pick_up_tip(tips20[which_tips20[tip20]])
+    for i in range(0,4):
+        p20m.aspirate(2, temp_pcr.rows()[1][i])
+        p20m.dispense(2, temp_pcr.rows()[1][i+1])
+        p20m.mix(3,10)
+    p20m.aspirate(2, temp_pcr.rows()[1][5])
+    p20m.drop_tip()
