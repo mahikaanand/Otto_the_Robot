@@ -15,7 +15,7 @@ metadata = {
                       200ul 1x DNA
                       
                       2 strip tubes in temp block.''',
-    'apiLevel': '2.11'
+    'apiLevel': '2.13'
     }
 
 def run(protocol):
@@ -79,6 +79,7 @@ def titrate_add_after(protocol):
 
     #add buff
     p300m.pick_up_tip(tips300[which_tips300[tip300]])
+    tip300 += 1
     p300m.distribute(10, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][1:7],
                      disposal_volume=10, new_tip='never')
@@ -86,9 +87,10 @@ def titrate_add_after(protocol):
 
     #titrate enzymes
     p20m.pick_up_tip(tips20[which_tips20[tip20]])
+    tip20 += 1
     p20m.transfer(12, plate96.rows()[0][enzy_col],
                    temp_pcr.rows()[0][0], new_tip='never')
-    for i in range(0,4):
+    for i in range(0,5):
         p20m.transfer(2, temp_pcr.rows()[0][i],
                    temp_pcr.rows()[0][i+1],
                    mix_after=(3, 5), new_tip='never')
@@ -96,10 +98,13 @@ def titrate_add_after(protocol):
     p20m.drop_tip()
 
     #add nucleic acid
-    p20m.transfer(10, plate96.rows()[0][samp_col],
-                     temp_pcr.rows()[0][0:7],
-                     disposal_volume=0, new_tip='always', 
-                     mix_after=(3,10))
+    for i in range(0,7):
+        p20m.pick_up_tip(tips20[which_tips20[tip20]])
+        tip20 += 1
+        p20m.aspirate(10, plate96.rows()[0][samp_col])
+        p20m.dispense(10, temp_pcr.rows()[0][i])
+        p20m.mix(3,10)
+        p20m.drop_tip()
 
 def titrate_together(protocol):
     global tip20, tip300
@@ -109,6 +114,7 @@ def titrate_together(protocol):
     
     #add buff
     p300m.pick_up_tip(tips300[which_tips300[tip300]])
+    tip300 += 1
     p300m.aspirate(175, plate96.rows()[1][buff_col])
     for i in range(1,7):
         p300m.dispense(20, temp_pcr.rows()[1][i])
@@ -116,11 +122,13 @@ def titrate_together(protocol):
 
     #titrate
     p300m.pick_up_tip(tips300[which_tips300[tip300]])
+    tip300 += 1
     p300m.aspirate(22, plate96.rows()[1][enzy_col])
     p300m.dispense(22, temp_pcr.rows()[1][0])    
     p300m.drop_tip()
     p20m.pick_up_tip(tips20[which_tips20[tip20]])
-    for i in range(0,4):
+    tip20 += 1
+    for i in range(0,5):
         p20m.aspirate(2, temp_pcr.rows()[1][i])
         p20m.dispense(2, temp_pcr.rows()[1][i+1])
         p20m.mix(3,10)
