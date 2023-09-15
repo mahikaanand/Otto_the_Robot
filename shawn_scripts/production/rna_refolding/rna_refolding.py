@@ -84,8 +84,9 @@ def refold(rna_vol, protocol):
     incubate(time.time(), 3, protocol)
 
     # cool to 20C for 10min
+    t1 = time.time()
     tempdeck.set_temperature(celsius=20)
-    incubate(time.time(), 10, protocol)
+    incubate(t1, 10, protocol)
 
     # add 1/10 vol 50mM MgCl2
     mg_vol = rna_vol/10
