@@ -35,8 +35,9 @@ def incubate(start_time, minutes, protocol):
 
     try:
         if not protocol.is_simulating():
-            while time.time() < end_time:
-                time.sleep(1)
+            if time.time() < end_time:
+                while time.time() < end_time:
+                    time.sleep(1)
         else:
             print('Not waiting, simulating')
     except KeyboardInterrupt:
