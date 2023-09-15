@@ -13,10 +13,9 @@ metadata = {
     }
 
 def run(protocol):
-    well_96start = 0 #index from 0
     rna_vol = 40
     strobe(12, 8, True, protocol)
-    setup(well_96start, protocol)
+    setup(protocol)
     refold(rna_vol, protocol)
     strobe(12, 8, False, protocol)
 
@@ -30,7 +29,7 @@ def strobe(blinks, hz, leave_on, protocol):
         i += 1
     protocol.set_rail_lights(leave_on)
 
-def setup(well_96start, protocol):
+def setup(protocol):
     #equiptment
     global trash, tips20, tips300, p20m, p300m, tempdeck, temp_24, rt_24
     trash = protocol.fixed_trash['A1']
@@ -43,10 +42,7 @@ def setup(well_96start, protocol):
     tempdeck = protocol.load_module('temperature module gen2', 10)
     temp_24 = tempdeck.load_labware(
                  'opentrons_24_aluminumblock_nest_1.5ml_snapcap')
-    rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 6) 
-
-    global start_96well
-    start_96well = well_96start
+    rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 6)
 
     #single tips
     global which_tips20, tip20
