@@ -14,7 +14,7 @@ metadata = {
 
 def run(protocol):
     well_96start = 0 #index from 0
-    rna_vol = 50
+    rna_vol = 40
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
     refold(rna_vol, protocol)
@@ -81,12 +81,11 @@ def refold(rna_vol, protocol):
     global tip300, tip20
     # heat denature at 95C for 3min
     tempdeck.set_temperature(celsius=95)
-    incubate(time.time(), 3, protocol)
-
-    # cool to 20C for 10min
     t1 = time.time()
+    incubate(t1, 3, protocol)
+
+    # cool to 20C
     tempdeck.set_temperature(celsius=20)
-    incubate(t1, 10, protocol)
 
     # add 1/10 vol 50mM MgCl2
     mg_vol = rna_vol/10
@@ -113,7 +112,8 @@ def refold(rna_vol, protocol):
 
     # incubate at 37C for 10min
     tempdeck.set_temperature(celsius=37)
-    incubate(time.time(), 10, protocol)
+    t3 = time.time()
+    incubate(t3, 10, protocol)
 
     # deactive heat
     tempdeck.deactivate()
