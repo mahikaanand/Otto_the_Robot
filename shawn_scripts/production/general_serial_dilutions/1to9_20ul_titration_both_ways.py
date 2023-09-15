@@ -11,7 +11,7 @@ metadata = {
                       100ul buff
                       100ul 2x DNA
                       Row2:
-                      50ul 1x DNA+protein
+                      30ul 1x DNA+protein
                       200ul 1x DNA
                       
                       2 strip tubes in temp block.''',
