@@ -7,7 +7,7 @@ metadata = {
     'protocolName': 'Titration - 1 to 9, both ways',
     'author': 'Shawn Laursen',
     'description': '''Row1:
-                      30ul 2x protein
+                      50ul 2x protein
                       100ul buff
                       100ul 2x DNA
                       Row2:
