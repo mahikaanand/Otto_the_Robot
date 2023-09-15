@@ -30,20 +30,6 @@ def strobe(blinks, hz, leave_on, protocol):
         i += 1
     protocol.set_rail_lights(leave_on)
 
-def incubate(start_time, minutes, protocol):
-    end_time = start_time + minutes*60
-
-    try:
-        if not protocol.is_simulating():
-            if time.time() < end_time:
-                while time.time() < end_time:
-                    time.sleep(1)
-        else:
-            print('Not waiting, simulating')
-    except KeyboardInterrupt:
-        pass
-        print()
-
 def setup(well_96start, protocol):
     #equiptment
     global trash, tips20, tips300, p20m, p300m, tempdeck, temp_24, rt_24
@@ -82,8 +68,7 @@ def refold(rna_vol, protocol):
     global tip300, tip20
     # heat denature at 95C for 3min
     tempdeck.set_temperature(celsius=95)
-    t1 = time.time()
-    incubate(t1, 3, protocol)
+    protocol.delay(minutes=3)
 
     # cool to 20C
     tempdeck.set_temperature(celsius=20)
@@ -113,8 +98,7 @@ def refold(rna_vol, protocol):
 
     # incubate at 37C for 10min
     tempdeck.set_temperature(celsius=37)
-    t3 = time.time()
-    incubate(t3, 10, protocol)
+    protocol.delay(minutes=10)
 
     # deactive heat
     tempdeck.deactivate()
