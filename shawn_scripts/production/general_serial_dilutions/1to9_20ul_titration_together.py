@@ -15,10 +15,11 @@ metadata = {
 def run(protocol):
     well_96start = 0 #index from 0
     num_samples = 2
+    dilution = 10 #1 in this dilution factor
 
     strobe(12, 8, True, protocol)
     setup(well_96start, num_samples, protocol)
-    titrate_together(protocol)
+    titrate_together(dilution, protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -66,7 +67,7 @@ def setup(well_96start, num_samples, protocol):
     for i in range(0,96):
         which_tips300.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
 
-def pickup_tips(number, pipette):
+def pickup_tips(number, pipette, protocol):
     global tip300, tip20
 
     if pipette == p20m:
@@ -84,27 +85,27 @@ def pickup_tips(number, pipette):
         p300m.pick_up_tip(tips300[which_tips300[tip300]])
         tip300 += 1
 
-def titrate_together(protocol):
+def titrate_together(dilution, protocol):
     enzy_col = start_96well
     buff_col = enzy_col+1
     samp_col = buff_col+1
     
     #add buff
-    pickup_tips(samples, p300m)
+    pickup_tips(samples, p300m, protocol)
     p300m.aspirate(175, plate96.rows()[1][buff_col])
     for i in range(1,7):
         p300m.dispense(20, temp_pcr.rows()[1][i])
     p300m.drop_tip()
 
     #titrate
-    pickup_tips(samples, p300m)
-    p300m.aspirate(22, plate96.rows()[1][enzy_col])
-    p300m.dispense(22, temp_pcr.rows()[1][0])    
+    pickup_tips(samples, p300m, protocol)
+    p300m.aspirate(20+(20/dilution), plate96.rows()[1][enzy_col])
+    p300m.dispense(20+(20/dilution), temp_pcr.rows()[1][0])    
     p300m.drop_tip()
-    pickup_tips(samples, p20m)
+    pickup_tips(samples, p20m, protocol)
     for i in range(0,5):
-        p20m.aspirate(2, temp_pcr.rows()[1][i])
-        p20m.dispense(2, temp_pcr.rows()[1][i+1])
+        p20m.aspirate((20/dilution), temp_pcr.rows()[1][i])
+        p20m.dispense((20/dilution), temp_pcr.rows()[1][i+1])
         p20m.mix(3,10)
-    p20m.aspirate(2, temp_pcr.rows()[1][5])
+    p20m.aspirate((20/dilution), temp_pcr.rows()[1][5])
     p20m.drop_tip()
