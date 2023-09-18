@@ -92,20 +92,20 @@ def titrate_together(dilution, protocol):
     
     #add buff
     pickup_tips(samples, p300m, protocol)
-    p300m.aspirate(175, plate96.rows()[1][buff_col])
+    p300m.aspirate(175, plate96.rows()[0][buff_col])
     for i in range(1,7):
-        p300m.dispense(20, temp_pcr.rows()[1][i])
+        p300m.dispense(20, temp_pcr.rows()[0][i])
     p300m.drop_tip()
 
     #titrate
     pickup_tips(samples, p300m, protocol)
-    p300m.aspirate(20+(20/dilution), plate96.rows()[1][enzy_col])
-    p300m.dispense(20+(20/dilution), temp_pcr.rows()[1][0])    
+    p300m.aspirate(20+(20/dilution), plate96.rows()[0][enzy_col])
+    p300m.dispense(20+(20/dilution), temp_pcr.rows()[0][0])    
     p300m.drop_tip()
     pickup_tips(samples, p20m, protocol)
     for i in range(0,5):
-        p20m.aspirate((20/dilution), temp_pcr.rows()[1][i])
-        p20m.dispense((20/dilution), temp_pcr.rows()[1][i+1])
+        p20m.aspirate((20/dilution), temp_pcr.rows()[0][i])
+        p20m.dispense((20/dilution), temp_pcr.rows()[0][i+1])
         p20m.mix(3,10)
-    p20m.aspirate((20/dilution), temp_pcr.rows()[1][5])
+    p20m.aspirate((20/dilution), temp_pcr.rows()[0][5])
     p20m.drop_tip()
