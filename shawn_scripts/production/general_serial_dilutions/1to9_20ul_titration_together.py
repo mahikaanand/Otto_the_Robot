@@ -14,7 +14,7 @@ metadata = {
 
 def run(protocol):
     well_96startx = 1 #index from 1 (as labelled on plate)
-    well_96starty = A #letter of row in 96well plate
+    well_96starty = "A" #letter of row in 96well plate, need quotes
     num_samples = 2
     dilution = 10 #1 in this dilution factor
 
@@ -50,7 +50,7 @@ def setup(well_96startx, well_96starty, num_samples, protocol):
 
     global start_96wellx, start_96welly, samples
     start_96wellx = well_96startx-1
-    row_dict = {A:0, B:1, C:2, D:3, E:4, F:5, G:6, H:7}
+    row_dict = {"A":0, "B":1, "C":2, "D":3, "E":4, "F":5, "G":6, "H":7}
     start_96welly = row_dict[well_96starty]
     samples = num_samples
 
