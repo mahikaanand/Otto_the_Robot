@@ -102,7 +102,7 @@ def titrate_together(dilution, protocol):
 
     #titrate
     p300m.aspirate(20+(20/dilution), plate96.rows()[start_96welly][enzy_col])
-    p300m.dispense(20+(20/dilution), temp_pcr.rows()[start_96welly][0])    
+    p300m.dispense(20+(20/dilution), temp_pcr.rows()[0][0])    
     p300m.drop_tip()
     pickup_tips(samples, p20m, protocol)
     for i in range(0,5):
