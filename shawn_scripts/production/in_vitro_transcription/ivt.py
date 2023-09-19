@@ -11,7 +11,7 @@ metadata = {
                         - 60ul of DNA template in col 2
                         - 100ul ivt rxn (sans DNA temp) in col 3
                         - 20ul of DNase in col 4
-                        - 300ul of 2x SDS-Urea buff in col 5
+
                       Robot:
                         - Titrate 2x enzymes in pcr tubes 1:1 6 times, leaving #7 as control (10ul)
                         - Add DNA temp (5ul)
@@ -19,9 +19,7 @@ metadata = {
                         - Heat block to 37C
                         - Incubate at 37C for 30mins
                         - Add DNase (1ul)
-                        - Incubate at 37C for 15mins
-                        - Add SDS-Urea 
-                        - Heat denature 95C for 3mins''',
+                        - Incubate at 37C for 15mins''',
     'apiLevel': '2.11'
     }
 
@@ -46,13 +44,11 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(well_96start, protocol):
     #equiptment
-    global tips20, tips201, tips202, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
-    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 7)
-    tips201 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
-    tips202 = protocol.load_labware('opentrons_96_tiprack_20ul', 1)
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    global tips20, tips300, p20m, p300m, plate96, tempdeck, temp_pcr
+    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
+    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 5)
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-                                     tip_racks=[tips20, tips201, tips202])
+                                     tip_racks=[tips20])
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
@@ -110,7 +106,7 @@ def ivt(samples, protocol):
     p300m.distribute(10, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][1:7],
                      disposal_volume=10, new_tip='never')
-    p300m.transfer(20, plate96.rows()[0][buff_col],
+    p300m.transfer(21, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][7],
                      disposal_volume=10, new_tip='never')
     p300m.drop_tip()
@@ -158,14 +154,4 @@ def ivt(samples, protocol):
 
     #heat DNase for 15 mins
     protocol.delay(minutes=15)
-
-    #add sds to samples
-    for i in range(0,8):
-        pickup_tips(samples, p300m, protocol)
-        p300m.transfer(30, plate96.rows()[0][urea_col],
-                        temp_pcr.rows()[0][i],
-                        disposal_volume=0, new_tip='never', 
-                        mix_after=(3,20))
-        p300m.drop_tip()
-    tempdeck.set_temperature(celsius=95)
     tempdeck.deactivate()
