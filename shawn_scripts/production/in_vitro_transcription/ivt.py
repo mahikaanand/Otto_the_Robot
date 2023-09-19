@@ -11,7 +11,7 @@ metadata = {
                         - 60ul of DNA template in col 2
                         - 100ul ivt rxn (sans DNA temp) in col 3
                         - 20ul of DNase in col 4
-                        - 300ul of 50 perc sucrose in col 5
+                        - 300ul of 2x SDS-Urea buff in col 5
                       Robot:
                         - Titrate 2x enzymes in pcr tubes 1:1 6 times, leaving #7 as control (10ul)
                         - Add DNA temp (5ul)
@@ -19,7 +19,9 @@ metadata = {
                         - Heat block to 37C
                         - Incubate at 37C for 30mins
                         - Add DNase (1ul)
-                        - Incubate at 37C for 15ins''',
+                        - Incubate at 37C for 15mins
+                        - Add SDS-Urea 
+                        - Heat denature 95C for 3mins''',
     'apiLevel': '2.11'
     }
 
@@ -60,31 +62,21 @@ def setup(well_96start, protocol):
     global start_96well
     start_96well = well_96start
 
-def incubate(start_time, minutes, protocol):
-    end_time = start_time + minutes*60
-
-    try:
-        if not protocol.is_simulating():
-            while time.time() < end_time:
-                time.sleep(1)
-        else:
-            print('Not waiting, simulating')
-    except KeyboardInterrupt:
-        pass
-        print()
-
 def ivt(protocol):
     enzy_col = start_96well
     buff_col = enzy_col+1
     temp_col = buff_col+1
     rxnm_col = temp_col+1
     dnase_col = rxnm_col+1
-    sucr_col = dnase_col+1
+    urea_col = dnase_col+1
 
     #add buffer
     p300m.pick_up_tip()
     p300m.distribute(10, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][1:7],
+                     disposal_volume=10, new_tip='never')
+    p300m.transfer(20, plate96.rows()[0][buff_col],
+                     temp_pcr.rows()[0][7],
                      disposal_volume=10, new_tip='never')
     p300m.drop_tip()
 
@@ -100,7 +92,7 @@ def ivt(protocol):
 
     #add nucleic acid
     p20m.transfer(5, plate96.rows()[0][temp_col],
-                     temp_pcr.rows()[0][0:7],
+                     temp_pcr.rows()[0][0:8],
                      disposal_volume=0, new_tip='always', 
                      mix_after=(3,10))
     
@@ -112,8 +104,7 @@ def ivt(protocol):
     
     #incubate 30mins at 37C
     tempdeck.set_temperature(celsius=37)
-    start_time1=time.time()
-    incubate(start_time1, 30, protocol)
+    protocol.delay(minutes=30)
 
     #add dnase buff to samples
     p20m.transfer(1, plate96.rows()[0][dnase_col],
@@ -122,12 +113,12 @@ def ivt(protocol):
                      mix_after=(3,10))
 
     #heat DNase for 15 mins
-    start_time2=time.time()
-    incubate(start_time2, 15, protocol)
-    tempdeck.deactivate()
+    protocol.delay(minutes=15)
 
     #add sucrose to samples
-    p20m.transfer(30, plate96.rows()[0][sucr_col],
+    p300m.transfer(30, plate96.rows()[0][urea_col],
                      temp_pcr.rows()[0][0:7],
                      disposal_volume=0, new_tip='always', 
-                     mix_after=(3,10))
+                     mix_after=(3,20))
+    tempdeck.set_temperature(celsius=95)
+    tempdeck.deactivate()
