@@ -1,5 +1,5 @@
 from opentrons import protocol_api
-import time
+import time,math
 
 
 metadata = {
@@ -27,10 +27,11 @@ metadata = {
 
 def run(protocol):
     well_96start = 0 #index from 0
-
+    samples = 1
+    
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    ivt(protocol)
+    ivt(samples, protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -62,7 +63,41 @@ def setup(well_96start, protocol):
     global start_96well
     start_96well = well_96start
 
-def ivt(protocol):
+    #single tips
+    global which_tips20, tip20
+    which_tips20 = []
+    tip20 = 0
+    tip_row_list = ['H','G','F','E','D','C','B','A']
+    for i in range(0,96):
+        which_tips20.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
+
+    #single tips
+    global which_tips300, tip300
+    which_tips300 = []
+    tip300 = 0
+    tip_row_list = ['H','G','F','E','D','C','B','A']
+    for i in range(0,96):
+        which_tips300.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
+
+def pickup_tips(number, pipette, protocol):
+    global tip300, tip20
+
+    if pipette == p20m:
+        if (tip20 % number) != 0:
+            while (tip20 % 8) != 0:
+                tip20 += 1
+        tip20 += number-1
+        p20m.pick_up_tip(tips20[which_tips20[tip20]])
+        tip20 += 1    
+    elif pipette == p300m:
+        if (tip300 % number) != 0:
+            while (tip300 % 8) != 0:
+                tip300 += 1
+        tip300 += number-1
+        p300m.pick_up_tip(tips300[which_tips300[tip300]])
+        tip300 += 1
+
+def ivt(samples, protocol):
     enzy_col = start_96well
     buff_col = enzy_col+1
     temp_col = buff_col+1
@@ -71,7 +106,7 @@ def ivt(protocol):
     urea_col = dnase_col+1
 
     #add buffer
-    p300m.pick_up_tip()
+    pickup_tips(samples, p300m, protocol)
     p300m.distribute(10, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][1:7],
                      disposal_volume=10, new_tip='never')
@@ -81,7 +116,7 @@ def ivt(protocol):
     p300m.drop_tip()
 
     #titrate enzymes
-    p20m.pick_up_tip()
+    pickup_tips(samples, p20m, protocol)
     p20m.transfer(20, plate96.rows()[0][enzy_col],
                    temp_pcr.rows()[0][0], new_tip='never')
     p20m.transfer(10, temp_pcr.rows()[0][0:5],
@@ -91,34 +126,46 @@ def ivt(protocol):
     p20m.drop_tip()
 
     #add nucleic acid
-    p20m.transfer(5, plate96.rows()[0][temp_col],
-                     temp_pcr.rows()[0][0:8],
-                     disposal_volume=0, new_tip='always', 
-                     mix_after=(3,10))
+    for i in range(0,8):
+        pickup_tips(samples, p20m, protocol)
+        p20m.transfer(5, plate96.rows()[0][temp_col],
+                        temp_pcr.rows()[0][i],
+                        disposal_volume=0, new_tip='never', 
+                        mix_after=(3,10))
+        p20m.drop_tip()
     
     #add ivt rxn mix
-    p20m.transfer(15, plate96.rows()[0][rxnm_col],
-                     temp_pcr.rows()[0][0:7],
-                     disposal_volume=0, new_tip='always', 
-                     mix_after=(3,10))
+    for i in range(0,7):
+        pickup_tips(samples, p20m, protocol)
+        p20m.transfer(15, plate96.rows()[0][rxnm_col],
+                        temp_pcr.rows()[0][i],
+                        disposal_volume=0, new_tip='never', 
+                        mix_after=(3,10))
+        p20m.drop_tip()
     
     #incubate 30mins at 37C
     tempdeck.set_temperature(celsius=37)
     protocol.delay(minutes=30)
 
     #add dnase buff to samples
-    p20m.transfer(1, plate96.rows()[0][dnase_col],
-                     temp_pcr.rows()[0][0:7],
-                     disposal_volume=0, new_tip='always', 
-                     mix_after=(3,10))
+    for i in range(0,7):
+        pickup_tips(samples, p20m, protocol)
+        p20m.transfer(1, plate96.rows()[0][dnase_col],
+                        temp_pcr.rows()[0][i],
+                        disposal_volume=0, new_tip='never', 
+                        mix_after=(3,10))
+        p20m.drop_tip()
 
     #heat DNase for 15 mins
     protocol.delay(minutes=15)
 
-    #add sucrose to samples
-    p300m.transfer(30, plate96.rows()[0][urea_col],
-                     temp_pcr.rows()[0][0:7],
-                     disposal_volume=0, new_tip='always', 
-                     mix_after=(3,20))
+    #add sds to samples
+    for i in range(0,8):
+        pickup_tips(samples, p300m, protocol)
+        p300m.transfer(30, plate96.rows()[0][urea_col],
+                        temp_pcr.rows()[0][i],
+                        disposal_volume=0, new_tip='never', 
+                        mix_after=(3,20))
+        p300m.drop_tip()
     tempdeck.set_temperature(celsius=95)
     tempdeck.deactivate()
