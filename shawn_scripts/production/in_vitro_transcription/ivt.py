@@ -9,7 +9,7 @@ metadata = {
                         - 30ul 2x protein in col 0
                         - 100ul buffer in col 1 
                         - 60ul of DNA template in col 2
-                        - 100ul ivt rxn (sans DNA temp) in col 3
+                        - 120ul ivt rxn (sans DNA temp) in col 3
                         - 20ul of DNase in col 4
 
                       Robot:
@@ -79,16 +79,14 @@ def pickup_tips(number, pipette, protocol):
     global tip300, tip20
 
     if pipette == p20m:
-        if (tip20 % number) != 0:
-            while (tip20 % 8) != 0:
-                tip20 += 1
+        while (7 - (tip20 % 8)) < number:
+            tip20 += 1
         tip20 += number-1
         p20m.pick_up_tip(tips20[which_tips20[tip20]])
         tip20 += 1    
     elif pipette == p300m:
-        if (tip300 % number) != 0:
-            while (tip300 % 8) != 0:
-                tip300 += 1
+        while (7 - (tip300 % 8)) < number:
+            tip300 += 1
         tip300 += number-1
         p300m.pick_up_tip(tips300[which_tips300[tip300]])
         tip300 += 1
@@ -102,10 +100,12 @@ def ivt(samples, protocol):
     urea_col = dnase_col+1
 
     #add buffer
-    pickup_tips(samples, p300m, protocol)
-    p300m.distribute(10, plate96.rows()[0][buff_col],
+    pickup_tips(samples, p20m, protocol)
+    p20m.distribute(10, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][1:7],
-                     disposal_volume=10, new_tip='never')
+                     new_tip='never')
+    p20m.drop_tip()
+    pickup_tips(samples, p300m, protocol)
     p300m.transfer(21, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][7],
                      disposal_volume=10, new_tip='never')
