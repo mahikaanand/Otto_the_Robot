@@ -74,7 +74,7 @@ def make_cu(protocol):
     p300m.dispense(50, plate96.rows()[6][2])
     p300m.dispense(50, plate96.rows()[6][3])
     p300m.dispense(25, plate96.rows()[6][4])
-    p300m.blow_out(tubes.rows()[0][0].top(-50))
+    p300m.blow_out(tubes.rows()[0][0])
     p300m.aspirate(300, tubes.rows()[0][0].top(-50))
     p300m.dispense(25, plate96.rows()[6][4])
     p300m.dispense(50, plate96.rows()[1][6])
