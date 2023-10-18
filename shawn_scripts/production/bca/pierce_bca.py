@@ -50,12 +50,14 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(well_96start, protocol):
     #equiptment
-    global tips300, tips300_2, trough, plate384, p300m, plate96, pcr_strips
+    global tips300, tips20, trough, p300m, p20m, plate96, pcr_strips
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
-    tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 8)
     trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
-                                     tip_racks=[tips300, tips300_2])
+                                     tip_racks=[tips300])
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
+                                     tip_racks=[tips20])
     p300m.flow_rate.aspirate = 40
     p300m.flow_rate.dispense = 40
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 5)
@@ -75,27 +77,41 @@ def setup(well_96start, protocol):
     start_96well = well_96start
 
     #single tips
-    global which_tips, tip
-    which_tips = []
-    tip = 0
+    global which_tips20, tip20
+    which_tips20 = []
+    tip20 = 0
     tip_row_list = ['H','G','F','E','D','C','B','A']
     for i in range(0,96):
-        which_tips.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
+        which_tips20.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
 
-    #tip columns
-    global which_tip_col, tip_col
-    which_tip_col = []
-    tip_col = 0
-    for i in range(1,13):
-        which_tip_col.append('A'+str(i))
+    #single tips
+    global which_tips300, tip300
+    which_tips300 = []
+    tip300 = 0
+    tip_row_list = ['H','G','F','E','D','C','B','A']
+    for i in range(0,96):
+        which_tips300.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
+
+def pickup_tips(number, pipette, protocol):
+    global tip300, tip20
+
+    if pipette == p20m:
+        while (7 - (tip20 % 8)) < number:
+            tip20 += 1
+        tip20 += number-1
+        p20m.pick_up_tip(tips20[which_tips20[tip20]])
+        tip20 += 1    
+    elif pipette == p300m:
+        while (7 - (tip300 % 8)) < number:
+            tip300 += 1
+        tip300 += number-1
+        p300m.pick_up_tip(tips300[which_tips300[tip300]])
+        tip300 += 1
 
 def make_standards(protocol):
-    global tip, tip_col
-
-    dilutants = [25,65,35,65,65,65,80]
+    dilutants = [30,60,90,93,96,99,100]
     for strip in [0,1]:
-        p300m.pick_up_tip(tips300[which_tips[tip]])
-        tip += 1
+        pickup_tips(1, p300m, protocol)
         count = 1
         for dilute in dilutants:
             p300m.aspirate(dilute, buffer)
@@ -104,42 +120,44 @@ def make_standards(protocol):
         p300m.drop_tip()
 
         count = 0
-        standards = [[60, bsa],
-                     [75, bsa],
-                     [65, bsa],
-                     [35, pcr_strips.rows()[1][strip]],
-                     [65, pcr_strips.rows()[2][strip]],
-                     [65, pcr_strips.rows()[4][strip]],
-                     [65, pcr_strips.rows()[5][strip]]]
+        standards = [[100, bsa],
+                     [70, bsa],
+                     [40, bsa],
+                     [10, bsa],
+                     [7, bsa],
+                     [4, bsa],
+                     [1, bsa]]
 
         for standard in standards:
-            p300m.pick_up_tip(tips300[which_tips[tip]])
-            tip += 1
-            p300m.aspirate(standard[0], standard[1])
-            p300m.dispense(standard[0], pcr_strips.rows()[count][strip])
-            p300m.mix(3,40)
-            p300m.drop_tip()
-            count += 1
+            if standard[0] > 20:
+                pickup_tips(1, p300m, protocol)
+                p300m.aspirate(standard[0], standard[1])
+                p300m.dispense(standard[0], pcr_strips.rows()[count][strip])
+                p300m.mix(3,20)
+                p300m.drop_tip()
+                count += 1
+            else:
+                pickup_tips(1, p20m, protocol)
+                p20m.aspirate(standard[0], standard[1])
+                p20m.dispense(standard[0], pcr_strips.rows()[count][strip])
+                p20m.mix(3,20)
+                p20m.drop_tip()
+                count += 1
 
-        p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
-        tip_col += 1
+        pickup_tips(8, p300m, protocol)
         p300m.transfer(25, pcr_strips.rows()[0][strip],
                        plate96.rows()[0][start_96well+strip],
                        new_tip='never')
         p300m.drop_tip()
 
 def titrate(sample, protocol):
-    global tip, tip_col
-
-    p300m.pick_up_tip(tips300[which_tips[tip]])
-    tip += 1
+    pickup_tips(1, p300m, protocol)
     p300m.aspirate(210, buffer)
     for row in range(1,8):
         p300m.dispense(30, pcr_strips.rows()[row][sample+2])
     p300m.drop_tip()
 
-    p300m.pick_up_tip(tips300[which_tips[tip]])
-    tip += 1
+    pickup_tips(1, p300m, protocol)
     for row in range(0,7):
         p300m.aspirate(30, pcr_strips.rows()[row][sample+2])
         p300m.dispense(30, pcr_strips.rows()[row+1][sample+2])
@@ -147,16 +165,13 @@ def titrate(sample, protocol):
     p300m.aspirate(30, pcr_strips.rows()[7][sample+2])
     p300m.drop_tip()
 
-    p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
-    tip_col += 1
+    pickup_tips(8, p300m, protocol)
     p300m.transfer(25, pcr_strips.rows()[0][sample+2],
                    plate96.rows()[0][start_96well+sample+2], new_tip='never')
     p300m.drop_tip()
 
 def add_wr(num_samples, protocol):
-    global tip_col
-
-    p300m.pick_up_tip(tips300_2[which_tip_col[tip_col]])
+    pickup_tips(8, p300m, protocol)
     for col in range(start_96well, start_96well+num_samples+2):
         p300m.distribute(200, working, plate96.rows()[0][col].top(),
                          disposal_volume=0, new_tip='never')
