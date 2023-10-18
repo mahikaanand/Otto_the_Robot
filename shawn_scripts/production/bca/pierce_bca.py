@@ -27,7 +27,7 @@ metadata = {
     }
 
 def run(protocol):
-    num_samples = 1
+    num_samples = 0
     well_96start = 0 #index from 0
 
     strobe(12, 8, True, protocol)
@@ -94,19 +94,21 @@ def setup(well_96start, protocol):
 
 def pickup_tips(number, pipette, protocol):
     global tip300, tip20
-
-    if pipette == p20m:
-        while (7 - (tip20 % 8)) < number:
-            tip20 += 1
-        tip20 += number-1
-        p20m.pick_up_tip(tips20[which_tips20[tip20]])
-        tip20 += 1    
-    elif pipette == p300m:
-        while (7 - (tip300 % 8)) < number:
-            tip300 += 1
+    
+    if pipette == p300m:
+        if (tip300 % number) != 0:
+            while (tip300 % 8) != 0:
+                tip300 += 1
         tip300 += number-1
         p300m.pick_up_tip(tips300[which_tips300[tip300]])
         tip300 += 1
+    elif pipette == p20m:
+        if (tip20 % number) != 0:
+            while (tip20 % 8) != 0:
+                tip20 += 1
+        tip20 += number-1
+        p20m.pick_up_tip(tips20[which_tips20[tip20]])
+        tip20 += 1
 
 def make_standards(protocol):
     dilutants = [30,60,90,93,96,99,100]
