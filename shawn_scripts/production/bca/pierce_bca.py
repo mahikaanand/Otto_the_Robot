@@ -111,7 +111,7 @@ def pickup_tips(number, pipette, protocol):
         tip20 += 1
 
 def make_standards(protocol):
-    dilutants = [30,60,90,90,90,90,100]
+    dilutants = [30,60,180,180,180,180,100]
     for strip in [0,1]:
         pickup_tips(1, p300m, protocol)
         count = 1
@@ -125,29 +125,21 @@ def make_standards(protocol):
         standards = [[100, bsa],
                      [70, bsa],
                      [40, bsa],
-                     [10, bsa]]
+                     [20, bsa]]
 
         for standard in standards:
-            if standard[0] > 20:
-                pickup_tips(1, p300m, protocol)
-                p300m.aspirate(standard[0], standard[1])
-                p300m.dispense(standard[0], pcr_strips.rows()[count][strip])
-                p300m.mix(3,20)
-                p300m.drop_tip()
-                count += 1
-            else:
-                pickup_tips(1, p20m, protocol)
-                p20m.aspirate(standard[0], standard[1])
-                p20m.dispense(standard[0], pcr_strips.rows()[count][strip])
-                p20m.mix(3,20)
-                p20m.drop_tip()
-                count += 1
+            pickup_tips(1, p300m, protocol)
+            p300m.aspirate(standard[0], standard[1])
+            p300m.dispense(standard[0], pcr_strips.rows()[count][strip])
+            p300m.mix(10,80)
+            p300m.drop_tip()
+            count += 1
         
-        pickup_tips(3, p20m, protocol)
-        p20m.aspirate(10, pcr_strips.rows()[0][strip])
-        p20m.dispense(10, pcr_strips.rows()[4][strip])
-        p20m.mix(3,20)
-        p20m.drop_tip()
+        pickup_tips(3, p300m, protocol)
+        p300m.aspirate(20, pcr_strips.rows()[1][strip])
+        p300m.dispense(20, pcr_strips.rows()[4][strip])
+        p300m.mix(10,160)
+        p300m.drop_tip()
         count += 1
 
         pickup_tips(8, p300m, protocol)
