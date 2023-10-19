@@ -94,7 +94,7 @@ def setup(well_96start, protocol):
 
 def pickup_tips(number, pipette, protocol):
     global tip300, tip20
-    
+
     if pipette == p300m:
         if (tip300 % number) != 0:
             while (tip300 % 8) != 0:
@@ -111,7 +111,7 @@ def pickup_tips(number, pipette, protocol):
         tip20 += 1
 
 def make_standards(protocol):
-    dilutants = [30,60,90,93,96,99,100]
+    dilutants = [30,60,90,90,90,90,100]
     for strip in [0,1]:
         pickup_tips(1, p300m, protocol)
         count = 1
@@ -125,10 +125,7 @@ def make_standards(protocol):
         standards = [[100, bsa],
                      [70, bsa],
                      [40, bsa],
-                     [10, bsa],
-                     [7, bsa],
-                     [4, bsa],
-                     [1, bsa]]
+                     [10, bsa]]
 
         for standard in standards:
             if standard[0] > 20:
@@ -145,6 +142,13 @@ def make_standards(protocol):
                 p20m.mix(3,20)
                 p20m.drop_tip()
                 count += 1
+        
+        pickup_tips(3, p20m, protocol)
+        p20m.aspirate(10, pcr_strips.rows()[0][strip])
+        p20m.dispense(10, pcr_strips.rows()[4][strip])
+        p20m.mix(3,20)
+        p20m.drop_tip()
+        count += 1
 
         pickup_tips(8, p300m, protocol)
         p300m.transfer(25, pcr_strips.rows()[0][strip],
