@@ -50,15 +50,12 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(well_96start, protocol):
     #equiptment
-    global tips300, tips300_2, tips20, trough, p300m, p20m, plate96, pcr_strips
+    global tips300, tips300_2, trough, p300m, plate96, pcr_strips
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
-    tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 1)
-    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 8)
+    tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
     trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300, tips300_2])
-    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-                                     tip_racks=[tips20])
     p300m.flow_rate.aspirate = 40
     p300m.flow_rate.dispense = 40
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 5)
@@ -78,14 +75,6 @@ def setup(well_96start, protocol):
     start_96well = well_96start
 
     #single tips
-    global which_tips20, tip20
-    which_tips20 = []
-    tip20 = 0
-    tip_row_list = ['H','G','F','E','D','C','B','A']
-    for i in range(0,96):
-        which_tips20.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
-
-    #single tips
     global which_tips300, tip300
     which_tips300 = []
     tip300 = 0
@@ -94,7 +83,7 @@ def setup(well_96start, protocol):
         which_tips300.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
 
 def pickup_tips(number, pipette, protocol):
-    global tip300, tip20
+    global tip300
 
     if pipette == p300m:
         if (tip300 % number) != 0:
@@ -103,13 +92,6 @@ def pickup_tips(number, pipette, protocol):
         tip300 += number-1
         p300m.pick_up_tip(tips300[which_tips300[tip300]])
         tip300 += 1
-    elif pipette == p20m:
-        if (tip20 % number) != 0:
-            while (tip20 % 8) != 0:
-                tip20 += 1
-        tip20 += number-1
-        p20m.pick_up_tip(tips20[which_tips20[tip20]])
-        tip20 += 1
 
 def make_standards(protocol):
     dilutants = [30,60,180,180,180,180,100]
