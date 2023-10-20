@@ -5,7 +5,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'BCA (Pierce)',
+    'protocolName': 'BCA (Pierce) - 6 sample',
     'author': 'Shawn Laursen',
     'description': '''This protocol will perform the Pierce BCA protocol.
                       Place 500ul of 2mg/ml BSA in A1 of Temp deck 24well.
@@ -27,7 +27,7 @@ metadata = {
     }
 
 def run(protocol):
-    num_samples = 0
+    num_samples = 6
     well_96start = 0 #index from 0
 
     strobe(12, 8, True, protocol)
@@ -50,12 +50,13 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(well_96start, protocol):
     #equiptment
-    global tips300, tips20, trough, p300m, p20m, plate96, pcr_strips
+    global tips300, tips300_2, tips20, trough, p300m, p20m, plate96, pcr_strips
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
+    tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 1)
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 8)
     trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
-                                     tip_racks=[tips300])
+                                     tip_racks=[tips300, tips300_2])
     p20m = protocol.load_instrument('p20_multi_gen2', 'right',
                                      tip_racks=[tips20])
     p300m.flow_rate.aspirate = 40
@@ -163,7 +164,7 @@ def titrate(sample, protocol):
     p300m.aspirate(30, pcr_strips.rows()[7][sample+2])
     p300m.drop_tip()
 
-    pickup_tips(8, p300m, protocol)
+    p300m.pick_up_tip(tips300_2)
     p300m.transfer(25, pcr_strips.rows()[0][sample+2],
                    plate96.rows()[0][start_96well+sample+2], new_tip='never')
     p300m.drop_tip()
