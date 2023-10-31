@@ -9,10 +9,10 @@ metadata = {
     'author': 'Shawn Laursen',
     'description': '''This protocol will perform the Pierce BCA protocol.
                       Place 500ul of 2mg/ml BSA in A1 of Temp deck 24well.
-                      Place 60ul protein in top row in the third column and on.
                       Place 2 (+ num samples) x 8 strip tubes in 96well aluminum block.
+                      Place 60ul protein in top row in the third column and on.
                       Place dilution buffer in column 1 of trough.
-                      Place 1200ul x # samples + 5000ul of mixed BCA reagent
+                      Place 1600ul x # samples + 5000ul of mixed BCA reagent
                       in column 2 of trough. Robot will make BSA standard dilution
                       in first 2 columns specified, put 60ul your protein(s) in
                       first tube of third (and on strips). Robot will make 1:1
@@ -32,9 +32,9 @@ def run(protocol):
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    make_standards(protocol)
-    for sample in range(0, num_samples):
-        titrate(sample, protocol)
+    # make_standards(protocol)
+    # for sample in range(0, num_samples):
+    #     titrate(sample, protocol)
     add_wr(num_samples, protocol)
     strobe(12, 8, False, protocol)
 
@@ -66,9 +66,11 @@ def setup(well_96start, protocol):
     temp_buffs = tempdeck.load_labware(
                  'opentrons_24_aluminumblock_nest_1.5ml_snapcap')
 
-    global buffer, working, bsa
+    global buffer, working, working1, working2, bsa
     buffer = trough.wells()[0]
     working = trough.wells()[1]
+    working1 = trough.wells()[2]
+    working2 = trough.wells()[3]
     bsa = temp_buffs.wells_by_name()['A1'].bottom(-2)
 
     global start_96well
@@ -152,8 +154,45 @@ def titrate(sample, protocol):
     p300m.drop_tip()
 
 def add_wr(num_samples, protocol):
+    # pickup_tips(8, p300m, protocol)
+    # if num_samples <=4:
+    #     for col in range(start_96well, start_96well+num_samples+2):
+    #         p300m.distribute(200, working, plate96.rows()[0][col].top(),
+    #                         disposal_volume=0, new_tip='never')
+    # elif num_samples <=8:
+    #     for col in range(start_96well, start_96well+6):
+    #         p300m.distribute(200, working, plate96.rows()[0][col].top(),
+    #                         disposal_volume=0, new_tip='never')
+    #     for col in range(start_96well+6, start_96well+num_samples+2):
+    #         p300m.distribute(200, working1, plate96.rows()[0][col].top(),
+    #                         disposal_volume=0, new_tip='never')
+    # elif num_samples <=12:
+    #     for col in range(start_96well, start_96well+6):
+    #         p300m.distribute(200, working, plate96.rows()[0][col].top(),
+    #                         disposal_volume=0, new_tip='never')
+    #     for col in range(start_96well+6, start_96well+num_samples+2):
+    #         p300m.distribute(200, working1, plate96.rows()[0][col].top(),
+    #                         disposal_volume=0, new_tip='never')
+    #     for col in range(start_96well+10, start_96well+num_samples+2):
+    #         p300m.distribute(200, working2, plate96.rows()[0][col].top(),
+    #                         disposal_volume=0, new_tip='never')       
+
     pickup_tips(8, p300m, protocol)
-    for col in range(start_96well, start_96well+num_samples+2):
+    for col in range(start_96well, start_96well+2):
         p300m.distribute(200, working, plate96.rows()[0][col].top(),
                          disposal_volume=0, new_tip='never')
+    counter = 0
+    while counter < num_samples:
+        if counter <= 4:
+            which_working = working
+        elif counter <= 8:
+            which_working = working1
+        elif counter <= 12:
+            which_working = working2
+        else: 
+            break
+        col = counter+start_96well+2
+        p300m.distribute(200, which_working, plate96.rows()[0][col].top(),
+                         disposal_volume=0, new_tip='never')
+        counter += 1
     p300m.drop_tip()
