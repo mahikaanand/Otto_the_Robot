@@ -5,7 +5,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'BCA (Pierce) - 6 sample',
+    'protocolName': 'BCA (Pierce)',
     'author': 'Shawn Laursen',
     'description': '''This protocol will perform the Pierce BCA protocol.
                       Place 500ul of 2mg/ml BSA in A1 of Temp deck 24well.
@@ -27,14 +27,14 @@ metadata = {
     }
 
 def run(protocol):
-    num_samples = 6
+    num_samples = 3
     well_96start = 0 #index from 0
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    # make_standards(protocol)
-    # for sample in range(0, num_samples):
-    #     titrate(sample, protocol)
+    make_standards(protocol)
+    for sample in range(0, num_samples):
+        titrate(sample, protocol)
     add_wr(num_samples, protocol)
     strobe(12, 8, False, protocol)
 
@@ -154,45 +154,24 @@ def titrate(sample, protocol):
     p300m.drop_tip()
 
 def add_wr(num_samples, protocol):
-    # pickup_tips(8, p300m, protocol)
-    # if num_samples <=4:
-    #     for col in range(start_96well, start_96well+num_samples+2):
-    #         p300m.distribute(200, working, plate96.rows()[0][col].top(),
-    #                         disposal_volume=0, new_tip='never')
-    # elif num_samples <=8:
-    #     for col in range(start_96well, start_96well+6):
-    #         p300m.distribute(200, working, plate96.rows()[0][col].top(),
-    #                         disposal_volume=0, new_tip='never')
-    #     for col in range(start_96well+6, start_96well+num_samples+2):
-    #         p300m.distribute(200, working1, plate96.rows()[0][col].top(),
-    #                         disposal_volume=0, new_tip='never')
-    # elif num_samples <=12:
-    #     for col in range(start_96well, start_96well+6):
-    #         p300m.distribute(200, working, plate96.rows()[0][col].top(),
-    #                         disposal_volume=0, new_tip='never')
-    #     for col in range(start_96well+6, start_96well+num_samples+2):
-    #         p300m.distribute(200, working1, plate96.rows()[0][col].top(),
-    #                         disposal_volume=0, new_tip='never')
-    #     for col in range(start_96well+10, start_96well+num_samples+2):
-    #         p300m.distribute(200, working2, plate96.rows()[0][col].top(),
-    #                         disposal_volume=0, new_tip='never')       
-
     pickup_tips(8, p300m, protocol)
     for col in range(start_96well, start_96well+2):
-        p300m.distribute(200, working, plate96.rows()[0][col].top(),
-                         disposal_volume=0, new_tip='never')
+        p300m.transfer(200, working, plate96.rows()[0][col].top(),
+                         disposal_volume=0, new_tip='never',
+                         blow_out='true', blowout_location='destination well')
     counter = 0
     while counter < num_samples:
-        if counter <= 4:
+        if counter <= 3:
             which_working = working
-        elif counter <= 8:
+        elif counter <= 7:
             which_working = working1
-        elif counter <= 12:
+        elif counter <= 11:
             which_working = working2
         else: 
             break
         col = counter+start_96well+2
-        p300m.distribute(200, which_working, plate96.rows()[0][col].top(),
-                         disposal_volume=0, new_tip='never')
+        p300m.transfer(200, which_working, plate96.rows()[0][col].top(),
+                         disposal_volume=0, new_tip='never', 
+                         blow_out='true', blowout_location='destination well')
         counter += 1
     p300m.drop_tip()
