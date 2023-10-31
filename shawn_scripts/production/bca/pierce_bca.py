@@ -18,10 +18,10 @@ metadata = {
                       first tube of third (and on strips). Robot will make 1:1
                       dilution series of your protein. After standard and
                       experimental dilutions are made, robot will add 200ul of
-                      working reagent to each well (30ul of protein is used in
-                      all wells). Don't forget alter the program with number of
+                      working reagent to each well (25ul of protein is used in
+                      all wells). Don't forget to alter the program with number of
                       samples and where to start on the 96well plate (indexed
-                      from 0).
+                      from 0) Dilutions are: 2, 1.4, 0.8, 0.2, 0.14, 0.08, 0.02, 0.
                       ''',
     'apiLevel': '2.11'
     }
