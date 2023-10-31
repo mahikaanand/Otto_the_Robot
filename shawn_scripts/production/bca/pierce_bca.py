@@ -70,7 +70,6 @@ def setup(well_96start, protocol):
     buffer = trough.wells()[0]
     working = trough.wells()[1]
     working1 = trough.wells()[2]
-    working2 = trough.wells()[3]
     bsa = temp_buffs.wells_by_name()['A1'].bottom(-2)
 
     global start_96well
@@ -163,12 +162,8 @@ def add_wr(num_samples, protocol):
     while counter < num_samples:
         if counter <= 3:
             which_working = working
-        elif counter <= 7:
-            which_working = working1
-        elif counter <= 11:
-            which_working = working2
         else: 
-            break
+            which_working = working1
         col = counter+start_96well+2
         p300m.transfer(200, which_working, plate96.rows()[0][col].top(),
                          disposal_volume=0, new_tip='never', 
