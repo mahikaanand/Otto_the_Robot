@@ -59,7 +59,7 @@ def pickup_tips(number, pipette, protocol):
         tip300 += 1
 
 def tip_test(protocol):
-    for i in range(0,7):
+    for i in range(0,12):
         pickup_tips(8, p300m, protocol)
         p300m.drop_tip()
     for i in range(0,8):
