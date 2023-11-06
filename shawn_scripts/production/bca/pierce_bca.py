@@ -91,7 +91,10 @@ def pickup_tips(number, pipette, protocol):
             while (tip300 % 8) != 0:
                 tip300 += 1
         tip300 += number-1
-        p300m.pick_up_tip(tips300[which_tips300[tip300]])
+        if tip300 < 96:
+            p300m.pick_up_tip(tips300[which_tips300[tip300]])
+        else:
+            p300m.pick_up_tip(tips300_2[which_tips300[tip300-96]])
         tip300 += 1
 
 def make_standards(protocol):
