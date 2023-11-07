@@ -32,7 +32,7 @@ def setup(protocol):
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
-    tubes = protocol.load_labware('opentrons_15_tuberack_falcon_15ml_conical', 5)
+    tubes = protocol.load_labware('opentrons_6_tuberack_falcon_50ml_conical', 5)
     pcr_strips = protocol.load_labware(
                         'opentrons_96_aluminumblock_generic_pcr_strip_200ul', 6)
     
