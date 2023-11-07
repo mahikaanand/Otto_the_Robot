@@ -32,7 +32,7 @@ def setup(protocol):
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
-    tubes = protocol.load_labware('opentrons_6_tuberack_falcon_50ml_conical', 5)
+    tubes = protocol.load_labware('opentrons_15_tuberack_falcon_15ml_conical', 5)
     pcr_strips = protocol.load_labware(
                         'opentrons_96_aluminumblock_generic_pcr_strip_200ul', 6)
     
@@ -62,14 +62,14 @@ def distribute(protocol):
     for col in range (0,6):
         for row in range(0,8):
             if counter < 100:    
-                p300m.aspirate(300, tubes.rows()[0][0].top(-93))
+                p300m.aspirate(300, tubes.rows()[0][0].top(-95))
                 counter = 300
             p300m.dispense(100, pcr_strips.rows()[row][col])
             counter -= 100
     for col in range (6,12):
         for row in range(0,8):
             if counter < 100:    
-                p300m.aspirate(300, tubes.rows()[0][1].top(-93))
+                p300m.aspirate(300, tubes.rows()[0][1].top(-95))
                 counter = 300
             p300m.dispense(100, pcr_strips.rows()[row][col])
             counter -= 100
