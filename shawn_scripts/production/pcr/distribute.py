@@ -62,14 +62,14 @@ def distribute(protocol):
     for col in range (0,6):
         for row in range(0,8):
             if counter < 100:    
-                p300m.aspirate(300, tubes.rows()[0][0].top(-95))
+                p300m.aspirate(300, tubes.rows()[0][0].top(-93))
                 counter = 300
             p300m.dispense(100, pcr_strips.rows()[row][col])
             counter -= 100
     for col in range (6,12):
         for row in range(0,8):
             if counter < 100:    
-                p300m.aspirate(300, tubes.rows()[0][1].top(-95))
+                p300m.aspirate(300, tubes.rows()[0][1].top(-93))
                 counter = 300
             p300m.dispense(100, pcr_strips.rows()[row][col])
             counter -= 100
