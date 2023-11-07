@@ -66,5 +66,6 @@ def distribute(protocol):
                 counter = 0
             p300m.aspirate(100, pcr_strips.rows()[row][col])
             counter += 100
+    p300m.dispense(300, tubes.rows()[0][0].top())
     p300m.drop_tip()
 
