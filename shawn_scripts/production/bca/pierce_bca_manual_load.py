@@ -5,7 +5,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'BCA (Pierce)',
+    'protocolName': 'BCA (Pierce) - manual load, 2 samples',
     'author': 'Shawn Laursen',
     'description': '''This protocol will perform the Pierce BCA protocol.
                       Place 500ul of 2mg/ml BSA in A1 of Temp deck 24well.
@@ -30,7 +30,7 @@ def run(protocol):
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
-    #make_standards(protocol)
+    make_standards(protocol)
     add_wr(num_samples, protocol)
     strobe(12, 8, False, protocol)
 
