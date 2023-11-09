@@ -26,7 +26,7 @@ metadata = {
 
 def run(protocol):
     num_samples = 2
-    well_96start = 0 #index from 0
+    well_96start = 9 #index from 0
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
