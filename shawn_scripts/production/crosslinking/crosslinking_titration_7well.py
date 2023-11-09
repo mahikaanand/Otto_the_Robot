@@ -8,16 +8,21 @@ metadata = {
     'protocolName': 'Crosslinker titration',
     'author': 'Shawn Laursen',
     'description': '''This protocol will do a 7 well titration of crosslinker
-                      (like BS3) from a stock with We 1:3 (1 in 4)
+                      (like BS3) from a stock with 1:3 (1 in 4)
                       dilutions, add set amount of protein to each well and
                       quench 30mins later.
                       Advised to spin down plate to mix after plating.
                       Advised to spin down plate after quenching.
 
+                      Col0: 100ul XL
+                      Col1: 30ul protein
+                      Col2: 300ul buff
+                      Col3: 300ul buff
+
                       Puts 60ul buffer in 384 well plate from trough (no Tris,
                       glycine, or DTT).
                       Adds 80ul high concentration crosslinker (ex 5mM) from
-                      column 1 of 96 well to 384 well and titrates 11 times with
+                      column 1 of 96 well to 384 well and titrates 6 times with
                       20ul (1:3), leaving last well as control.
                       Adds 10ul of protein (ex 5uM) from column 2 of 96 well
                       plate to all wells of 384 well.
