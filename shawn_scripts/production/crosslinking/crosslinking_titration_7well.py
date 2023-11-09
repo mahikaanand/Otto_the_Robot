@@ -18,6 +18,7 @@ metadata = {
                       Col1: 30ul protein
                       Col2: 300ul buff
                       Col3: 300ul buff
+                      Trough0: Glycine
 
                       Puts 60ul buffer in 384 well plate from trough (no Tris,
                       glycine, or DTT).
@@ -33,13 +34,13 @@ metadata = {
     }
 
 def run(protocol):
-    num_buffs = 1 #up to 4
+    quad384 = 1 #up to 4 
     well_96start = 0 #index from 0
     quad_start = 0 #index from 0
     quench_time = 30 #in minutes
 
     strobe(12, 8, True, protocol)
-    setup(num_buffs, well_96start, quad_start, protocol)
+    setup(quad384, well_96start, quad_start, protocol)
     for buff in buffs:
         xl_titration(buff, protocol)
     for buff in buffs:
@@ -67,7 +68,7 @@ def setup(num_buffs, well_96start, quad_start, protocol):
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
 
     global glycine
-    glycine = trough.wells()[1]
+    glycine = trough.wells()[0]
 
     #buffs
     global buffs, buffa, buffb, buffc, buffd
