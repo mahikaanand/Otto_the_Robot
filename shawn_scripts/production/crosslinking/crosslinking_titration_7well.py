@@ -117,7 +117,6 @@ def xl_titration(buff, protocol):
     p300m.blow_out()
     p300m.transfer(80, plate96.rows()[0][xl_col],
                    plate384.rows()[which_rows][start_384well], new_tip='never')
-    p300m.blow_out()
     p300m.transfer(20,
                    plate384.rows()[which_rows][start_384well:start_384well+5],
                    plate384.rows()[which_rows][start_384well+1:start_384well+6],
