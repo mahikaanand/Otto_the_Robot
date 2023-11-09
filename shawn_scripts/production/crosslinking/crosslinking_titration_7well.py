@@ -14,7 +14,7 @@ metadata = {
                       Advised to spin down plate to mix after plating.
                       Advised to spin down plate after quenching.
 
-                      Col0: 100ul XL
+                      Col0: 90ul XL
                       Col1: 30ul protein
                       Col2: 300ul buff
                       Col3: 300ul buff
