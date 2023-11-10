@@ -113,14 +113,14 @@ def xl_titration(protocol):
                      temp_pcr.rows()[0][1:4],
                      disposal_volume=0, new_tip='never')
     p300m.distribute(60, plate96.rows()[0][buff_col1],
-                     temp_pcr.rows()[0][4:7],
+                     temp_pcr.rows()[0][4:8],
                      disposal_volume=0, new_tip='never')
     p300m.transfer(80, plate96.rows()[0][xl_col],
                    temp_pcr.rows()[0][0], new_tip='never')
     p300m.transfer(20,
                    temp_pcr.rows()[0][0:5],
                    temp_pcr.rows()[0][1:6],
-                   mix_after=(3, 20), new_tip='never')
+                   mix_after=(3,20), new_tip='never')
     p300m.aspirate(20, temp_pcr.rows()[0][5])
     p300m.drop_tip()
 
@@ -129,7 +129,7 @@ def xl_titration(protocol):
 
     pickup_tips(8, p300m, protocol)
     p300m.aspirate(80, plate96.rows()[0][prot_col])
-    for j in range(0, 7):
+    for j in range(0,7):
         p300m.dispense(10, temp_pcr.rows()[0][j].top())
         p300m.touch_tip()
     p300m.drop_tip()
@@ -149,17 +149,25 @@ def quench(wait_mins, protocol):
 
     pickup_tips(8, p300m, protocol)
     p300m.aspirate(80, glycine)
-    for j in range(0, 7):
+    for j in range(0,7):
         p300m.dispense(10, temp_pcr.rows()[0][j].top())
         p300m.touch_tip()
     p300m.drop_tip()
 
 def add_sample_buff(protocol):   
-    for col in range(0,8):
+    sample_buff = start_96well+4
+    sample_buff1 = start_96well+5
+    for col in range(0,4):
         pickup_tips(8, p300m, protocol)
-        p300m.aspirate(80, plate96.rows()[0][col])
-        p300m.dispense(80, temp_pcr.rows()[0][col])
-        p300m.mix(3,80)
+        p300m.aspirate(70, plate96.rows()[0][sample_buff])
+        p300m.dispense(70, temp_pcr.rows()[0][col])
+        p300m.mix(3,70)
+        p300m.drop_tip()
+    for col in range(4,8):
+        pickup_tips(8, p300m, protocol)
+        p300m.aspirate(70, plate96.rows()[0][sample_buff1])
+        p300m.dispense(70, temp_pcr.rows()[0][col])
+        p300m.mix(3,70)
         p300m.drop_tip()
 
 def denature(protocol):
