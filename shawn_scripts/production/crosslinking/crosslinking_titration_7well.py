@@ -15,9 +15,11 @@ metadata = {
                       Advised to spin down plate after quenching.
 
                       Col0: 90ul XL
-                      Col1: 30ul protein
+                      Col1: 100ul protein
                       Col2: 300ul buff
                       Col3: 300ul buff
+                      Col4: 300ul SB
+                      Col5: 300ul SB
                       Trough0: Glycine
 
                       Puts 60ul buffer in pcr strips from trough (no Tris,
