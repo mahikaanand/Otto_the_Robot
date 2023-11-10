@@ -34,17 +34,15 @@ metadata = {
     }
 
 def run(protocol):
-    quad384 = 1 #up to 4 
     well_96start = 0 #index from 0
-    quad_start = 0 #index from 0
     quench_time = 30 #in minutes
 
     strobe(12, 8, True, protocol)
-    setup(quad384, well_96start, quad_start, protocol)
-    for buff in buffs:
-        xl_titration(buff, protocol)
-    for buff in buffs:
-        quench(buff, quench_time, protocol)
+    setup(well_96start, protocol)
+    xl_titration(protocol)
+    quench(quench_time, protocol)
+    add_sample_buff(protocol)
+    denature(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -190,14 +188,13 @@ def quench(buff, wait_mins, protocol):
         p300m.touch_tip()
     p300m.drop_tip()
 
-def prep(buff, protocol):
-    for row in range(0,7):
-        for col in range(0,7):     
-            pickup_tips(1, p300m, protocol)
-            p300m.aspirate(80, sb)
-            p300m.dispense(80, temp_pcr.rows()[row][col])
-            p300m.mix(3,80)
-            p300m.drop_tip()
+def add_sample_buff(protocol):   
+    for col in range(0,8):
+        pickup_tips(8, p300m, protocol)
+        p300m.aspirate(80, plate96.rows()[0][col])
+        p300m.dispense(80, temp_pcr.rows()[0][col])
+        p300m.mix(3,80)
+        p300m.drop_tip()
 
 def denature(protocol):
     tempdeck.set_temperature(celsius=95)
