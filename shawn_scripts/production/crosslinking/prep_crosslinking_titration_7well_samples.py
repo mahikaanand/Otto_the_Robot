@@ -105,8 +105,9 @@ def pickup_tips(number, pipette, protocol):
         tip300 += 1
 
 def transfer(buff, protocol): 
-    counter = 0
-    for row in range(0,16,2):
+
+    for row in range(0,16,2):    
+        counter = 0
         for col in range(0,7):     
             pickup_tips(1, p300m, protocol)
             p300m.aspirate(80, plate384.rows()[row][col])
