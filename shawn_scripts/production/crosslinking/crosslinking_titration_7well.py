@@ -37,7 +37,7 @@ metadata = {
 
 def run(protocol):
     well_96start = 0 #index from 0
-    quench_time = 0.5 #in minutes
+    quench_time = 30 #in minutes
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
@@ -59,13 +59,15 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(well_96start, protocol):
     #equiptment
-    global tips300, tips300_2, trough, p300m, plate96, tempdeck, temp_pcr
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
-    tips300_2 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
-    trough = protocol.load_labware('nest_12_reservoir_15ml', '2')
+    global tips300, tips20, trough, p300m, p20m, plate96, tempdeck, temp_pcr
+    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
+    trough = protocol.load_labware('nest_12_reservoir_15ml', 4)
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
-                                     tip_racks=[tips300, tips300_2])
-    plate96 = protocol.load_labware('costar_96_wellplate_200ul', 6)
+                                     tip_racks=[tips300])
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
+                                     tip_racks=[tips20])
+    plate96 = protocol.load_labware('costar_96_wellplate_200ul', 7)
     tempdeck = protocol.load_module('temperature module gen2', 10)
     temp_pcr = tempdeck.load_labware(
                  'opentrons_96_aluminumblock_generic_pcr_strip_200ul')
@@ -76,63 +78,35 @@ def setup(well_96start, protocol):
     global start_96well
     start_96well = well_96start
 
-    p300m.flow_rate.aspirate = 40
-    p300m.flow_rate.dispense = 40
-
-    #single tips
-    global which_tips300, tip300
-    which_tips300 = []
-    tip300 = 0
-    tip_row_list = ['H','G','F','E','D','C','B','A']
-    for i in range(0,96):
-        which_tips300.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
-
-def pickup_tips(number, pipette, protocol):
-    global tip300
-
-    if pipette == p300m:
-        if (tip300 % number) != 0:
-            while (tip300 % 8) != 0:
-                tip300 += 1
-        tip300 += number-1
-        if tip300 < 96:
-            p300m.pick_up_tip(tips300[which_tips300[tip300]])
-        else:
-            p300m.pick_up_tip(tips300_2[which_tips300[tip300-96]])
-        tip300 += 1
-
 def xl_titration(protocol):
     xl_col = start_96well
     prot_col = xl_col+1
     buff_col = xl_col+2
     buff_col1 = xl_col+3
 
-    pickup_tips(8, p300m, protocol)
+    p300m.pick_up_tip()
     p300m.distribute(60, plate96.rows()[0][buff_col],
                      temp_pcr.rows()[0][1:4],
                      disposal_volume=0, new_tip='never')
     p300m.distribute(60, plate96.rows()[0][buff_col1],
-                     temp_pcr.rows()[0][4:8],
+                     temp_pcr.rows()[0][4:7],
                      disposal_volume=0, new_tip='never')
     p300m.transfer(80, plate96.rows()[0][xl_col],
                    temp_pcr.rows()[0][0], new_tip='never')
     p300m.transfer(20,
                    temp_pcr.rows()[0][0:5],
                    temp_pcr.rows()[0][1:6],
-                   mix_after=(3,20), new_tip='never')
+                   mix_after=(5,60), new_tip='never')
     p300m.aspirate(20, temp_pcr.rows()[0][5])
     p300m.drop_tip()
 
     global start_time
     start_time = time.time()
 
-    pickup_tips(8, p300m, protocol)
-    p300m.aspirate(80, plate96.rows()[0][prot_col])
     for j in range(0,7):
-        p300m.dispense(10, temp_pcr.rows()[0][j].top())
-        p300m.touch_tip()
-    p300m.drop_tip()
-
+        p20m.transfer(10, plate96.rows()[0][prot_col],
+                temp_pcr.rows()[0][j],
+                mix_after=(5,20))
 
 def quench(wait_mins, protocol):
     end_time = start_time + wait_mins*60
@@ -146,24 +120,23 @@ def quench(wait_mins, protocol):
         pass
         print()
 
-    pickup_tips(8, p300m, protocol)
+    p300m.pick_up_tip()
     p300m.aspirate(80, glycine)
     for j in range(0,7):
         p300m.dispense(10, temp_pcr.rows()[0][j].top())
-        p300m.touch_tip()
     p300m.drop_tip()
 
 def add_sample_buff(protocol):   
     sample_buff = start_96well+4
     sample_buff1 = start_96well+5
     for col in range(0,4):
-        pickup_tips(8, p300m, protocol)
+        p300m.pick_up_tip()
         p300m.aspirate(70, plate96.rows()[0][sample_buff])
         p300m.dispense(70, temp_pcr.rows()[0][col])
         p300m.mix(3,70)
         p300m.drop_tip()
-    for col in range(4,8):
-        pickup_tips(8, p300m, protocol)
+    for col in range(4,7):
+        p300m.pick_up_tip()
         p300m.aspirate(70, plate96.rows()[0][sample_buff1])
         p300m.dispense(70, temp_pcr.rows()[0][col])
         p300m.mix(3,70)
