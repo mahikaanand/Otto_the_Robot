@@ -55,7 +55,7 @@ def strobe(blinks, hz, leave_on, protocol):
         i += 1
     protocol.set_rail_lights(leave_on)
 
-def setup(well_96start, quad_start, protocol):
+def setup(well_96start, protocol):
     #equiptment
     global tips300, tips300_2, trough, p300m, plate96, tempdeck, temp_pcr
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
@@ -73,9 +73,6 @@ def setup(well_96start, quad_start, protocol):
 
     global start_96well
     start_96well = well_96start
-
-    global start_times
-    start_times = []
 
     p300m.flow_rate.aspirate = 40
     p300m.flow_rate.dispense = 40
@@ -124,8 +121,8 @@ def xl_titration(protocol):
     p300m.aspirate(20, temp_pcr.rows()[0][5])
     p300m.drop_tip()
 
-    global start_times
-    start_times.append(time.time())
+    global start_time
+    start_time = time.time()
 
     pickup_tips(8, p300m, protocol)
     p300m.aspirate(80, plate96.rows()[0][prot_col])
@@ -136,7 +133,7 @@ def xl_titration(protocol):
 
 
 def quench(wait_mins, protocol):
-    end_time = start_times[buffs.index(buff)] + wait_mins*60
+    end_time = start_time + wait_mins*60
     try:
         if not protocol.is_simulating():
             while time.time() < end_time:
