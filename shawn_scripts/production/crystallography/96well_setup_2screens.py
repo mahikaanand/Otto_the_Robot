@@ -4,7 +4,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'Crystallography - set up 96 well with 4 4x6 screens',
+    'protocolName': 'Crystallography - set up 96 well with 2 4x6 screens',
     'author': 'Shawn Laursen',
     'description': '''Makes 4 x 24 screen in 96 well block.
                       Makes 900ul of each.
@@ -24,7 +24,7 @@ metadata = {
 
 def run(protocol):
     strobe(12, 8, True, protocol)
-    setup(4, protocol)
+    setup(2, protocol)
     for buff in buffs:
         def_xy(buff, protocol)
         add_buff(buff, protocol)
