@@ -119,27 +119,15 @@ def add_1d(buff, protocol):
     vol = 450
     for col in range(0,5):
         if vol > 300:
-            p300m.aspirate(300, buff[1], rate=0.1)
-            # protocol.delay(seconds=20)
-            # p300m.default_speed /= 10
-            p300m.dispense(300, plate96.rows()[buffx][buffy+col].top(), rate=0.1)
-            # p300m.default_speed *= 10
-            # protocol.delay(seconds=20) 
+            p300m.aspirate(300, buff[1])
+            p300m.dispense(300, plate96.rows()[buffx][buffy+col].top())
             p300m.touch_tip() 
-            p300m.aspirate(vol-300, buff[1], rate=0.1)
-            # protocol.delay(seconds=20)
-            # p300m.default_speed /= 10
-            p300m.dispense(vol-300, plate96.rows()[buffx][buffy+col].top(), rate=0.1)
-            # p300m.default_speed *= 10
-            # protocol.delay(seconds=20)  
+            p300m.aspirate(vol-300, buff[1])
+            p300m.dispense(vol-300, plate96.rows()[buffx][buffy+col].top())
             p300m.touch_tip() 
         else:  
-            p300m.aspirate(vol, buff[1], rate=0.1)
-            # protocol.delay(seconds=20)
-            # p300m.default_speed /= 10
-            p300m.dispense(vol, plate96.rows()[buffx][buffy+col].top(), rate=0.1)
-            # p300m.default_speed *= 10
-            # protocol.delay(seconds=20)  
+            p300m.aspirate(vol, buff[1])
+            p300m.dispense(vol, plate96.rows()[buffx][buffy+col].top())
             p300m.touch_tip() 
         vol -= 90
     p300m.drop_tip()
@@ -201,12 +189,5 @@ def mix_em(protocol):
     pickup_tips(8, p300m, protocol)
     for col in reversed(range(0,6)):
         p300m.mix(repetitions=5, volume=300, location=plate96.rows()[0][col])
-        # protocol.delay(seconds=10)
-    p300m.drop_tip()
-    
-    pickup_tips(8, p300m, protocol)
-    for col in reversed(range(6,12)):
-        p300m.mix(repetitions=5, volume=300, location=plate96.rows()[0][col])
-        # protocol.delay(seconds=10)
     p300m.drop_tip()
 
