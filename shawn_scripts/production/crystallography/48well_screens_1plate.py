@@ -9,7 +9,7 @@ metadata = {
                       with protein drops. Need a little overage of 
                       protein. 
                       >300ul of each 96well condition in block.
-                      12xprot_drop + ~5ul of protein in each tube 
+                      6xprot_drop + ~5ul of protein in each tube 
                       of strip tube.''',
     'apiLevel': '2.11'
     }
