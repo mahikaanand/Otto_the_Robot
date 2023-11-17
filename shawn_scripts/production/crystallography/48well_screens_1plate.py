@@ -69,6 +69,7 @@ def add_screen(plate, protocol):
     p300m.transfer(200+buff_drop, 
                    screen_block.rows()[0][buffx:buffx+6],
                    plate.rows()[0][1:13:2], 
+                   mix_before=(5,300),
                    new_tip='always')
 
 def add_drop(plate, protocol):
