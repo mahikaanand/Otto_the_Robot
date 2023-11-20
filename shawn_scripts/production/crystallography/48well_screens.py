@@ -85,5 +85,4 @@ def add_protein(plate, protocol):
         p20m.pick_up_tip()
         p20m.aspirate(prot_drop, temp_pcr.rows()[0][0].bottom(0))
         p20m.dispense(prot_drop, plate.rows()[0][i].top(-1.8))
-        p20m.mix(repetitions=3, volume=prot_drop)
         p20m.drop_tip()
