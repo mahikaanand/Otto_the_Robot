@@ -24,7 +24,7 @@ def run(protocol):
     for plate in plates:
         add_screen(plate, protocol)
         add_drop(plate, protocol)
-        test(protocol)
+        test(plate, protocol)
         # add_protein(plate, protocol)
     # tempdeck.deactivate()
     strobe(12, 8, False, protocol)
@@ -99,7 +99,7 @@ def add_protein(plate, protocol):
         p20m.mix(repetitions=3, volume=prot_drop)
         p20m.drop_tip()
 
-def test(protocol):
+def test(plate, protocol):
     height = 0
     p20m.pick_up_tip()
     for i in range(0,12,2):
