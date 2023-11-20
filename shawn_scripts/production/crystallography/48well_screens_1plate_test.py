@@ -78,6 +78,7 @@ def add_drop(plate, protocol):
     for i in range(0,12,2):
         p20m.aspirate(buff_drop, plate.rows()[0][i+1])
         p20m.dispense(buff_drop, plate.rows()[0][i].top(-1.8))
+    p20m.blow_out(protocol.fixed_trash['A1'])
 
 def add_protein(plate, protocol):
     for i in range(0,4,2):
@@ -100,12 +101,13 @@ def add_protein(plate, protocol):
         p20m.drop_tip()
 
 def test(plate, protocol):
-    height = 0
+    height = -1.8
     for i in range(0,12,2):
         p20m.aspirate(prot_drop, temp_pcr.rows()[0][0].bottom(0))
         p20m.move_to(plate.rows()[0][i].top(-1.8))
-        p20m.dispense(prot_drop, plate.rows()[0][i].bottom(height))
+        p20m.dispense(prot_drop, plate.rows()[0][i].top(height))
         protocol.delay(seconds=5)
-        height += 1
+        p20m.blow_out(protocol.fixed_trash['A1'])
+        height += 0.4
     p20m.drop_tip(tips20.wells()[0])
 
