@@ -66,18 +66,18 @@ def add_screen(plate, protocol):
     elif plate == plate48_2:
         buffx = 6
 
+    p300m.pick_up_tip(tips300.wells()[0])
     p300m.transfer(200+buff_drop, 
                    screen_block.rows()[0][buffx:buffx+6],
-                   plate.rows()[0][1:13:2], 
-                   mix_before=(5,300),
-                   new_tip='always')
+                   plate.rows()[0][1:13:2],
+                   new_tip='never')
+    p300m.drop_tip(tips300.wells()[0])
 
 def add_drop(plate, protocol):
+    p20m.pick_up_tip(tips20.wells()[0])
     for i in range(0,12,2):
-        p20m.pick_up_tip()
         p20m.aspirate(buff_drop, plate.rows()[0][i+1])
         p20m.dispense(buff_drop, plate.rows()[0][i].top(-1.8))
-        p20m.drop_tip()
 
 def add_protein(plate, protocol):
     for i in range(0,4,2):
@@ -101,11 +101,10 @@ def add_protein(plate, protocol):
 
 def test(plate, protocol):
     height = 0
-    p20m.pick_up_tip()
     for i in range(0,12,2):
         p20m.move_to(plate.rows()[0][i].top(-1.8))
         p20m.dispense(prot_drop, plate.rows()[0][i].bottom(height))
         protocol.delay(seconds=5)
         height += 1
-    p20m.drop_tip()
+    p20m.drop_tip(tips20.wells()[0])
 
