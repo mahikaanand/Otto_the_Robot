@@ -22,7 +22,7 @@ def run(protocol):
     setup(4, protocol)
     # tempdeck.set_temperature(celsius=4)
     for plate in plates:
-        add_screen(plate, protocol)
+        # add_screen(plate, protocol)
         add_drop(plate, protocol)
         test(plate, protocol)
         # add_protein(plate, protocol)
@@ -102,6 +102,7 @@ def add_protein(plate, protocol):
 def test(plate, protocol):
     height = 0
     for i in range(0,12,2):
+        p20m.aspirate(prot_drop, temp_pcr.rows()[0][0].bottom(0))
         p20m.move_to(plate.rows()[0][i].top(-1.8))
         p20m.dispense(prot_drop, plate.rows()[0][i].bottom(height))
         protocol.delay(seconds=5)
