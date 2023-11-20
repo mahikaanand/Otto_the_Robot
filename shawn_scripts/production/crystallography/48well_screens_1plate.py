@@ -3,7 +3,7 @@ import time
 
 
 metadata = {
-    'protocolName': 'Crystallography - 2 x 48well Crystal Tray Setup',
+    'protocolName': 'Crystallography - 1 x 48well Crystal Tray Setup',
     'author': 'Shawn Laursen',
     'description': '''Takes 96well block and sets up 2x48well trays
                       with protein drops. Need a little overage of 
