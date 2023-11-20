@@ -20,12 +20,13 @@ def run(protocol):
     buff_drop = 2
     strobe(12, 8, True, protocol)
     setup(4, protocol)
-    tempdeck.set_temperature(celsius=4)
+    # tempdeck.set_temperature(celsius=4)
     for plate in plates:
-        # add_screen(plate, protocol)
-        # add_drop(plate, protocol)
-        add_protein(plate, protocol)
-    tempdeck.deactivate()
+        add_screen(plate, protocol)
+        add_drop(plate, protocol)
+        test(protocol)
+        # add_protein(plate, protocol)
+    # tempdeck.deactivate()
     strobe(12, 8, False, protocol)
 
 
@@ -97,4 +98,14 @@ def add_protein(plate, protocol):
         p20m.dispense(prot_drop, plate.rows()[0][i])
         p20m.mix(repetitions=3, volume=prot_drop)
         p20m.drop_tip()
+
+def test(protocol):
+    height = 0
+    p20m.pick_up_tip()
+    for i in range(0,12,2):
+        p20m.move_to(plate.rows()[0][i].top(-1.8))
+        p20m.dispense(prot_drop, plate.rows()[0][i].bottom(height))
+        protocol.delay(seconds=5)
+        height += 1
+    p20m.drop_tip()
 
