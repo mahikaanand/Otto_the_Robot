@@ -104,7 +104,7 @@ def make_standards(protocol):
         count = 1
         for dilute in dilutants:
             p300m.aspirate(dilute, buffer)
-            p300m.dispense(dilute, pcr_strips.rows()[count][strip])
+            p300m.dispense(dilute, pcr_strips.rows()[count][strip].bottom(2))
             count += 1
         p300m.drop_tip()
 
@@ -117,20 +117,20 @@ def make_standards(protocol):
         for standard in standards:
             pickup_tips(1, p300m, protocol)
             p300m.aspirate(standard[0], standard[1])
-            p300m.dispense(standard[0], pcr_strips.rows()[count][strip])
+            p300m.dispense(standard[0], pcr_strips.rows()[count][strip].bottom(2))
             p300m.mix(10,80)
             p300m.drop_tip()
             count += 1
         
         pickup_tips(3, p300m, protocol)
-        p300m.aspirate(20, pcr_strips.rows()[1][strip])
-        p300m.dispense(20, pcr_strips.rows()[4][strip])
+        p300m.aspirate(20, pcr_strips.rows()[1][strip].bottom(2))
+        p300m.dispense(20, pcr_strips.rows()[4][strip].bottom(2))
         p300m.mix(10,160)
         p300m.drop_tip()
         count += 1
 
         pickup_tips(8, p300m, protocol)
-        p300m.transfer(25, pcr_strips.rows()[0][strip],
+        p300m.transfer(25, pcr_strips.rows()[0][strip].bottom(2),
                        plate96.rows()[0][start_96well+strip],
                        new_tip='never')
         p300m.drop_tip()
@@ -139,19 +139,19 @@ def titrate(sample, protocol):
     pickup_tips(1, p300m, protocol)
     p300m.aspirate(210, buffer)
     for row in range(1,8):
-        p300m.dispense(30, pcr_strips.rows()[row][sample+2])
+        p300m.dispense(30, pcr_strips.rows()[row][sample+2].bottom(2))
     p300m.drop_tip()
 
     pickup_tips(1, p300m, protocol)
     for row in range(0,7):
-        p300m.aspirate(30, pcr_strips.rows()[row][sample+2])
-        p300m.dispense(30, pcr_strips.rows()[row+1][sample+2])
+        p300m.aspirate(30, pcr_strips.rows()[row][sample+2].bottom(2))
+        p300m.dispense(30, pcr_strips.rows()[row+1][sample+2].bottom(2))
         p300m.mix(3,30)
-    p300m.aspirate(30, pcr_strips.rows()[7][sample+2])
+    p300m.aspirate(30, pcr_strips.rows()[7][sample+2].bottom(2))
     p300m.drop_tip()
 
     p300m.pick_up_tip(tips300_2)
-    p300m.transfer(25, pcr_strips.rows()[0][sample+2],
+    p300m.transfer(25, pcr_strips.rows()[0][sample+2].bottom(2),
                    plate96.rows()[0][start_96well+sample+2], new_tip='never')
     p300m.drop_tip()
 
