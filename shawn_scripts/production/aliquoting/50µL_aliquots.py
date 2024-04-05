@@ -61,7 +61,7 @@ def pickup_tips(number, pipette, protocol):
 def distribute(protocol):
     pickup_tips(1, p300m, protocol)
     counter = 0
-    for col in range (0,12):
+    for col in range (0,12,2):
         for row in range(0,8):
             if counter < 50:    
                 p300m.aspirate(300, tubes.rows()[0][0].top(-95))
