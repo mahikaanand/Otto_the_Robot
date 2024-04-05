@@ -3,10 +3,10 @@ import time,math
 
 
 metadata = {
-    'protocolName': 'PCR distribute',
+    'protocolName': '50µL aliquots',
     'author': 'Shawn Laursen',
-    'description': '''Put 10ml of PCR into 2 x 5ml conical.
-                      Robot distributes 100ul to pcr strips.''',
+    'description': '''Put 5ml of protein into 1 x 5ml conical.
+                      Robot distributes 50ul to pcr tubes.''',
     'apiLevel': '2.11'
     }
 
@@ -15,6 +15,7 @@ def run(protocol):
     setup(protocol)
     distribute(protocol)
     strobe(12, 8, False, protocol)
+    
 
 def strobe(blinks, hz, leave_on, protocol):
     i = 0
@@ -28,14 +29,15 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(protocol):
     #equiptment
-    global tips300, p300m, tubes, pcr_strips
+    global tips300, p300m, tubes, pcr_strips, tempdeck
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
                                      tip_racks=[tips300])
     tubes = protocol.load_labware('opentrons_15_tuberack_falcon_15ml_conical', 5)
-    pcr_strips = protocol.load_labware(
+    tempdeck = protocol.load_module('temperature module gen2', 10)
+    pcr_strips = tempdeck.load_labware(
                         'opentrons_96_aluminumblock_generic_pcr_strip_200ul', 6)
-    
+    tempdeck.set_temperature(celsius=4)
 
     #single tips
     global which_tips300, tip300
@@ -59,19 +61,13 @@ def pickup_tips(number, pipette, protocol):
 def distribute(protocol):
     pickup_tips(1, p300m, protocol)
     counter = 0
-    for col in range (0,6):
+    for col in range (0,12):
         for row in range(0,8):
-            if counter < 100:    
+            if counter < 50:    
                 p300m.aspirate(300, tubes.rows()[0][0].top(-95))
                 counter = 300
-            p300m.dispense(100, pcr_strips.rows()[row][col])
-            counter -= 100
-    for col in range (6,12):
-        for row in range(0,8):
-            if counter < 100:    
-                p300m.aspirate(300, tubes.rows()[0][1].top(-95))
-                counter = 300
-            p300m.dispense(100, pcr_strips.rows()[row][col])
-            counter -= 100
+            p300m.dispense(50, pcr_strips.rows()[row][col])
+            counter -= 50
     p300m.drop_tip()
+    tempdeck.deactivate()
 
