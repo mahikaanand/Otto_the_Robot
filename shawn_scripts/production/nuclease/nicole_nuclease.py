@@ -3,20 +3,19 @@ import time
 
 
 metadata = {
-    'protocolName': 'Nuclease assay',
+    'protocolName': 'Nicole\'s nuclease assay',
     'author': 'Shawn Laursen',
-    'description': '''You put mixes in 96 well plate: 
-                        - 30ul 2x enzyme in col 0
-                        - 100ul buffer in col 1 
-                        - 100ul nucleic acid/protein in col 2
-                        - 200ul SDS-urea buffer in col 3
-                        - 300ul of formamide in col 4
+    'description': '''You put mixes in 96 well plate:
+                        - 30ul 2x enzyme in col 1
+                        - 100ul buffer in col 2
+                        - 100ul nucleic acid/protein in col 3 
+                        - 30ul quench buffer in col 
                       Robot:
-                        - Heat block to 20C
-                        - Titrate 2x enzymes in pcr tubes 1:1 6 times, leaving #7 as control (10ul)
+                        - Heat block to 20C 
+                        - Titrate 2x enzymes in pcr tubes 1:1 6 times, leaving #7 as control (10ul) 
                         - Add 2x nucleic acid/protein stock (10ul) 
-                        - Incubate at 20C for 20mins
-                        - Add quench buff to all wells from stock (2ul)
+                        - Incubate at 20C for 20mins 
+                        - Add quench buff to all wells from stock (2ul) 
                         - Incubate at 37C for 10mins''',
     'apiLevel': '2.18'
     }
