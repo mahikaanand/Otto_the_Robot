@@ -1,5 +1,6 @@
 from opentrons import protocol_api
 import time,math
+import subprocess
 
 
 metadata = {
