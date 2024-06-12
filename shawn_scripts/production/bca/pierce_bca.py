@@ -23,12 +23,32 @@ metadata = {
                       samples and where to start on the 96well plate (indexed
                       from 0) Dilutions are: 2, 1.4, 0.8, 0.2, 0.14, 0.08, 0.02, 0.
                       ''',
-    'apiLevel': '2.11'
+    'apiLevel': '2.18'
     }
 
+def add_parameters(parameters: protocol_api.Parameters):
+    parameters.add_int(
+        variable_name="well_96start",
+        display_name="96 column start",
+        description="Which column to start in. Indexed from 1.",
+        default=1,
+        minimum=1,
+        maximum=12,
+        unit="column"
+    )
+    parameters.add_int(
+        variable_name="num_samples",
+        display_name="Number of samples",
+        description="Number of samples",
+        default=1,
+        minimum=1,
+        maximum=12,
+        unit="samples"
+    )
+
 def run(protocol):
-    num_samples = 3
-    well_96start = 0 #index from 0
+    num_samples = protocol.params.num_samples
+    well_96start = protocol.params.well_96start - 1
 
     strobe(12, 8, True, protocol)
     setup(well_96start, protocol)
