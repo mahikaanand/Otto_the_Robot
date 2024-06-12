@@ -7,10 +7,29 @@ metadata = {
     'author': 'Shawn Laursen',
     'description': '''Put 10ml of PCR into 2 x 5ml conical.
                       Robot distributes 100ul to pcr strips.''',
-    'apiLevel': '2.11'
+    'apiLevel': '2.18'
     }
 
+def add_parameters(parameters: protocol_api.Parameters):
+    parameters.add_str(
+        variable_name="song",
+        display_name="Song",
+        choices=[
+            {"display_name": "None", "value": "None"},
+            {"display_name": "2001", "value": "2001.mp3"},
+            {"display_name": "Puccini", "value": "puccini.mp3"},
+            {"display_name": "Verdi", "value": "verdi.mp3"},
+            {"display_name": "Mozart", "value": "mozart.mp3"},
+            {"display_name": "Haydn", "value": "haydn.mp3"},
+            {"display_name": "Beethoven", "value": "beethoven.mp3"},
+            {"display_name": "BEP", "value": "get_it_started.mp3"},
+            {"display_name": "Rockabye", "value": "rockabye.mp3"},
+        ],
+        default="None",
+    )
+
 def run(protocol):
+    music(protocol.params.song, protocol)
     strobe(12, 8, True, protocol)
     setup(protocol)
     distribute(protocol)
@@ -75,3 +94,18 @@ def distribute(protocol):
             counter -= 100
     p300m.drop_tip()
 
+def run_quiet_process(command):
+    subprocess.Popen('{} &'.format(command), shell=True)
+
+def music(song, protocol):
+    print('Speaker')
+    print('Next\t--> CTRL-C')
+    if song != "None":
+        try:
+            if not protocol.is_simulating():
+                run_quiet_process('mpg123 {}'.format(song))
+            else:
+                print('Not playing mp3, simulating')
+        except KeyboardInterrupt:
+            pass
+            print()
