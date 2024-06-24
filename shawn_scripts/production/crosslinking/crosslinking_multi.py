@@ -9,7 +9,7 @@ metadata = {
     'author': 'Shawn Laursen',
     'description': '''This protocol will do a crosslinking reaction at 3 concentrations of BS3.
                       Liquids:
-                      - Put 50µL of sample into pcr tray (every third column)
+                      - Put 30µL of sample into pcr tray (every third column)
                       - Fill up 1ml tube of buff in first position of 24well
                       - Fill up >(10µL * num samples) 1ml tube of 2x BS3 in second position of 24well
                       - Fill up >(10µL * num samples) tube of 2000x BS3 in third position of 24well
@@ -35,14 +35,14 @@ def add_parameters(parameters: protocol_api.Parameters):
         description="Which column to start in. Indexed from 1.",
         default=1,
         minimum=1,
-        maximum=12,
+        maximum=10,
         unit="column"
     )
     parameters.add_int(
         variable_name="incubation_temp",
         display_name="Incubation temp",
         description="Incubation temp of reaction.",
-        default=20,
+        default=37,
         minimum=4,
         maximum=95,
         unit="C"
@@ -51,24 +51,6 @@ def add_parameters(parameters: protocol_api.Parameters):
         variable_name="incubation_time",
         display_name="Incubation time",
         description="Incubation duration.",
-        default=20,
-        minimum=0,
-        maximum=1000,
-        unit="min"
-    )
-    parameters.add_int(
-        variable_name="quench_temp",
-        display_name="Quenching temp",
-        description="Queching temp of proteinase K.",
-        default=37,
-        minimum=4,
-        maximum=95,
-        unit="C"
-    )
-    parameters.add_int(
-        variable_name="quench_time",
-        display_name="Quenching time",
-        description="Queching duration of proteinase K.",
         default=30,
         minimum=0,
         maximum=1000,
@@ -99,10 +81,8 @@ def run(protocol):
     temp_96start = protocol.params.temp_96start - 1
     incubation_temp = protocol.params.incubation_temp
     incubation_time = protocol.params.incubation_time
-    quench_temp = protocol.params.quench_temp
-    quench_time = protocol.params.quench_time
-    denature_temp = protocol.params.quench_time
-    denature_time = protocol.params.quench_time
+    denature_temp = protocol.params.denature_temp
+    denature_time = protocol.params.denature_time
 
     strobe(12, 8, True, protocol)
     setup(protocol)
@@ -110,7 +90,7 @@ def run(protocol):
     distribute_samples(protocol)
     add_crosslinker(incubation_temp, protocol)
     incubate(incubation_time, protocol)
-    quench(quench_temp, quench_time, protocol)
+    quench(protocol)
     add_sample_buff(protocol)
     denature(denature_temp, denature_time, protocol)
     
@@ -285,7 +265,7 @@ def incubate(incubation_time, protocol):
         pass
         print()
 
-def quench(quench_temp, quench_time, protocol):
+def quench(protocol):
     # do it slowly to get equal time on heat block
     for i in range(0, num_samples):
         col = ((i // 8)*3) + temp_96start 
