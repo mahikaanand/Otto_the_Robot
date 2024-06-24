@@ -313,17 +313,17 @@ def add_sample_buff(protocol):
             col += 3
         except:
             col = 0
-        pickup_tips(8, p300m, protocol)
+        pickup_tips(remainder, p300m, protocol)
         p300m.distribute(40, sds, 
                       temp_pcr.rows()[0][col],
                       disposal_volume=0, new_tip='never')
         p300m.drop_tip()
-        pickup_tips(8, p300m, protocol)
+        pickup_tips(remainder, p300m, protocol)
         p300m.distribute(40, sds, 
                       temp_pcr.rows()[0][col+1],
                       disposal_volume=0, new_tip='never')
         p300m.drop_tip()
-        pickup_tips(8, p300m, protocol)
+        pickup_tips(remainder, p300m, protocol)
         p300m.distribute(40, sds, 
                       temp_pcr.rows()[0][col+2],
                       disposal_volume=0, new_tip='never')
