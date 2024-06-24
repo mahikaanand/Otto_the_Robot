@@ -128,7 +128,7 @@ def strobe(blinks, hz, leave_on, protocol):
 def setup(protocol):
     # equiptment
     global tips300, tips20, trough, p300m, p20m, tempdeck, temp_pcr, rt_24, glycine
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 6)
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
     trough = protocol.load_labware('nest_12_reservoir_15ml', 4)
     p300m = protocol.load_instrument('p300_multi_gen2', 'left',
@@ -138,7 +138,7 @@ def setup(protocol):
     tempdeck = protocol.load_module('temperature module gen2', 10)
     temp_pcr = tempdeck.load_labware(
                  'opentrons_96_aluminumblock_generic_pcr_strip_200ul')
-    rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 6)
+    rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 7)
     glycine = trough.wells()[0]
 
     # liquids
