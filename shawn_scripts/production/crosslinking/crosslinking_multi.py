@@ -147,11 +147,10 @@ def setup(protocol):
         description="Samples",
         display_color="#FFFF00",
     )
-    for i in range(0, (num_samples // 8)):
-        col = (i*3) + temp_96start
-        temp_pcr.rows()[0][col].load_liquid(liquid=yellowSamples, volume=50)
-    if col == 0:
-        temp_pcr.rows()[0][0].load_liquid(liquid=yellowSamples, volume=50)
+    for i in range(0, (32 // 8)):
+        col = (i*3) 
+        for j in range(0, 8):
+            temp_pcr.rows()[j][col].load_liquid(liquid=yellowSamples, volume=50)
 
     greenGlycine = protocol.define_liquid(
         name="Glycine",
