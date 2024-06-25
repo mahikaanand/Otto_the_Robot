@@ -113,13 +113,10 @@ def setup(protocol):
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
     tips20_2 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
     trough = protocol.load_labware('nest_12_reservoir_15ml', 2)
-    p300m = protocol.load_instrument('p300_multi_gen2', 'left',
-                                     tip_racks=[tips300])
-    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-                                     tip_racks=[tips20, tips20_2])
+    p300m = protocol.load_instrument('p300_multi_gen2', 'left', tip_racks=[tips300])
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks=[tips20, tips20_2])
     tempdeck = protocol.load_module('temperature module gen2', 10)
-    temp_pcr = tempdeck.load_labware(
-                 'opentrons_96_aluminumblock_generic_pcr_strip_200ul')
+    temp_pcr = tempdeck.load_labware('opentrons_96_aluminumblock_nest_wellplate_100ul')
     rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 8)
     glycine = trough.wells()[0]
     sds = trough.wells()[1]
@@ -243,7 +240,7 @@ def add_crosslinker(incubation_temp, protocol):
             p300m.aspirate(100, rt_24.rows()[0][j]) 
             for row in range(0,8):
                 p300m.dispense(10, temp_pcr.rows()[row][col+j].top())  
-                p300m.touch_tip(speed=20)    
+                p300m.touch_tip(speed=20, v_offset=-3)    
             p300m.drop_tip()
 
     # deal with remainder
@@ -258,17 +255,16 @@ def add_crosslinker(incubation_temp, protocol):
             p300m.aspirate(100, rt_24.rows()[0][j]) 
             for row in range(0,remainder):
                 p300m.dispense(10, temp_pcr.rows()[row][col+j].top())  
-                p300m.touch_tip(speed=20)    
+                p300m.touch_tip(speed=20, v_offset=-3)    
             p300m.drop_tip()
 
     # mix everything
-    for i in range(0, (num_samples // 8)):
+    for i in range(0, num_cols):
         col = (i*3) + temp_96start
         for j in range(0,3):
             pickup_tips(8, p20m, protocol)
-            p20m.mix(3,10, temp_pcr.rows()[0][j])
+            p20m.mix(3,10, temp_pcr.rows()[0][col+j])
             p20m.drop_tip()
-    remainder = num_samples % 8
     if remainder != 0:
         try:
             col += 3
@@ -276,7 +272,7 @@ def add_crosslinker(incubation_temp, protocol):
             col = 0
         for j in range(0,3):
             pickup_tips(remainder, p20m, protocol)
-            p20m.mix(3,10, temp_pcr.rows()[0][j])
+            p20m.mix(3,10, temp_pcr.rows()[0][col+j])
             p20m.drop_tip()
 
 def incubate(incubation_time, protocol):
