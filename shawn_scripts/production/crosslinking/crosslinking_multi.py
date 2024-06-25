@@ -230,7 +230,7 @@ def distribute_samples(protocol):
         try:
             col += 3
         except:
-            col = 0
+            col = temp_96start +3
         pickup_tips(remainder, p20m, protocol)
         p20m.distribute(10, temp_pcr.rows()[0][col], 
                         temp_pcr.rows()[0][col+1:col+3],
@@ -268,7 +268,7 @@ def add_crosslinker(incubation_temp, protocol):
         try:
             col += 3
         except:
-            col = 0
+            col = temp_96start +3
         for j in range(0,3):
             pickup_tips(remainder, p20m, protocol)
             p20m.aspirate(10, temp_pcr.rows()[0][temp_96start+j])
@@ -306,7 +306,7 @@ def quench(protocol):
         try:
             col += 3
         except:
-            col = 0
+            col = temp_96start +3
         for j in range(0,3): 
             pickup_tips(remainder, p20m, protocol)
             p20m.aspirate(10,glycine) 
@@ -332,7 +332,7 @@ def add_sample_buff(protocol):
         try:
             col += 3
         except:
-            col = 0
+            col = temp_96start +3
         for j in range(0,3): 
             pickup_tips(remainder, p300m, protocol)
             p300m.aspirate(40,sds) 
