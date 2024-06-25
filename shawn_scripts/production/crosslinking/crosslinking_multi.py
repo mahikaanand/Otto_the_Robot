@@ -264,7 +264,7 @@ def add_crosslinker(incubation_temp, protocol):
             p20m.dispense(10, temp_pcr.rows()[0][col+j])
             p20m.mix(3,10)
             p20m.drop_tip()
-            
+
     remainder = num_samples % 8
     if remainder != 0:
         try:
