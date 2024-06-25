@@ -264,11 +264,13 @@ def add_crosslinker(incubation_temp, protocol):
             p20m.dispense(10, temp_pcr.rows()[0][col+j])
             p20m.mix(3,10)
             p20m.drop_tip()
+            
+    remainder = num_samples % 8
     if remainder != 0:
         try:
             col += 3
         except:
-            col = temp_96start +3
+            col = temp_96start + 3
         for j in range(0,3):
             pickup_tips(remainder, p20m, protocol)
             p20m.aspirate(10, temp_pcr.rows()[0][temp_96start+j])
