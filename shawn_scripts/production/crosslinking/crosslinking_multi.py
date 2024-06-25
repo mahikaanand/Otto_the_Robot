@@ -230,28 +230,54 @@ def distribute_samples(protocol):
         p20m.drop_tip()
 
 def add_crosslinker(incubation_temp, protocol):
-    # add 0, 1, 1000x crosslinker
     tempdeck.set_temperature(celsius=incubation_temp)
     global start_time
     start_time = time.time()
-    for i in range(0, num_samples):
-        col = ((i // 8)*3) + temp_96start 
-        row = i % 8
-        pickup_tips(1, p20m, protocol)
-        p20m.aspirate(10,rt_24.rows()[0][0].bottom(7))
-        p20m.dispense(10,temp_pcr.rows()[row][col])
-        p20m.mix(3,10)
-        p20m.drop_tip()
-        pickup_tips(1, p20m, protocol)
-        p20m.aspirate(10,rt_24.rows()[0][1].bottom(7))
-        p20m.dispense(10,temp_pcr.rows()[row][col+1])
-        p20m.mix(3,10)
-        p20m.drop_tip()
-        pickup_tips(1, p20m, protocol)
-        p20m.aspirate(10,rt_24.rows()[0][2].bottom(7))
-        p20m.dispense(10,temp_pcr.rows()[row][col+2])
-        p20m.mix(3,10)
-        p20m.drop_tip()
+    
+    # determine now many columns
+    num_cols = num_samples // 8
+    for i in range(0, num_cols):
+        col = (i * 3) + temp_96start
+        for j in range(0,3): 
+            pickup_tips(1, p300m, protocol)
+            p300m.aspirate(100, rt_24.rows()[0][j]) 
+            for row in range(0,8):
+                p300m.dispense(10, temp_pcr.rows()[row][col+j].top())  
+                p300m.touch_tip(speed=20)    
+            p300m.drop_tip()
+
+    # deal with remainder
+    remainder = num_samples % 8
+    if remainder != 0:
+        try:
+            col += 3
+        except:
+            col = 0
+        for j in range(0,3): 
+            pickup_tips(1, p300m, protocol)
+            p300m.aspirate(100, rt_24.rows()[0][j]) 
+            for row in range(0,remainder):
+                p300m.dispense(10, temp_pcr.rows()[row][col+j].top())  
+                p300m.touch_tip(speed=20)    
+            p300m.drop_tip()
+
+    # mix everything
+    for i in range(0, (num_samples // 8)):
+        col = (i*3) + temp_96start
+        for j in range(0,3):
+            pickup_tips(8, p20m, protocol)
+            p20m.mix(3,10, temp_pcr.rows()[0][j])
+            p20m.drop_tip()
+    remainder = num_samples % 8
+    if remainder != 0:
+        try:
+            col += 3
+        except:
+            col = 0
+        for j in range(0,3):
+            pickup_tips(remainder, p20m, protocol)
+            p20m.mix(3,10, temp_pcr.rows()[0][j])
+            p20m.drop_tip()
 
 def incubate(incubation_time, protocol):
     end_time = start_time + incubation_time*60
@@ -266,45 +292,16 @@ def incubate(incubation_time, protocol):
         print()
 
 def quench(protocol):
-    # do it slowly to get equal time on heat block
-    for i in range(0, num_samples):
-        col = ((i // 8)*3) + temp_96start 
-        row = i % 8
-        pickup_tips(1, p20m, protocol)
-        p20m.aspirate(10,glycine)
-        p20m.dispense(10,temp_pcr.rows()[row][col])
-        p20m.mix(3,20)
-        p20m.drop_tip()
-        pickup_tips(1, p20m, protocol)
-        p20m.aspirate(10,glycine)
-        p20m.dispense(10,temp_pcr.rows()[row][col+1])
-        p20m.mix(3,20)
-        p20m.drop_tip()
-        pickup_tips(1, p20m, protocol)
-        p20m.aspirate(10,glycine)
-        p20m.dispense(10,temp_pcr.rows()[row][col+2])
-        p20m.mix(3,20)
-        p20m.drop_tip()
-
-def add_sample_buff(protocol):   
     # full 8 cols
-    for i in range(0, (num_samples // 8)):
+    num_cols = num_samples // 8
+    for i in range(0, num_cols):
         col = (i*3) + temp_96start
-        pickup_tips(8, p300m, protocol)
-        p300m.distribute(40, sds, 
-                      temp_pcr.rows()[0][col],
-                      disposal_volume=0, new_tip='never')
-        p300m.drop_tip()
-        pickup_tips(8, p300m, protocol)
-        p300m.distribute(40, sds, 
-                      temp_pcr.rows()[0][col+1],
-                      disposal_volume=0, new_tip='never')
-        p300m.drop_tip()
-        pickup_tips(8, p300m, protocol)
-        p300m.distribute(40, sds, 
-                      temp_pcr.rows()[0][col+2],
-                      disposal_volume=0, new_tip='never')
-        p300m.drop_tip()
+        for j in range(0,3): 
+            pickup_tips(8, p20m, protocol)
+            p20m.aspirate(10,glycine) 
+            p20m.dispense(10,temp_pcr.rows()[0][col+j])
+            p20m.mix(3,20)  
+            p20m.drop_tip()
 
     # remainder rows in last col
     remainder = num_samples % 8
@@ -313,21 +310,38 @@ def add_sample_buff(protocol):
             col += 3
         except:
             col = 0
-        pickup_tips(remainder, p300m, protocol)
-        p300m.distribute(40, sds, 
-                      temp_pcr.rows()[0][col],
-                      disposal_volume=0, new_tip='never')
-        p300m.drop_tip()
-        pickup_tips(remainder, p300m, protocol)
-        p300m.distribute(40, sds, 
-                      temp_pcr.rows()[0][col+1],
-                      disposal_volume=0, new_tip='never')
-        p300m.drop_tip()
-        pickup_tips(remainder, p300m, protocol)
-        p300m.distribute(40, sds, 
-                      temp_pcr.rows()[0][col+2],
-                      disposal_volume=0, new_tip='never')
-        p300m.drop_tip()
+        for j in range(0,3): 
+            pickup_tips(remainder, p20m, protocol)
+            p20m.aspirate(10,glycine) 
+            p20m.dispense(10,temp_pcr.rows()[0][col+j])
+            p20m.mix(3,20)  
+            p20m.drop_tip()
+
+def add_sample_buff(protocol):   
+    # full 8 cols
+    num_cols = num_samples // 8
+    for i in range(0, num_cols):
+        col = (i*3) + temp_96start
+        for j in range(0,3): 
+            pickup_tips(8, p300m, protocol)
+            p300m.aspirate(40,sds) 
+            p300m.dispense(40,temp_pcr.rows()[0][col+j])
+            p300m.mix(3,40)  
+            p300m.drop_tip()
+
+    # remainder rows in last col
+    remainder = num_samples % 8
+    if remainder != 0:
+        try:
+            col += 3
+        except:
+            col = 0
+        for j in range(0,3): 
+            pickup_tips(remainder, p300m, protocol)
+            p300m.aspirate(40,sds) 
+            p300m.dispense(40,temp_pcr.rows()[0][col+j])
+            p300m.mix(3,40)  
+            p300m.drop_tip()
 
 def denature(denature_temp, denature_time, protocol):
     tempdeck.set_temperature(celsius=denature_temp)
