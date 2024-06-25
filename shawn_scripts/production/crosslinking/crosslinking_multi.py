@@ -78,8 +78,10 @@ def add_parameters(parameters: protocol_api.Parameters):
     )
 
 def run(protocol):
-    global num_samples, well_96start, temp_96start
+    global num_samples, temp_96start, num_cols, remainder
     num_samples = protocol.params.num_samples
+    num_cols = num_samples // 8
+    remainder = num_samples % 8
     temp_96start = protocol.params.temp_96start - 1
     incubation_temp = protocol.params.incubation_temp
     incubation_time = protocol.params.incubation_time
@@ -225,7 +227,6 @@ def distribute_samples(protocol):
         p20m.drop_tip()
 
     # remainder rows in last col
-    remainder = num_samples % 8
     if remainder != 0:
         try:
             col += 3
@@ -239,8 +240,6 @@ def distribute_samples(protocol):
 
 def add_crosslinker(incubation_temp, protocol):    
     # disperse xl into 8 wells
-    num_cols = num_samples // 8
-    remainder = num_samples % 8
     col = temp_96start
     for j in range(0,3):
         pickup_tips(1, p300m, protocol)
@@ -265,7 +264,6 @@ def add_crosslinker(incubation_temp, protocol):
             p20m.mix(3,10)
             p20m.drop_tip()
 
-    remainder = num_samples % 8
     if remainder != 0:
         try:
             col += 3
@@ -292,7 +290,6 @@ def incubate(incubation_time, protocol):
 
 def quench(protocol):
     # full 8 cols
-    num_cols = num_samples // 8
     for i in range(0, num_cols):
         col = (i*3) + temp_96start + 3
         for j in range(0,3): 
@@ -303,7 +300,6 @@ def quench(protocol):
             p20m.drop_tip()
 
     # remainder rows in last col
-    remainder = num_samples % 8
     if remainder != 0:
         try:
             col += 3
@@ -329,7 +325,6 @@ def add_sample_buff(protocol):
             p300m.drop_tip()
 
     # remainder rows in last col
-    remainder = num_samples % 8
     if remainder != 0:
         try:
             col += 3
