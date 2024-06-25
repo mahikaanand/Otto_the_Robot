@@ -260,7 +260,7 @@ def add_crosslinker(incubation_temp, protocol):
         col = (i*3) + temp_96start + 3
         for j in range(0,3):
             pickup_tips(8, p20m, protocol)
-            p20m.aspirate(10, temp_pcr.rows()[0][col+j])
+            p20m.aspirate(10, temp_pcr.rows()[0][temp_96start+j])
             p20m.dispense(10, temp_pcr.rows()[0][col+j])
             p20m.mix(3,10)
             p20m.drop_tip()
@@ -271,7 +271,7 @@ def add_crosslinker(incubation_temp, protocol):
             col = 0
         for j in range(0,3):
             pickup_tips(remainder, p20m, protocol)
-            p20m.aspirate(10, temp_pcr.rows()[0][col+j])
+            p20m.aspirate(10, temp_pcr.rows()[0][temp_96start+j])
             p20m.dispense(10, temp_pcr.rows()[0][col+j])
             p20m.mix(3,10)
             p20m.drop_tip()
