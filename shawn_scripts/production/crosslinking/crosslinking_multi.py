@@ -7,9 +7,11 @@ import math
 metadata = {
     'protocolName': 'Crosslinker titration',
     'author': 'Shawn Laursen',
-    'description': '''This protocol will do a crosslinking reaction at 3 concentrations of BS3.
+    'description': '''This protocol will do a crosslinking reaction at 3 concentrations of BS3. It's going 
+                      to use the first 3 wells to distribute crosslinker, so don't use those. Starting column
+                      should be the first of these empty columns, you'll put protein in the fourth.
                       Liquids:
-                      - Put 30µL of sample into pcr tray (every third column)
+                      - Put 30µL of sample into pcr tray (every third column, starting in fourth column)
                       - Fill up 1ml tube of buff in first position of 24well
                       - Fill up >(10µL * num samples) 1ml tube of 2x BS3 in second position of 24well
                       - Fill up >(10µL * num samples) tube of 2000x BS3 in third position of 24well
@@ -26,7 +28,7 @@ def add_parameters(parameters: protocol_api.Parameters):
         description="Number of samples.",
         default=8,
         minimum=1,
-        maximum=32,
+        maximum=24,
         unit="samples"
     )
     parameters.add_int(
@@ -35,7 +37,7 @@ def add_parameters(parameters: protocol_api.Parameters):
         description="Which column to start in. Indexed from 1.",
         default=1,
         minimum=1,
-        maximum=10,
+        maximum=7,
         unit="column"
     )
     parameters.add_int(
@@ -122,13 +124,22 @@ def setup(protocol):
     sds = trough.wells()[1]
 
     # liquids
+    grayReserved = protocol.define_liquid(
+        name="Reserved",
+        description="Reserved for robot",
+        display_color="#000000",
+    )
+    for i in range(0, 3):
+        for j in range(0, 8):
+            temp_pcr.rows()[j][i].load_liquid(liquid=grayReserved, volume=50)
+
     yellowSamples = protocol.define_liquid(
         name="Samples",
         description="Samples",
         display_color="#FFFF00",
     )
-    for i in range(0, (32 // 8)):
-        col = (i*3) 
+    for i in range(0, (24 // 8)):
+        col = (i*3) + 3
         for j in range(0, 8):
             temp_pcr.rows()[j][col].load_liquid(liquid=yellowSamples, volume=50)
 
@@ -206,7 +217,7 @@ def pickup_tips(number, pipette, protocol):
 def distribute_samples(protocol):
     # full 8 cols
     for i in range(0, (num_samples // 8)):
-        col = (i*3) + temp_96start
+        col = (i*3) + temp_96start +3
         pickup_tips(8, p20m, protocol)
         p20m.distribute(10, temp_pcr.rows()[0][col], 
                       temp_pcr.rows()[0][col+1:col+3],
@@ -226,44 +237,32 @@ def distribute_samples(protocol):
                         disposal_volume=0, new_tip='never')
         p20m.drop_tip()
 
-def add_crosslinker(incubation_temp, protocol):
+def add_crosslinker(incubation_temp, protocol):    
+    # disperse xl into 8 wells
+    num_cols = num_samples // 8
+    remainder = num_samples % 8
+    col = temp_96start
+    for j in range(0,3):
+        pickup_tips(1, p300m, protocol)
+        p300m.aspirate((num_samples*10)+40, rt_24.rows()[0][j]) 
+        for row in range(0, remainder):
+            p300m.dispense(((num_cols+1)*10)+5, temp_pcr.rows()[row][col+j])
+        for row in range(remainder, 8):  
+            p300m.dispense(((num_cols)*10)+5, temp_pcr.rows()[row][col+j])  
+        p300m.drop_tip()
+
     tempdeck.set_temperature(celsius=incubation_temp)
     global start_time
     start_time = time.time()
-    
-    # determine now many columns
-    num_cols = num_samples // 8
-    for i in range(0, num_cols):
-        col = (i * 3) + temp_96start
-        for j in range(0,3): 
-            pickup_tips(1, p300m, protocol)
-            p300m.aspirate(100, rt_24.rows()[0][j]) 
-            for row in range(0,8):
-                p300m.dispense(10, temp_pcr.rows()[row][col+j].top())  
-                p300m.touch_tip(speed=20, v_offset=-3)    
-            p300m.drop_tip()
 
-    # deal with remainder
-    remainder = num_samples % 8
-    if remainder != 0:
-        try:
-            col += 3
-        except:
-            col = 0
-        for j in range(0,3): 
-            pickup_tips(1, p300m, protocol)
-            p300m.aspirate(100, rt_24.rows()[0][j]) 
-            for row in range(0,remainder):
-                p300m.dispense(10, temp_pcr.rows()[row][col+j].top())  
-                p300m.touch_tip(speed=20, v_offset=-3)    
-            p300m.drop_tip()
-
-    # mix everything
+    # distribute
     for i in range(0, num_cols):
-        col = (i*3) + temp_96start
+        col = (i*3) + temp_96start + 3
         for j in range(0,3):
             pickup_tips(8, p20m, protocol)
-            p20m.mix(3,10, temp_pcr.rows()[0][col+j])
+            p20m.aspirate(10, temp_pcr.rows()[0][col+j])
+            p20m.dispense(10, temp_pcr.rows()[0][col+j])
+            p20m.mix(3,10)
             p20m.drop_tip()
     if remainder != 0:
         try:
@@ -272,7 +271,9 @@ def add_crosslinker(incubation_temp, protocol):
             col = 0
         for j in range(0,3):
             pickup_tips(remainder, p20m, protocol)
-            p20m.mix(3,10, temp_pcr.rows()[0][col+j])
+            p20m.aspirate(10, temp_pcr.rows()[0][col+j])
+            p20m.dispense(10, temp_pcr.rows()[0][col+j])
+            p20m.mix(3,10)
             p20m.drop_tip()
 
 def incubate(incubation_time, protocol):
@@ -291,7 +292,7 @@ def quench(protocol):
     # full 8 cols
     num_cols = num_samples // 8
     for i in range(0, num_cols):
-        col = (i*3) + temp_96start
+        col = (i*3) + temp_96start + 3
         for j in range(0,3): 
             pickup_tips(8, p20m, protocol)
             p20m.aspirate(10,glycine) 
@@ -317,7 +318,7 @@ def add_sample_buff(protocol):
     # full 8 cols
     num_cols = num_samples // 8
     for i in range(0, num_cols):
-        col = (i*3) + temp_96start
+        col = (i*3) + temp_96start + 3
         for j in range(0,3): 
             pickup_tips(8, p300m, protocol)
             p300m.aspirate(40,sds) 
