@@ -54,7 +54,7 @@ def setup(protocol):
                                      tip_racks=[tips300])
     tubes = protocol.load_labware('opentrons_15_tuberack_falcon_15ml_conical', 5)
     pcr_strips = protocol.load_labware(
-                        'opentrons_96_aluminumblock_generic_pcr_strip_200ul', 6)
+                        'opentrons_96_aluminumblock_nest_wellplate_100ul', 6)
     
 
     #single tips
