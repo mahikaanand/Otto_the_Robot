@@ -13,24 +13,16 @@ metadata = {
 
 def add_parameters(parameters: protocol_api.Parameters):
     parameters.add_str(
-        variable_name="song",
-        display_name="Song",
+        variable_name="tube_type",
+        display_name="Plate or strip tubes",
         choices=[
-            {"display_name": "None", "value": "None"},
-            {"display_name": "2001", "value": "2001.mp3"},
-            {"display_name": "Puccini", "value": "puccini.mp3"},
-            {"display_name": "Verdi", "value": "verdi.mp3"},
-            {"display_name": "Mozart", "value": "mozart.mp3"},
-            {"display_name": "Haydn", "value": "haydn.mp3"},
-            {"display_name": "Beethoven", "value": "beethoven.mp3"},
-            {"display_name": "BEP", "value": "get_it_started.mp3"},
-            {"display_name": "Rockabye", "value": "rockabye.mp3"},
+            {"display_name": "Plate", "value": "opentrons_96_aluminumblock_nest_wellplate_100ul"},
+            {"display_name": "Strip tubes", "value": "opentrons_96_aluminumblock_generic_pcr_strip_200ul"},
         ],
-        default="None",
+        default="opentrons_96_aluminumblock_nest_wellplate_100ul",
     )
 
 def run(protocol):
-    music(protocol.params.song, protocol)
     strobe(12, 8, True, protocol)
     setup(protocol)
     distribute(protocol)
@@ -54,7 +46,7 @@ def setup(protocol):
                                      tip_racks=[tips300])
     tubes = protocol.load_labware('opentrons_15_tuberack_falcon_15ml_conical', 5)
     pcr_strips = protocol.load_labware(
-                        'opentrons_96_aluminumblock_nest_wellplate_100ul', 6)
+                        protocol.params.tube_type, 6)
     
 
     #single tips
@@ -94,19 +86,3 @@ def distribute(protocol):
             p300m.dispense(100, pcr_strips.rows()[row][col])
             counter -= 100
     p300m.drop_tip()
-
-def run_quiet_process(command):
-    subprocess.Popen('{} &'.format(command), shell=True)
-
-def music(song, protocol):
-    print('Speaker')
-    print('Next\t--> CTRL-C')
-    if song != "None":
-        try:
-            if not protocol.is_simulating():
-                run_quiet_process('mpg123 {}'.format(song))
-            else:
-                print('Not playing mp3, simulating')
-        except KeyboardInterrupt:
-            pass
-            print()

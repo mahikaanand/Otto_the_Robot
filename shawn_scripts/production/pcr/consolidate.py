@@ -6,8 +6,19 @@ metadata = {
     'protocolName': 'PCR consolidate',
     'author': 'Shawn Laursen',
     'description': '''Takes 100ul out of stip tubes and puts into 50ml conical.''',
-    'apiLevel': '2.11'
+    'apiLevel': '2.18'
     }
+
+def add_parameters(parameters: protocol_api.Parameters):
+    parameters.add_str(
+        variable_name="tube_type",
+        display_name="Plate or strip tubes",
+        choices=[
+            {"display_name": "Plate", "value": "opentrons_96_aluminumblock_nest_wellplate_100ul"},
+            {"display_name": "Strip tubes", "value": "opentrons_96_aluminumblock_generic_pcr_strip_200ul"},
+        ],
+        default="opentrons_96_aluminumblock_nest_wellplate_100ul",
+    )
 
 def run(protocol):
     strobe(12, 8, True, protocol)
@@ -33,7 +44,7 @@ def setup(protocol):
                                      tip_racks=[tips300])
     tubes = protocol.load_labware('opentrons_6_tuberack_falcon_50ml_conical', 5)
     pcr_strips = protocol.load_labware(
-                        'opentrons_96_aluminumblock_nest_wellplate_100ul', 6)
+                        protocol.params.tube_type, 6)
     
 
     #single tips
