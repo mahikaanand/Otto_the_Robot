@@ -32,21 +32,35 @@ def strobe(blinks, hz, leave_on, protocol):
 def setup(protocol):
     # equiptment
     global tips20,p20m
-    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
-    p20m = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks=[tips20, tips20_2])
+    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks=[tips20])
 
     #single tips
     global tip20_dict
     tip20_dict = {key: ['H','G','F','E','D','C','B','A'] for key in range(1, 12 + 1)}
 
 def pickup_tips(number, pipette, protocol):
-    for col in tip20_dict:
-        if len(tip20_dict[col]) >= number:
-            p20m.pick_up_tip(tips20[str(tip20_dict[col][number-1] + str(col))])
-            tip20_dict[col] = tip20_dict[col][number:]
-            break
+    if pipette == p20m:
+        for col in tip20_dict:
+            if len(tip20_dict[col]) >= number:
+                p20m.pick_up_tip(tips20[str(tip20_dict[col][number-1] + str(col))])
+                tip20_dict[col] = tip20_dict[col][number:]
+                break
+    if pipette == p300m:
+        for col in tip300_dict:
+            if len(tip300_dict[col]) >= number:
+                p300m.pick_up_tip(tips300[str(tip300_dict[col][number-1] + str(col))])
+                tip300_dict[col] = tip300_dict[col][number:]
+                break
         
 def test(protocol):
+    pickup_tips(7, p20m, protocol)
+    p20m.drop_tip()
+    pickup_tips(7, p20m, protocol)
+    p20m.drop_tip()
+    pickup_tips(7, p20m, protocol)
+    p20m.drop_tip()
+
     for j in range(0,3):
         pickup_tips(7, p20m, protocol)
         p20m.drop_tip()
