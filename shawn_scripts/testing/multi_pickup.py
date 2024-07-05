@@ -33,7 +33,7 @@ def setup(protocol):
     # equiptment
     global tips20,p20m
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
-    p20m = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks=[tips20, tips20_2])
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks=[tips20])
 
     #single tips
     global tip20_dict
