@@ -40,13 +40,27 @@ def setup(protocol):
     tip20_dict = {key: ['H','G','F','E','D','C','B','A'] for key in range(1, 12 + 1)}
 
 def pickup_tips(number, pipette, protocol):
-    for col in tip20_dict:
-        if len(tip20_dict[col]) >= number:
-            p20m.pick_up_tip(tips20[str(tip20_dict[col][number-1] + str(col))])
-            tip20_dict[col] = tip20_dict[col][number:]
-            break
+    if pipette == p20m:
+        for col in tip20_dict:
+            if len(tip20_dict[col]) >= number:
+                p20m.pick_up_tip(tips20[str(tip20_dict[col][number-1] + str(col))])
+                tip20_dict[col] = tip20_dict[col][number:]
+                break
+    if pipette == p300m:
+        for col in tip300_dict:
+            if len(tip300_dict[col]) >= number:
+                p300m.pick_up_tip(tips300[str(tip300_dict[col][number-1] + str(col))])
+                tip300_dict[col] = tip300_dict[col][number:]
+                break
         
 def test(protocol):
+    pickup_tips(7, p20m, protocol)
+    p20m.drop_tip()
+    pickup_tips(7, p20m, protocol)
+    p20m.drop_tip()
+    pickup_tips(7, p20m, protocol)
+    p20m.drop_tip()
+
     for j in range(0,3):
         pickup_tips(7, p20m, protocol)
         p20m.drop_tip()

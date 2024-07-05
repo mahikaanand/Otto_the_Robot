@@ -112,13 +112,12 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(protocol):
     # equiptment
-    global tips300, tips20, tips20_2, trough, p300m, p20m, tempdeck, temp_pcr, rt_24, glycine, sds
+    global tips300, tips20, trough, p300m, p20m, tempdeck, temp_pcr, rt_24, glycine, sds
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 6)
     tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 4)
-    tips20_2 = protocol.load_labware('opentrons_96_tiprack_20ul', 5)
     trough = protocol.load_labware('nest_12_reservoir_15ml', 2)
     p300m = protocol.load_instrument('p300_multi_gen2', 'left', tip_racks=[tips300])
-    p20m = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks=[tips20, tips20_2])
+    p20m = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks=[tips20])
     tempdeck = protocol.load_module('temperature module gen2', 10)
     temp_pcr = tempdeck.load_labware('opentrons_96_aluminumblock_nest_wellplate_100ul')
     rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 8)
@@ -180,41 +179,24 @@ def setup(protocol):
     )
     sds.load_liquid(liquid=blueSDS, volume=5000)
 
-    #single tips
-    global which_tips20, tip20
-    which_tips20 = []
-    tip20 = 0
-    tip_row_list = ['H','G','F','E','D','C','B','A']
-    for i in range(0,96):
-        which_tips20.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
-
-    #single tips
-    global which_tips300, tip300
-    which_tips300 = []
-    tip300 = 0
-    tip_row_list = ['H','G','F','E','D','C','B','A']
-    for i in range(0,96):
-        which_tips300.append(tip_row_list[(i%8)]+str(math.floor(i/8)+1))
+    # tips
+    global tip20_dict, tip300_dict
+    tip20_dict = {key: ['H','G','F','E','D','C','B','A'] for key in range(1, 12 + 1)}
+    tip300_dict = {key: ['H','G','F','E','D','C','B','A'] for key in range(1, 12 + 1)}
 
 def pickup_tips(number, pipette, protocol):
-    global tip300, tip20
     if pipette == p20m:
-        if (tip20 % number) != 0:
-            while (tip20 % 8) != 0:
-                tip20 += 1
-        tip20 += number-1
-        if tip20 < 96:
-            p20m.pick_up_tip(tips20[which_tips20[tip20]])
-        else:
-            p20m.pick_up_tip(tips20_2[which_tips20[tip20-96]])
-        tip20 += 1 
+        for col in tip20_dict:
+            if len(tip20_dict[col]) >= number:
+                p20m.pick_up_tip(tips20[str(tip20_dict[col][number-1] + str(col))])
+                tip20_dict[col] = tip20_dict[col][number:]
+                break
     if pipette == p300m:
-        if (tip300 % number) != 0:
-            while (tip300 % 8) != 0:
-                tip300 += 1
-        tip300 += number-1
-        p300m.pick_up_tip(tips300[which_tips300[tip300]])
-        tip300 += 1
+        for col in tip300_dict:
+            if len(tip300_dict[col]) >= number:
+                p300m.pick_up_tip(tips300[str(tip300_dict[col][number-1] + str(col))])
+                tip300_dict[col] = tip300_dict[col][number:]
+                break
 
 def distribute_samples(protocol):
     # full 8 cols
