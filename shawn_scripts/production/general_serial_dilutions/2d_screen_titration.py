@@ -53,25 +53,21 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(protocol):
     # equiptment
-    global tips20, tips300, plate96, plate384, p20m, p300m, rt_24, trough
-    tips20 = protocol.load_labware('opentrons_96_tiprack_20ul', 7)
+    global tips300, plate96, plate384, p300m, rt_24, trough
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 9)
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 4)
     plate384 = protocol.load_labware('corning3575_384well_alt', 5)
-    p20m = protocol.load_instrument('p20_multi_gen2', 'right',
-                                     tip_racks=[tips20])
-    p300m = protocol.load_instrument('p300_multi_gen2', 'left',
-                                     tip_racks=[tips300])
+    p300m = protocol.load_instrument('p300_multi_gen2', 'left', tip_racks=[tips300])
     rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 8)
     trough = protocol.load_labware('nest_12_reservoir_15ml', 1)
 
     # reagents
     global buff, dna, prot1, prot2, prot_control
     buff = trough.wells()[0]
-    dna = rt_24.rows()[0][2]
-    prot1 = rt_24.rows()[0][3]
-    prot2 = rt_24.rows()[0][4]
-    prot_control = rt_24.rows()[0][5]
+    dna = rt_24.rows()[0][0]
+    prot1 = rt_24.rows()[0][1]
+    prot2 = rt_24.rows()[0][2]
+    prot_control = rt_24.rows()[0][3]
 
     # tips
     global tip20_dict, tip300_dict
