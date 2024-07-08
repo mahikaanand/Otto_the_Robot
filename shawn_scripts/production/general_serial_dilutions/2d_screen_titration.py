@@ -40,6 +40,7 @@ def run(protocol):
     titrate_protein_one(protocol)
     protocol.pause('Spin down plate and return.')
     titrate_protein_two(protocol)
+    add_controls(protocol)
     strobe(12, 8, False, protocol)
 
 def strobe(blinks, hz, leave_on, protocol):
@@ -129,17 +130,17 @@ def fill_plate_dna(protocol):
         wells = 1
 
 def titrate_protein_one(protocol):
-    # add 180µL of buff to dilution wells
+    # add 200µL of buff to dilution wells
     pickup_tips(1, p300m, protocol)
     for row in range(1,8):
-        p300m.aspirate(180, buff)
-        p300m.dispense(180, plate96.rows()[row][well_96start+2])
+        p300m.aspirate(200, buff)
+        p300m.dispense(200, plate96.rows()[row][well_96start+2])
     for row in range(0,8):
-        p300m.aspirate(180, buff)
-        p300m.dispense(180, plate96.rows()[row][well_96start+3])
+        p300m.aspirate(200, buff)
+        p300m.dispense(200, plate96.rows()[row][well_96start+3])
     p300m.drop_tip()
 
-    # add 180µL of protein to first well
+    # add 200µL of protein to first well
     pickup_tips(1, p300m, protocol)
     p300m.aspirate(300, prot1)
     p300m.dispense(300, plate96.rows()[0][well_96start+2])
@@ -147,7 +148,7 @@ def titrate_protein_one(protocol):
     p300m.dispense(100, plate96.rows()[0][well_96start+3])
     p300m.mix(3,100)
 
-    # grab 90µL of protein from stock and do titration  
+    # grab 100µL of protein from stock and do titration  
     for row in range(1,7):
         p300m.aspirate(100, plate96.rows()[row-1][well_96start+3])
         p300m.dispense(100, plate96.rows()[row][well_96start+2])
@@ -172,7 +173,7 @@ def titrate_protein_two(protocol):
     # put prot2 into col 1 of 384 well plate 
     pickup_tips(1, p300m, protocol)
     for i in [0,8]:
-        p300m.aspirate(180, prot2)
+        p300m.aspirate(170, prot2)
         for row in range(i,i+8):
             p300m.dispense(20, plate384.rows()[row][0])
     p300m.drop_tip()
@@ -189,7 +190,7 @@ def titrate_protein_two(protocol):
 
 def add_controls(protocol):
     # add buff and dna
-    for item in [buff, dna]:
+    for item in [buff, dna1]:
         pickup_tips(1, p300m, protocol)
         for i in range(0,2):
             p300m.aspirate(20, item) 
