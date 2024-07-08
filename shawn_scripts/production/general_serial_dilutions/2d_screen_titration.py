@@ -40,7 +40,6 @@ def run(protocol):
     fill_plate_buff(protocol)
     fill_plate_dna(protocol)    
     titrate_protein_one(protocol)
-    protocol.pause('Spin down plate and return.')
     titrate_protein_two(protocol)
     add_controls(protocol)
     strobe(12, 8, False, protocol)
@@ -133,43 +132,47 @@ def fill_plate_dna(protocol):
         wells = 1
 
 def titrate_protein_one(protocol):
-    # add 200µL of buff to dilution wells
-    pickup_tips(1, p300m, protocol)
-    for row in range(1,8):
-        p300m.aspirate(200, buff)
-        p300m.dispense(200, plate96.rows()[row][well_96start+2])
-    for row in range(0,8):
-        p300m.aspirate(200, buff)
-        p300m.dispense(200, plate96.rows()[row][well_96start+3])
-    p300m.drop_tip()
+    # add 100µL of buff to dilution wells
+    for i in [0,2]:
+        pickup_tips(1, p300m, protocol)
+        for row in range(1,8):
+            p300m.aspirate(100, buff)
+            p300m.dispense(100, plate96.rows()[row][well_96start+2+i])
+        for row in range(0,8):
+            p300m.aspirate(100, buff)
+            p300m.dispense(100, plate96.rows()[row][well_96start+3+i])
+        p300m.drop_tip()
 
-    # add 200µL of protein to first well
-    pickup_tips(1, p300m, protocol)
-    p300m.aspirate(300, prot1)
-    p300m.dispense(300, plate96.rows()[0][well_96start+2])
-    p300m.aspirate(100, plate96.rows()[0][well_96start+2])
-    p300m.dispense(100, plate96.rows()[0][well_96start+3])
-    p300m.mix(3,100)
-
-    # grab 100µL of protein from stock and do titration  
-    for row in range(1,7):
-        p300m.aspirate(100, plate96.rows()[row-1][well_96start+3])
-        p300m.dispense(100, plate96.rows()[row][well_96start+2])
-        p300m.mix(3,100)
-        p300m.aspirate(100, plate96.rows()[row][well_96start+2])
-        p300m.dispense(100, plate96.rows()[row][well_96start+3])
-        p300m.mix(3,100)
-    p300m.drop_tip()
+        # add 200µL of protein to first well
+        pickup_tips(1, p300m, protocol)
+        p300m.aspirate(200, prot1)
+        p300m.dispense(200, plate96.rows()[0][well_96start+2+i])
+        
+        # grab 100µL of protein from stock and do titration
+        p300m.aspirate(100, plate96.rows()[0][well_96start+2+i])
+        p300m.dispense(100, plate96.rows()[0][well_96start+3+i])
+        p300m.mix(3,100)  
+        for row in range(1,7):
+            p300m.aspirate(100, plate96.rows()[row-1][well_96start+3+i])
+            p300m.dispense(100, plate96.rows()[row][well_96start+2+i])
+            p300m.mix(3,100)
+            p300m.aspirate(100, plate96.rows()[row][well_96start+2+i])
+            p300m.dispense(100, plate96.rows()[row][well_96start+3+i])
+            p300m.mix(3,100)
+        p300m.aspirate(100, plate96.rows()[6][well_96start+3+i])
+        p300m.dispense(100, plate96.rows()[7][well_96start+2+i])
+        p300m.mix(3,100)  
+        p300m.drop_tip()
 
     # plate titration in 384well
-    for i in range(0,2):
+    for j in range(0,2):
         pickup_tips(8, p300m, protocol)
-        p300m.aspirate(180, plate96.rows()[0][well_96start+2+i])
-        p300m.dispense(10, plate384.rows()[i][0].top())
-        p300m.touch_tip()
-        for col in range(0,16):
-            p300m.dispense(10, plate384.rows()[i][col].top())
-            p300m.touch_tip()
+        p300m.aspirate(90, plate96.rows()[0][well_96start+4+j])
+        p300m.dispense(90, plate96.rows()[0][well_96start+2+j])
+        p300m.aspirate(180, plate96.rows()[0][well_96start+2+j])
+        p300m.dispense(20, plate384.rows()[j][0])
+        for col in range(1,16):
+            p300m.dispense(10, plate384.rows()[j][col])
         p300m.drop_tip()
 
 def titrate_protein_two(protocol):
