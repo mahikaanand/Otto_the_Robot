@@ -13,11 +13,12 @@ metadata = {
                       Put in 1 ml eppis in 24well holder:
                       - 3x DNA (1600ul)
                       - 3x DNA (1600ul)
-                      - 3x protein 1 (350ul)
-                      - 3x protein 2 (400ul)
+                      - 3x protein 1 (450ul)
+                      - 3x protein 2 (450ul)
                       - control protein (60ul)
                       - 3x control DNA (300ul)
-                      Put buff into first well of trough (~3ml).''',
+                      Put buff into first well of trough (~3ml)
+                      Put control buff into second well of trough.''',
     'apiLevel': '2.18'
     }
 
@@ -65,8 +66,9 @@ def setup(protocol):
     trough = protocol.load_labware('nest_12_reservoir_15ml', 2)
 
     # reagents
-    global buff, dna1, dna2, prot1, prot2, prot_control, dna3
+    global buff, buff_control, dna1, dna2, prot1, prot2, prot_control, dna3
     buff = trough.wells()[0]
+    buff_control = trough.wells()[1]
     dna1 = rt_24.rows()[0][0]
     dna2 = rt_24.rows()[0][1]
     prot1 = rt_24.rows()[0][2]
@@ -194,7 +196,7 @@ def titrate_protein_two(protocol):
 
 def add_controls(protocol):
     # add buff and dna
-    for item in [buff, dna3]:
+    for item in [buff_control, dna3]:
         pickup_tips(1, p300m, protocol)
         for i in range(0,2):
             p300m.aspirate(20, item) 
