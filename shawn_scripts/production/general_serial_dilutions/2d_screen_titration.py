@@ -207,5 +207,5 @@ def add_controls(protocol):
                     plate384.rows()[i][16:22],
                     plate384.rows()[i][17:23],
                     mix_after=(3, 30), new_tip='never')
-        p300m.aspirate(30, plate384.rows()[i][23])
+        p300m.aspirate(30, plate384.rows()[i][22])
         p300m.drop_tip()
