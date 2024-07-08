@@ -123,11 +123,9 @@ def fill_plate_dna(protocol):
         # use 8 channel to distribute
         pickup_tips(8, p300m, protocol)
         p300m.aspirate(170, plate96.rows()[0][well_96start+1])
-        p300m.dispense(10, plate384.rows()[wells][0].top())
-        p300m.touch_tip()
+        p300m.dispense(20, plate384.rows()[wells][0])
         for col in range(0,16):
-            p300m.dispense(10, plate384.rows()[wells][col].top())
-            p300m.touch_tip()
+            p300m.dispense(10, plate384.rows()[wells][col])
         p300m.drop_tip()
         wells = 1
 
