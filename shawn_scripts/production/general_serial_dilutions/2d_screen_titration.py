@@ -38,6 +38,7 @@ def run(protocol):
     fill_plate_buff(protocol)
     fill_plate_dna(protocol)    
     titrate_protein_one(protocol)
+    protocol.pause('Spin down plate and return.')
     titrate_protein_two(protocol)
     strobe(12, 8, False, protocol)
 
@@ -54,20 +55,21 @@ def strobe(blinks, hz, leave_on, protocol):
 def setup(protocol):
     # equiptment
     global tips300, plate96, plate384, p300m, rt_24, trough
-    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 9)
+    tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 6)
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 4)
     plate384 = protocol.load_labware('corning3575_384well_alt', 5)
     p300m = protocol.load_instrument('p300_multi_gen2', 'left', tip_racks=[tips300])
     rt_24 = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 8)
-    trough = protocol.load_labware('nest_12_reservoir_15ml', 1)
+    trough = protocol.load_labware('nest_12_reservoir_15ml', 2)
 
     # reagents
-    global buff, dna, prot1, prot2, prot_control
+    global buff, dna1, dna2, prot1, prot2, prot_control
     buff = trough.wells()[0]
-    dna = rt_24.rows()[0][0]
-    prot1 = rt_24.rows()[0][1]
-    prot2 = rt_24.rows()[0][2]
-    prot_control = rt_24.rows()[0][3]
+    dna1 = rt_24.rows()[0][0]
+    dna2 = rt_24.rows()[0][1]
+    prot1 = rt_24.rows()[0][2]
+    prot2 = rt_24.rows()[0][3]
+    prot_control = rt_24.rows()[0][4]
 
     # tips
     global tip20_dict, tip300_dict
@@ -75,12 +77,12 @@ def setup(protocol):
     tip300_dict = {key: ['H','G','F','E','D','C','B','A'] for key in range(1, 12 + 1)}
 
 def pickup_tips(number, pipette, protocol):
-    if pipette == p20m:
-        for col in tip20_dict:
-            if len(tip20_dict[col]) >= number:
-                p20m.pick_up_tip(tips20[str(tip20_dict[col][number-1] + str(col))])
-                tip20_dict[col] = tip20_dict[col][number:]
-                break
+    # if pipette == p20m:
+    #     for col in tip20_dict:
+    #         if len(tip20_dict[col]) >= number:
+    #             p20m.pick_up_tip(tips20[str(tip20_dict[col][number-1] + str(col))])
+    #             tip20_dict[col] = tip20_dict[col][number:]
+    #             break
 
     if pipette == p300m:
         for col in tip300_dict:
@@ -106,7 +108,8 @@ def fill_plate_buff(protocol):
         p300m.drop_tip()
 
 def fill_plate_dna(protocol):
-    for i in range(0,2):
+    wells = 0
+    for dna in [dna1, dna2]:
         # disperse dna into wells of 96 well plate
         pickup_tips(1, p300m, protocol)
         for row in range(0, 8):
@@ -117,12 +120,13 @@ def fill_plate_dna(protocol):
         # use 8 channel to distribute
         pickup_tips(8, p300m, protocol)
         p300m.aspirate(180, plate96.rows()[0][well_96start+1])
-        p300m.dispense(10, plate384.rows()[i][0].top())
+        p300m.dispense(10, plate384.rows()[wells][0].top())
         p300m.touch_tip()
         for col in range(0,16):
-            p300m.dispense(10, plate384.rows()[i][col].top())
+            p300m.dispense(10, plate384.rows()[wells][col].top())
             p300m.touch_tip()
         p300m.drop_tip()
+        wells = 1
 
 def titrate_protein_one(protocol):
     # add 180µL of buff to dilution wells
