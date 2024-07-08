@@ -11,11 +11,13 @@ metadata = {
     'author': 'Shawn Laursen',
     'description': '''Makes 16 well x 16 well titration of 2 proteins.
                       Put in 1 ml eppis in 24well holder:
-                      - 3x DNA
-                      - 3x protein 1 
-                      - 3x protein 2 
-                      - control protein
-                      Put buff into first well of trough.''',
+                      - 3x DNA (1600ul)
+                      - 3x DNA (1600ul)
+                      - 3x protein 1 (350ul)
+                      - 3x protein 2 (400ul)
+                      - control protein (60ul)
+                      - 3x control DNA (300ul)
+                      Put buff into first well of trough (~3ml).''',
     'apiLevel': '2.18'
     }
 
@@ -64,13 +66,14 @@ def setup(protocol):
     trough = protocol.load_labware('nest_12_reservoir_15ml', 2)
 
     # reagents
-    global buff, dna1, dna2, prot1, prot2, prot_control
+    global buff, dna1, dna2, prot1, prot2, prot_control, dna3
     buff = trough.wells()[0]
     dna1 = rt_24.rows()[0][0]
     dna2 = rt_24.rows()[0][1]
     prot1 = rt_24.rows()[0][2]
     prot2 = rt_24.rows()[0][3]
     prot_control = rt_24.rows()[0][4]
+    dna3 = rt_24.rows()[0][5]
 
     # tips
     global tip20_dict, tip300_dict
@@ -114,13 +117,13 @@ def fill_plate_dna(protocol):
         # disperse dna into wells of 96 well plate
         pickup_tips(1, p300m, protocol)
         for row in range(0, 8):
-            p300m.aspirate(200, dna) 
-            p300m.dispense(200, plate96.rows()[row][well_96start+1])
+            p300m.aspirate(185, dna) 
+            p300m.dispense(185, plate96.rows()[row][well_96start+1])
         p300m.drop_tip()
        
         # use 8 channel to distribute
         pickup_tips(8, p300m, protocol)
-        p300m.aspirate(180, plate96.rows()[0][well_96start+1])
+        p300m.aspirate(170, plate96.rows()[0][well_96start+1])
         p300m.dispense(10, plate384.rows()[wells][0].top())
         p300m.touch_tip()
         for col in range(0,16):
@@ -190,20 +193,21 @@ def titrate_protein_two(protocol):
 
 def add_controls(protocol):
     # add buff and dna
-    for item in [buff, dna1]:
+    for item in [buff, dna3]:
         pickup_tips(1, p300m, protocol)
         for i in range(0,2):
             p300m.aspirate(20, item) 
-            p300m.dispense(20, plate96.rows()[i][16])
+            p300m.dispense(20, plate384.rows()[i][16])
             p300m.distribute(15, item, plate384.rows()[i][17:24], 
                             disposal_volume=10, new_tip='never')
         p300m.drop_tip()
      
      # add protein and titrate
-    pickup_tips(1, p300m, protocol)
     for i in range(0,2):
-        p300m.aspirate(20, prot2)
+        pickup_tips(1, p300m, protocol)
+        p300m.aspirate(20, prot_control)
         p300m.dispense(20, plate384.rows()[i][17])
+        p300m.mix(3,30)
         p300m.transfer(30,
                     plate384.rows()[i][17:22],
                     plate384.rows()[i][18:23],
