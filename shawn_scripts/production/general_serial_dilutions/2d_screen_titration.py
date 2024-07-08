@@ -124,7 +124,7 @@ def fill_plate_dna(protocol):
         pickup_tips(8, p300m, protocol)
         p300m.aspirate(170, plate96.rows()[0][well_96start+1])
         p300m.dispense(20, plate384.rows()[wells][0])
-        for col in range(0,16):
+        for col in range(1,16):
             p300m.dispense(10, plate384.rows()[wells][col])
         p300m.drop_tip()
         wells = 1
