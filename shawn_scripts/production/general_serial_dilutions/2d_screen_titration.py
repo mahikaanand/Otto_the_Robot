@@ -98,16 +98,8 @@ def pickup_tips(number, pipette, protocol):
 
 def fill_plate_buff(protocol):
     for i in range(0,2):
-        # disperse buff into wells of 96 well plate
-        pickup_tips(1, p300m, protocol)
-        for row in range(0,8):
-            p300m.aspirate(200, buff) 
-            p300m.dispense(200, plate96.rows()[row][well_96start])
-        p300m.drop_tip()
-        
-        # use 8 channel to distribute
         pickup_tips(8, p300m, protocol)
-        p300m.distribute(10, plate96.rows()[0][well_96start],
+        p300m.distribute(10, buff,
                          plate384.rows()[i][1:16], disposal_volume=10, 
                          new_tip='never')
         p300m.drop_tip()
@@ -119,12 +111,12 @@ def fill_plate_dna(protocol):
         pickup_tips(1, p300m, protocol)
         for row in range(0, 8):
             p300m.aspirate(185, dna) 
-            p300m.dispense(185, plate96.rows()[row][well_96start+1])
+            p300m.dispense(185, plate96.rows()[row][well_96start])
         p300m.drop_tip()
        
         # use 8 channel to distribute
         pickup_tips(8, p300m, protocol)
-        p300m.aspirate(170, plate96.rows()[0][well_96start+1])
+        p300m.aspirate(170, plate96.rows()[0][well_96start])
         p300m.dispense(20, plate384.rows()[wells][0])
         for col in range(1,16):
             p300m.dispense(10, plate384.rows()[wells][col])
