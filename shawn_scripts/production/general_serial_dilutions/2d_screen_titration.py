@@ -207,10 +207,10 @@ def add_controls(protocol):
     for i in range(0,2):
         pickup_tips(1, p300m, protocol)
         p300m.aspirate(20, prot_control)
-        p300m.dispense(20, plate384.rows()[i][17])
+        p300m.dispense(20, plate384.rows()[i][16])
         p300m.mix(3,30)
         p300m.transfer(30,
-                    plate384.rows()[i][17:22],
+                    plate384.rows()[i][16:22],
                     plate384.rows()[i][18:23],
                     mix_after=(3, 30), new_tip='never')
         p300m.aspirate(30, plate384.rows()[i][23])
