@@ -32,6 +32,24 @@ def add_parameters(parameters: protocol_api.Parameters):
         maximum=9,
         unit="column"
     )
+    parameters.add_int(
+        variable_name="x_dils",
+        display_name="Number of dilutions for x dimension.",
+        description="Number of dilutions to dilute in the x direction.",
+        default=16,
+        minimum=1,
+        maximum=16,
+        unit="dilutions"
+    )
+    parameters.add_int(
+        variable_name="y_dils",
+        display_name="Number of dilutions for y dimension.",
+        description="Number of dilutions to dilute in the y direction.",
+        default=16,
+        minimum=1,
+        maximum=16,
+        unit="dilutions"
+    )
 
 def run(protocol):
     global well_96start
@@ -40,8 +58,8 @@ def run(protocol):
     setup(protocol)
     fill_plate_buff(protocol)
     fill_plate_dna(protocol)    
-    titrate_x(protocol)
-    titrate_y(protocol)
+    titrate_x(protocol, protocol.params.x_dils)
+    titrate_y(protocol, protocol.params.y_dils)
     add_controls(protocol)
     strobe(12, 8, False, protocol)
 
@@ -123,7 +141,7 @@ def fill_plate_dna(protocol):
         p300m.drop_tip()
         wells = 1
 
-def titrate_x(protocol):
+def titrate_x(protocol, dilutions):
     # add 100µL of buff to dilution wells
     for i in [0,2]:
         pickup_tips(1, p300m, protocol)
@@ -167,7 +185,7 @@ def titrate_x(protocol):
             p300m.dispense(10, plate384.rows()[j][col])
         p300m.drop_tip()
 
-def titrate_y(protocol):
+def titrate_y(protocol, dilutions):
     # put prot2 into col 1 of 384 well plate 
     pickup_tips(1, p300m, protocol)
     for i in [0,8]:
