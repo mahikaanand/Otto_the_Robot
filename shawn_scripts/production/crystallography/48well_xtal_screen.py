@@ -47,9 +47,9 @@ def add_parameters(parameters: protocol_api.Parameters):
         variable_name="well_vol",
         display_name="Well volume",
         description="Amount of buff to make in each well (probably >50x of drop size).",
-        default=200,
+        default=300,
         minimum=50,
-        maximum=200,
+        maximum=300,
         unit="µL"
     )
     parameters.add_int(
@@ -242,40 +242,34 @@ def make_screen(protocol):
     # add water to all wells 
     pickup_tips(1, p300m, protocol)
     for well in range(0, 24):
-        if plate_side == 0:
-            well_idx = (well*2) + 1
-        else:
-            well_idx = (well*2) + 49
-        col = (well+1) // 4
-        row = (well+1) % 6
+        col = well // 4
+        row = well % 4
         x_vol = well_vol * ((col*x_step)/x_stock)
         y_vol = well_vol * ((row*y_step)/y_stock)
         water_vol = well_vol - (buff_vol+x_vol+y_vol)
         p300m.aspirate(water_vol, water)
-        p300m.dispense(water_vol, plate48.wells()[well_idx])
+        p300m.dispense(water_vol, plate48.rows()[row+plate_side][(col*2)+1])
     p300m.drop_tip()
 
     # add y buffs to wells
     for well in range(0, 24):
-        pickup_tips(1, p300m, protocol)
-        if plate_side == 0:
-            well_idx = (well*2) + 1
-        else:
-            well_idx = (well*2) + 49
-        row = (well+1) % 6
+        col = well // 4
+        row = well % 4
         y_vol = well_vol * ((row*y_step)/y_stock)
-        p300m.aspirate(y_vol, y_buff)
-        p300m.dispense(y_vol, plate48.wells()[well_idx])
-        p300m.drop_tip()
+        if y_vol > 0:
+            pickup_tips(1, p300m, protocol)
+            p300m.aspirate(y_vol, y_buff)
+            p300m.dispense(y_vol, plate48.rows()[row+plate_side][(col*2)+1])
+            p300m.drop_tip()
 
     # add x buffs to wells
     for col in range(0, 6):
-        pickup_tips(4, p300m, protocol)
         x_vol = well_vol * ((col*x_step)/x_stock)
+        pickup_tips(4, p300m, protocol)
         p300m.aspirate(x_vol, x_buff, rate=0.1)
         protocol.delay(seconds=10)
         p300m.dispense(x_vol, plate48.rows()[plate_side][(col*2)+1], rate=0.1)
-        p300m.mix(5, x_vol)
+        p300m.mix(5, well_vol)
         p300m.drop_tip()
 
 def add_protein(prot_drop, protocol):
@@ -283,14 +277,14 @@ def add_protein(prot_drop, protocol):
     pickup_tips(1, p300m, protocol)
     p300m.aspirate((prot_drop*24)+5, protein)
     for row in range(0,4):
-        p300m.dispense(prot_drop*6, plate48.rows()[row+plate_side][1])
+        p300m.dispense(prot_drop*6, plate48.rows()[row+plate_side][0])
     p300m.drop_tip()
 
     # dispense drops from first col
     pickup_tips(4, p20m, protocol)
-    p20m.aspirate(prot_drop*5, plate48.rows()[plate_side][1])
+    p20m.aspirate(prot_drop*5, plate48.rows()[plate_side][0], rate=0.1)
     for i in range(2,12,2):
-        p20m.dispense(prot_drop, plate48.rows()[plate_side][i].top(-1.8))
+        p20m.dispense(prot_drop, plate48.rows()[plate_side][i].top(-1.8), rate=0.1)
     p20m.drop_tip()
 
 def add_drop(buff_drop, protocol):
