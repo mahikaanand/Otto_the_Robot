@@ -23,7 +23,7 @@ def add_parameters(parameters: protocol_api.Parameters):
             {"display_name": "Top", "value": 0},
             {"display_name": "Bottom", "value": 4},
         ],
-        default=4,
+        default=0,
     )
     parameters.add_float(
         variable_name="prot_drop",
