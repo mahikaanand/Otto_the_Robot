@@ -275,22 +275,22 @@ def make_screen(protocol):
 def add_protein(prot_drop, protocol):
     # place rows worth of protein in first col
     pickup_tips(1, p300m, protocol)
-    p300m.aspirate((prot_drop*24)+5, protein)
+    p300m.aspirate((prot_drop*24)+5, protein, rate=0.1)
     for row in range(0,4):
-        p300m.dispense(prot_drop*6, plate48.rows()[row+plate_side][0])
+        p300m.dispense(prot_drop*6, plate48.rows()[row+plate_side][0].bottom(-1))
     p300m.drop_tip()
 
     # dispense drops from first col
     pickup_tips(4, p20m, protocol)
-    p20m.aspirate(prot_drop*5, plate48.rows()[plate_side][0], rate=0.1)
+    p20m.aspirate(prot_drop*5, plate48.rows()[plate_side][0].bottom(-1), rate=0.1)
     for i in range(2,12,2):
-        p20m.dispense(prot_drop, plate48.rows()[plate_side][i].top(-1.8), rate=0.1)
+        p20m.dispense(prot_drop, plate48.rows()[plate_side][i].bottom(-1), rate=0.1)
     p20m.drop_tip()
 
 def add_drop(buff_drop, protocol):
     for i in range(0,12,2):
         pickup_tips(4, p20m, protocol)
         p20m.aspirate(buff_drop, plate48.rows()[plate_side][i+1])
-        p20m.dispense(buff_drop, plate48.rows()[plate_side][i].top(-1.8))
+        p20m.dispense(buff_drop, plate48.rows()[plate_side][i].bottom(-1))
         p20m.mix(3, buff_drop)
         p20m.drop_tip()
