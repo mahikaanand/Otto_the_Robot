@@ -268,8 +268,10 @@ def make_screen(protocol):
         pickup_tips(4, p300m, protocol)
         p300m.aspirate(x_vol, x_buff, rate=0.1)
         protocol.delay(seconds=10)
+        p300m.move_to(x_buff.top(5))
+        protocol.delay(seconds=10)
         p300m.dispense(x_vol, plate48.rows()[plate_side][(col*2)+1], rate=0.1)
-        p300m.mix(5, well_vol/2)
+        p300m.mix(8, well_vol/2)
         p300m.drop_tip()
 
 def add_protein(prot_drop, protocol):
@@ -278,6 +280,7 @@ def add_protein(prot_drop, protocol):
     p300m.aspirate((prot_drop*24)+5, protein, rate=0.1)
     for row in range(0,4):
         p300m.dispense(prot_drop*6, plate48.rows()[row+plate_side][0].bottom(-1))
+        p300m.touch_tip(radius=0.5, speed=15.0)
     p300m.drop_tip()
 
     # dispense drops from first col
