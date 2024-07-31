@@ -280,7 +280,7 @@ def add_protein(prot_drop, protocol):
     p300m.aspirate((prot_drop*24)+5, protein, rate=0.1)
     for row in range(0,4):
         p300m.dispense(prot_drop*6, plate48.rows()[row+plate_side][0].bottom(-1))
-        p300m.touch_tip(radius=0.5, speed=15.0)
+        p300m.touch_tip(radius=0.5, speed=15.0, v_offset=-3.0)
     p300m.drop_tip()
 
     # dispense drops from first col
