@@ -120,7 +120,6 @@ def HPLC(start_96well,  RXN_time, protocol):
 
     # Re-neutralization
     p300m.well_bottom_clearance.dispense = 3
-    #p300m.pick_up_tip()
     p300m.distribute(13, KOH, newplate96.rows()[0][rows_noHPF1], disposal_volume = 0, new_tip = 'never')
     p300m.distribute(13, KOH, newplate96.rows()[0][rows_HPF1], disposal_volume = 0, new_tip = 'never')
     p300m.drop_tip()
