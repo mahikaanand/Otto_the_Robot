@@ -70,7 +70,7 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(protocol):
     # equipment
-    global tips300, p20m, p300m, plate96, trough, newplate96, hs, hs_adapter
+    global tips300, p20m, p300m, plate96, trough, newplate96, shaker
     
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 5)
     tips300b = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
@@ -81,8 +81,8 @@ def setup(protocol):
                                      tip_racks=[tips300, tips300b])
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 3)
     trough = protocol.load_labware('nest_12_reservoir_15mL', 2)
-    hs = protocol.load_module('heaterShakerModuleV1', 10)
-    newplate96 = hs.load_labware('costar_96_wellplate_200ul')
+    shaker = protocol.load_module('heaterShakerModuleV1', 10)
+    newplate96 = shaker.load_labware('costar_96_wellplate_200ul')
 
 
 def HPLC(start_96well,  RXN_time, protocol):
@@ -102,7 +102,7 @@ def HPLC(start_96well,  RXN_time, protocol):
 
 
     # Fill half plate w 1M NaOAc
-    hs.close_labware_latch()
+    shaker.close_labware_latch()
 
     #p300m.distribute(13, NaOAc, plate96.rows()[0][rows_noHPF1], disposal_volume = 0, new_tip = 'never')
     #p300m.distribute(13, NaOAc, plate96.rows()[0][rows_HPF1], disposal_volume = 0, new_tip = 'never')
@@ -126,4 +126,4 @@ def HPLC(start_96well,  RXN_time, protocol):
     shaker.deactivate_shaker()
     p300m.drop_tip()
 
-    hs.open_labware_latch()
+    shaker.open_labware_latch()
