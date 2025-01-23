@@ -70,7 +70,7 @@ def strobe(blinks, hz, leave_on, protocol):
 
 def setup(protocol):
     # equipment
-    global tips300, p20m, p300m, plate96, trough, newplate96, shaker, shaker_adapter
+    global tips300, p20m, p300m, plate96, trough, newplate96, hs, hs_adapter
     
     tips300 = protocol.load_labware('opentrons_96_tiprack_300ul', 5)
     tips300b = protocol.load_labware('opentrons_96_tiprack_300ul', 4)
@@ -81,9 +81,9 @@ def setup(protocol):
                                      tip_racks=[tips300, tips300b])
     plate96 = protocol.load_labware('costar_96_wellplate_200ul', 3)
     trough = protocol.load_labware('nest_12_reservoir_15mL', 2)
-    shaker = protocol.load_module('heaterShakerModuleV1', 10)
-    shaker_adapter = shaker.load_adapter('opentrons_96_flat_bottom_adapter')
-    newplate96 = shaker_adapter.load_labware('costar_96_wellplate_200uL', 'SHAKE PLATE')
+    hs = protocol.load_module('heaterShakerModuleV1', 10)
+    hs_adapter = hs.load_adapter('opentrons_96_flat_bottom_adapter')
+    newplate96 = hs_adapter.load_labware('costar_96_wellplate_200uL', 'SHAKE PLATE')
 
 
 def HPLC(start_96well,  RXN_time, protocol):
