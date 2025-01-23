@@ -2,7 +2,7 @@ from opentrons import protocol_api
 import time
 
 metadata = {
-    'protocolName': '5cmpd PARPi HPLC Assay pt.2',
+    'protocolName': 'Testing Shaker Module',
     'author': 'Thomas Stilley',
     'description': '''Learning shaker module
                     Tips: 
