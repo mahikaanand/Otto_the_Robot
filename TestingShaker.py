@@ -83,7 +83,7 @@ def setup(protocol):
     trough = protocol.load_labware('nest_12_reservoir_15mL', 2)
     hs = protocol.load_module('heaterShakerModuleV1', 10)
     hs_adapter = hs.load_adapter('opentrons_96_flat_bottom_adapter')
-    newplate96 = hs_adapter.load_labware('costar_96_wellplate_200uL', 'SHAKE PLATE')
+    newplate96 = hs_adapter.load_labware('costar_96_wellplate_200ul', 'SHAKE PLATE')
 
 
 def HPLC(start_96well,  RXN_time, protocol):
