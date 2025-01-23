@@ -100,6 +100,11 @@ def HPLC(start_96well,  RXN_time, protocol):
     rows_noHPF1 = slice(0,6)
     rows_HPF1 = slice(6,12)
 
+    slice1 = slice(0,3)
+    slice2 = slice(3,6)
+    slice3 = slice(6,9)
+    slice4 = slice(9,12)
+
 
     # Fill half plate w 1M NaOAc
     shaker.close_labware_latch()
@@ -121,22 +126,22 @@ def HPLC(start_96well,  RXN_time, protocol):
     # Re-neutralization
     p300m.well_bottom_clearance.dispense = 3
     
-    p300m.distribute(13, KOH, newplate96.rows()[0][:2], disposal_volume = 0, new_tip = 'never')
+    p300m.distribute(13, KOH, newplate96.rows()[0][slice1], disposal_volume = 0, new_tip = 'never')
     shaker.set_and_wait_for_shake_speed(1000)
     protocol.delay(minutes=1)
     shaker.deactivate_shaker()
 
-    p300m.distribute(13, KOH, newplate96.rows()[0][3:5], disposal_volume = 0, new_tip = 'never')
+    p300m.distribute(13, KOH, newplate96.rows()[0][slice2], disposal_volume = 0, new_tip = 'never')
     shaker.set_and_wait_for_shake_speed(1000)
     protocol.delay(minutes=1)
     shaker.deactivate_shaker()
 
-    p300m.distribute(13, KOH, newplate96.rows()[0][6:8], disposal_volume = 0, new_tip = 'never')
+    p300m.distribute(13, KOH, newplate96.rows()[0][slice3], disposal_volume = 0, new_tip = 'never')
     shaker.set_and_wait_for_shake_speed(1000)
     protocol.delay(minutes=1)
     shaker.deactivate_shaker()
 
-    p300m.distribute(13, KOH, newplate96.rows()[0][9:11], disposal_volume = 0, new_tip = 'never')
+    p300m.distribute(13, KOH, newplate96.rows()[0][slice4], disposal_volume = 0, new_tip = 'never')
     shaker.set_and_wait_for_shake_speed(1000)
     protocol.delay(minutes=1)
     shaker.deactivate_shaker()
