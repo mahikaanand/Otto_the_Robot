@@ -102,6 +102,7 @@ def HPLC(start_96well,  RXN_time, protocol):
 
 
     # Fill half plate w 1M NaOAc
+    hs.close_labware_latch()
 
     #p300m.distribute(13, NaOAc, plate96.rows()[0][rows_noHPF1], disposal_volume = 0, new_tip = 'never')
     #p300m.distribute(13, NaOAc, plate96.rows()[0][rows_HPF1], disposal_volume = 0, new_tip = 'never')
@@ -123,3 +124,5 @@ def HPLC(start_96well,  RXN_time, protocol):
     p300m.distribute(13, KOH, newplate96.rows()[0][rows_noHPF1], disposal_volume = 0, new_tip = 'never')
     p300m.distribute(13, KOH, newplate96.rows()[0][rows_HPF1], disposal_volume = 0, new_tip = 'never')
     p300m.drop_tip()
+
+    hs.open_labware_latch()
