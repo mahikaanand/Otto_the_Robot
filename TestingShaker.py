@@ -120,8 +120,10 @@ def HPLC(start_96well,  RXN_time, protocol):
 
     # Re-neutralization
     p300m.well_bottom_clearance.dispense = 3
-    p300m.distribute(13, KOH, newplate96.rows()[0][rows_noHPF1], disposal_volume = 0, new_tip = 'never')
-    p300m.distribute(13, KOH, newplate96.rows()[0][rows_HPF1], disposal_volume = 0, new_tip = 'never')
+    p300m.distribute(13, KOH, newplate96.rows()[0][:12], disposal_volume = 0, new_tip = 'never')
+    shaker.set_and_wait_for_shake_speed(500)
+    protocol.delay(minutes=1)
+    shaker.deactivate_shaker()
     p300m.drop_tip()
 
     hs.open_labware_latch()
