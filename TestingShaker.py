@@ -131,15 +131,27 @@ def HPLC(start_96well,  RXN_time, protocol):
     protocol.delay(minutes=1)
     shaker.deactivate_shaker()
 
+    shaker.open_labware_latch()
+    protocol.delay(minutes=0.5)
+    shaker.close_labware_latch()
+
     p300m.distribute(13, KOH, newplate96.rows()[0][slice2], disposal_volume = 0, new_tip = 'never')
     shaker.set_and_wait_for_shake_speed(1000)
     protocol.delay(minutes=1)
     shaker.deactivate_shaker()
 
+    shaker.open_labware_latch()
+    protocol.delay(minutes=0.5)
+    shaker.close_labware_latch()
+
     p300m.distribute(13, KOH, newplate96.rows()[0][slice3], disposal_volume = 0, new_tip = 'never')
     shaker.set_and_wait_for_shake_speed(1000)
     protocol.delay(minutes=1)
     shaker.deactivate_shaker()
+
+    shaker.open_labware_latch()
+    protocol.delay(minutes=0.5)
+    shaker.close_labware_latch()
 
     p300m.distribute(13, KOH, newplate96.rows()[0][slice4], disposal_volume = 0, new_tip = 'never')
     shaker.set_and_wait_for_shake_speed(1000)
