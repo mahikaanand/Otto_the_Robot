@@ -1,7 +1,7 @@
 # want to distribute instead of transfer
 # use 300uL tips to pick up 240uL and distribute to all wells
 # do not need to change the actual distributing/transfering protocol
-# header  - x  mls in trough, 2.5mL PARP in trough 2, 2.5mL in trough 3
+# !! add header  - x  mls in trough, 2.5mL PARP in trough 2, 2.5mL in trough 3 (might be 5mL in the troughs)
 
 #NEED BIG AND SMALL TIPS
 # NEED TO ACTUALLY PICK UP BUFFER
@@ -58,30 +58,32 @@ def run(protocol_context):
     liquid_trash = trough.wells()[-1]
     tip_name_20 = 'opentrons_96_tiprack_20ul' # want 300uL tips to pick up 240uL to distribute
     tip_name_300 = 'opentrons_96_tiprack_300ul'
-    tiprack20 = [
-        protocol_context.load_labware(tip_name_20, slot)
-        for slot in ['11']
-    ]
+
     tiprack300 = [
         protocol_context.load_labware(tip_name_300, slot)
         for slot in ['8']
     ]
 
-    pipette20 = protocol_context.load_instrument(
-        pipette20_type, mount='right', tip_racks=tiprack20)
-    
+    tiprack20 = [
+        protocol_context.load_labware(tip_name_20, slot)
+        for slot in ['11']
+    ]
+
     pipette300 = protocol_context.load_instrument(
         pipette300_type, mount = 'left', tip_racks=tiprack300)
-    
+
+    pipette20 = protocol_context.load_instrument(
+        pipette20_type, mount='right', tip_racks=tiprack20)
+
+    pipette300.flow_rate.aspirate = 20
+    pipette300.flow_rate.aspirate = 20
+
     pipette20.flow_rate.aspirate = 10
     pipette20.flow_rate.dispense = 10
 
-    pipette300.flow_rate.aspirate = 10
-    pipette300.flow_rate.aspirate = 10
-
     transfer_volume_compound = 1
-    distribute_volume_compund = 20
-    diluent_volume = 40
+    #distribute_volume_compund = 240
+    diluent_volume = 240
 
     assay_prep = AssayPrep(protocol_context, compound_plate_1, compound_plate_2, assay_plate, pipette20, pipette300, buffer, enzyme_1, enzyme_2, liquid_trash, transfer_volume_compound)
 
@@ -91,9 +93,12 @@ def run(protocol_context):
     #loop to fill odd and even rows of assay_plate
     #assay_prep.fill_plate_with_buffer(evenodd=0, rangestart=0, rangeend=24)
     #assay_prep.fill_plate_with_buffer(evenodd=1, rangestart=0, rangeend=24)
-    for i in range (0,24):
-        assay_prep.fill_plate_with_buffer(distribute_volume_buffer=20, evenodd=0, rangestart=0, rangeend=24)        
+    for i in range (0,12):
+        assay_prep.fill_plate_with_buffer(distribute_volume_buffer=20, evenodd=0, rangestart=i, rangeend=i+1)        
+        assay_prep.fill_plate_with_buffer(distribute_volume_buffer=20, evenodd=1, rangestart=i, rangeend=i+1)
+    #assay_prep.fill_plate_with_buffer(distribute_volume_buffer=240, evenodd=0, rangestart=0, rangeend=24)
 
+    #assay_prep.distribute_buffer()
     pipette300.drop_tip()
     pipette20.pick_up_tip()
 
@@ -210,14 +215,15 @@ class AssayPrep:
         self.liquid_trash = liquid_trash
         self.transfer_volume_compound = transfer_volume_compound      
 
-    
+
     def fill_plate_with_buffer(self, distribute_volume_buffer, evenodd, rangestart, rangeend):
-        for row in range(rangestart, rangeend):
+        for i in range(rangestart, rangeend):
             self.pipette300.distribute(
-                20,
+                #20,
                 #want it to pick up 240 and distribute 20 into each well
+                distribute_volume_buffer,
                 self.buffer,
-                self.assay_plate.rows()[evenodd][row],
+                self.assay_plate.rows()[evenodd][i],
                 new_tip="never"
             )       
 
